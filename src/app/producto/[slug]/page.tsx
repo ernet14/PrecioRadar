@@ -4,6 +4,8 @@ import { Container } from "@/components/layout/Container";
 import { AlertFeedback } from "@/components/alerts/AlertFeedback";
 import { CreateAlertPanel } from "@/components/product/CreateAlertPanel";
 import { PriceHistoryChart } from "@/components/product/PriceHistoryChart";
+import { ReportFeedback } from "@/components/product/ReportFeedback";
+import { ReportProblemForm } from "@/components/product/ReportProblemForm";
 import { TrackProductButton } from "@/components/product/TrackProductButton";
 import { TrackingFeedback } from "@/components/product/TrackingFeedback";
 import { Badge } from "@/components/ui/Badge";
@@ -32,6 +34,8 @@ type ProductoPageProps = {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{
     alert?: string | string[];
+    report?: string | string[];
+    reportOffer?: string | string[];
     tracking?: string | string[];
   }>;
 };
@@ -195,6 +199,8 @@ function OfferRow({
   productSlug: string;
   trackingOverview: TrackingOverview;
 }) {
+  const offerKey = getOfferKey(offer);
+
   return (
     <div
       className="grid gap-4 bg-white p-4 lg:[grid-template-columns:var(--offer-grid)] lg:items-center lg:gap-3"
@@ -248,12 +254,20 @@ function OfferRow({
         >
           Ver oferta
         </a>
+        <Link
+          className="mt-2 inline-flex h-9 w-full items-center justify-center rounded-lg px-3 text-xs font-semibold text-slate-500 transition hover:bg-slate-50 hover:text-blue-700"
+          href={`/producto/${productSlug}?reportOffer=${encodeURIComponent(
+            offerKey,
+          )}#reportar-problema`}
+        >
+          Reportar
+        </Link>
       </div>
 
       <div className="min-w-0">
         <TrackProductButton
           className="h-11 !bg-blue-600 px-3 text-sm hover:!bg-blue-700 focus-visible:outline-blue-600"
-          offerKey={getOfferKey(offer)}
+          offerKey={offerKey}
           fullWidth
           productSlug={productSlug}
           returnTo={`/producto/${productSlug}`}
@@ -304,6 +318,8 @@ export default async function ProductoPage({
   const trackingOverview = await getTrackingOverviewForUser(user?.id);
   const alertOverview = await getAlertOverviewForUser(user?.id);
   const alertStatus = getQueryValue(queryParams.alert);
+  const reportStatus = getQueryValue(queryParams.report);
+  const selectedReportOfferKey = getQueryValue(queryParams.reportOffer);
   const trackingStatus = getQueryValue(queryParams.tracking);
 
   return (
@@ -318,6 +334,7 @@ export default async function ProductoPage({
 
         <TrackingFeedback status={trackingStatus} />
         <AlertFeedback status={alertStatus} />
+        <ReportFeedback status={reportStatus} />
 
         <section className="grid gap-6 lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)_320px]">
           <Card className="overflow-hidden border-slate-200 bg-white shadow-[0_22px_70px_rgba(15,23,42,0.08)]">
@@ -449,14 +466,13 @@ export default async function ProductoPage({
               Acciones del producto
             </h2>
             <p className="mt-2 text-sm leading-6 text-slate-500">
-              Reportes y seguimiento quedan visibles para validar el flujo.
+              Ayudanos a mantener precios, relaciones y links confiables.
             </p>
-            <Button
-              className="mt-5 w-full border-blue-200 text-blue-700 hover:border-blue-300 hover:bg-blue-50"
-              variant="secondary"
-            >
-              Reportar problema
-            </Button>
+            <ReportProblemForm
+              product={product}
+              returnTo={`/producto/${product.slug}`}
+              selectedOfferKey={selectedReportOfferKey}
+            />
           </Card>
         </section>
 
