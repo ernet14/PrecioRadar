@@ -34,8 +34,50 @@ export type AdminRecentReport = {
   offerTitle: string | null;
   productName: string | null;
   reason: string;
-  status: string;
+  status: AdminReportStatus;
 };
+
+export type AdminProductPreview = {
+  categoryName: string;
+  id: string;
+  isDemo: boolean;
+  name: string;
+  offerCount: number;
+  slug: string;
+  updatedAt: Date;
+};
+
+export type AdminOfferPreview = {
+  available: boolean;
+  id: string;
+  isDemo: boolean;
+  price: string;
+  productName: string;
+  storeName: string;
+  title: string;
+  updatedAt: Date;
+};
+
+export type AdminStorePreview = {
+  active: boolean;
+  affiliateEnabled: boolean;
+  id: string;
+  isDemo: boolean;
+  name: string;
+  offerCount: number;
+  slug: string;
+};
+
+export const ADMIN_REPORT_STATUSES = [
+  "OPEN",
+  "REVIEWED",
+  "RESOLVED",
+  "DISMISSED",
+] as const;
+
+export type AdminReportStatus = (typeof ADMIN_REPORT_STATUSES)[number];
+
+export type AdminReportStatusCounts = Record<AdminReportStatus, number>;
 
 export type AdminReportDetail =
   | {
@@ -54,26 +96,41 @@ export type AdminReportDetail =
           slug: string;
         } | null;
         reason: string;
-        status: string;
+        status: AdminReportStatus;
         userEmail: string | null;
       };
       status: "ready";
     }
   | { reason: string; status: "database_unavailable" | "error" | "not_found" };
 
+export type UpdateAdminReportStatusResult =
+  | { reportStatus: AdminReportStatus; status: "updated" }
+  | { status: "database_unavailable"; reason: string }
+  | { status: "invalid" }
+  | { status: "not_found" }
+  | { status: "error" };
+
 export type AdminOverview =
   | {
       counts: AdminCounts;
+      products: AdminProductPreview[];
+      offers: AdminOfferPreview[];
       popularSearches: AdminPopularSearch[];
       providerErrors: AdminProviderError[];
       recentReports: AdminRecentReport[];
+      reportStatusCounts: AdminReportStatusCounts;
+      stores: AdminStorePreview[];
       status: "ready";
     }
   | {
       counts: AdminCounts;
+      products: [];
+      offers: [];
       popularSearches: [];
       providerErrors: [];
       recentReports: [];
+      reportStatusCounts: AdminReportStatusCounts;
+      stores: [];
       reason: string;
       status: "database_unavailable" | "error";
     };
@@ -94,6 +151,19 @@ const emptyCounts: AdminCounts = {
 
 const missingDatabaseReason =
   "Falta configurar DATABASE_URL o DIRECT_URL con la conexion Postgres de Supabase.";
+
+function createEmptyReportStatusCounts(): AdminReportStatusCounts {
+  return {
+    DISMISSED: 0,
+    OPEN: 0,
+    RESOLVED: 0,
+    REVIEWED: 0,
+  };
+}
+
+function isAdminReportStatus(value: string): value is AdminReportStatus {
+  return ADMIN_REPORT_STATUSES.includes(value as AdminReportStatus);
+}
 
 function getPopularSearches(searchLogs: { query: string }[]) {
   const countsByQuery = new Map<string, number>();
@@ -123,91 +193,149 @@ export async function getAdminOverview(): Promise<AdminOverview> {
   if (!prisma) {
     return {
       counts: emptyCounts,
+      products: [],
+      offers: [],
       popularSearches: [],
       providerErrors: [],
       recentReports: [],
+      reportStatusCounts: createEmptyReportStatusCounts(),
+      stores: [],
       reason: missingDatabaseReason,
       status: "database_unavailable",
     };
   }
 
   try {
-    const [
-      products,
-      offers,
-      stores,
-      categories,
-      users,
-      searches,
-      clicks,
-      alerts,
-      reports,
-      affiliateLinks,
-      providerErrors,
-      recentSearchLogs,
-      recentProviderErrors,
-      recentReports,
-    ] = await Promise.all([
-      prisma.product.count(),
-      prisma.productOffer.count(),
-      prisma.store.count(),
-      prisma.category.count(),
-      prisma.user.count(),
-      prisma.searchLog.count(),
-      prisma.clickTracking.count(),
-      prisma.alert.count(),
-      prisma.productReport.count(),
-      prisma.affiliateLink.count(),
-      prisma.providerLog.count({
-        where: {
-          status: {
-            notIn: ["ok", "ready", "success"],
+    const reportStatusCounts = createEmptyReportStatusCounts();
+    const products = await prisma.product.count();
+    const offers = await prisma.productOffer.count();
+    const stores = await prisma.store.count();
+    const categories = await prisma.category.count();
+    const users = await prisma.user.count();
+    const searches = await prisma.searchLog.count();
+    const clicks = await prisma.clickTracking.count();
+    const alerts = await prisma.alert.count();
+    const reports = await prisma.productReport.count();
+    const affiliateLinks = await prisma.affiliateLink.count();
+    const providerErrors = await prisma.providerLog.count({
+      where: {
+        status: {
+          notIn: ["ok", "ready", "success"],
+        },
+      },
+    });
+    const reportStatusGroups = await prisma.productReport.groupBy({
+      by: ["status"],
+      _count: {
+        _all: true,
+      },
+    });
+    const recentSearchLogs = await prisma.searchLog.findMany({
+      orderBy: { createdAt: "desc" },
+      select: { query: true },
+      take: 100,
+    });
+    const recentProviderErrors = await prisma.providerLog.findMany({
+      orderBy: { createdAt: "desc" },
+      select: {
+        action: true,
+        createdAt: true,
+        errorMessage: true,
+        provider: true,
+        status: true,
+      },
+      take: 5,
+      where: {
+        status: {
+          notIn: ["ok", "ready", "success"],
+        },
+      },
+    });
+    const recentReports = await prisma.productReport.findMany({
+      orderBy: { createdAt: "desc" },
+      select: {
+        createdAt: true,
+        id: true,
+        message: true,
+        offer: {
+          select: {
+            title: true,
           },
         },
-      }),
-      prisma.searchLog.findMany({
-        orderBy: { createdAt: "desc" },
-        select: { query: true },
-        take: 100,
-      }),
-      prisma.providerLog.findMany({
-        orderBy: { createdAt: "desc" },
-        select: {
-          action: true,
-          createdAt: true,
-          errorMessage: true,
-          provider: true,
-          status: true,
-        },
-        take: 5,
-        where: {
-          status: {
-            notIn: ["ok", "ready", "success"],
+        product: {
+          select: {
+            name: true,
           },
         },
-      }),
-      prisma.productReport.findMany({
-        orderBy: { createdAt: "desc" },
-        select: {
-          createdAt: true,
-          id: true,
-          message: true,
-          offer: {
-            select: {
-              title: true,
-            },
+        reason: true,
+        status: true,
+      },
+      take: 5,
+    });
+    const recentProducts = await prisma.product.findMany({
+      orderBy: { updatedAt: "desc" },
+      select: {
+        _count: {
+          select: {
+            offers: true,
           },
-          product: {
-            select: {
-              name: true,
-            },
-          },
-          reason: true,
-          status: true,
         },
-        take: 5,
-      }),
-    ]);
+        category: {
+          select: {
+            name: true,
+          },
+        },
+        id: true,
+        isDemo: true,
+        name: true,
+        slug: true,
+        updatedAt: true,
+      },
+      take: 5,
+    });
+    const recentOffers = await prisma.productOffer.findMany({
+      orderBy: { updatedAt: "desc" },
+      select: {
+        available: true,
+        id: true,
+        isDemo: true,
+        price: true,
+        product: {
+          select: {
+            name: true,
+          },
+        },
+        store: {
+          select: {
+            name: true,
+          },
+        },
+        title: true,
+        updatedAt: true,
+      },
+      take: 5,
+    });
+    const storePreviews = await prisma.store.findMany({
+      orderBy: { name: "asc" },
+      select: {
+        _count: {
+          select: {
+            offers: true,
+          },
+        },
+        active: true,
+        affiliateEnabled: true,
+        id: true,
+        isDemo: true,
+        name: true,
+        slug: true,
+      },
+      take: 8,
+    });
+
+    for (const statusGroup of reportStatusGroups) {
+      reportStatusCounts[statusGroup.status] = statusGroup._count._all;
+    }
 
     return {
       counts: {
@@ -223,6 +351,25 @@ export async function getAdminOverview(): Promise<AdminOverview> {
         stores,
         users,
       },
+      products: recentProducts.map((product) => ({
+        categoryName: product.category.name,
+        id: product.id,
+        isDemo: product.isDemo,
+        name: product.name,
+        offerCount: product._count.offers,
+        slug: product.slug,
+        updatedAt: product.updatedAt,
+      })),
+      offers: recentOffers.map((offer) => ({
+        available: offer.available,
+        id: offer.id,
+        isDemo: offer.isDemo,
+        price: offer.price.toString(),
+        productName: offer.product.name,
+        storeName: offer.store.name,
+        title: offer.title,
+        updatedAt: offer.updatedAt,
+      })),
       popularSearches: getPopularSearches(recentSearchLogs),
       providerErrors: recentProviderErrors,
       recentReports: recentReports.map((report) => ({
@@ -234,15 +381,29 @@ export async function getAdminOverview(): Promise<AdminOverview> {
         reason: report.reason,
         status: report.status,
       })),
+      reportStatusCounts,
+      stores: storePreviews.map((store) => ({
+        active: store.active,
+        affiliateEnabled: store.affiliateEnabled,
+        id: store.id,
+        isDemo: store.isDemo,
+        name: store.name,
+        offerCount: store._count.offers,
+        slug: store.slug,
+      })),
       status: "ready",
     };
   } catch (error) {
     console.error("Unable to load admin overview.", error);
     return {
       counts: emptyCounts,
+      products: [],
+      offers: [],
       popularSearches: [],
       providerErrors: [],
       recentReports: [],
+      reportStatusCounts: createEmptyReportStatusCounts(),
+      stores: [],
       reason: "No pudimos cargar el panel admin por un error inesperado.",
       status: "error",
     };
@@ -334,5 +495,34 @@ export async function getAdminReportDetail(
       reason: "No pudimos cargar el reporte por un error inesperado.",
       status: "error",
     };
+  }
+}
+
+export async function updateAdminReportStatus(
+  reportId: string,
+  status: string,
+): Promise<UpdateAdminReportStatusResult> {
+  const prisma = getPrismaClient();
+
+  if (!prisma) {
+    return { status: "database_unavailable", reason: missingDatabaseReason };
+  }
+
+  if (!reportId || !isAdminReportStatus(status)) {
+    return { status: "invalid" };
+  }
+
+  try {
+    const result = await prisma.productReport.updateMany({
+      data: { status },
+      where: { id: reportId },
+    });
+
+    return result.count > 0
+      ? { reportStatus: status, status: "updated" }
+      : { status: "not_found" };
+  } catch (error) {
+    console.error("Unable to update admin report status.", error);
+    return { status: "error" };
   }
 }

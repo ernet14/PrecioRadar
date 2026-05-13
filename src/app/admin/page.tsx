@@ -3,10 +3,15 @@ import { Container } from "@/components/layout/Container";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { requireAdmin } from "@/lib/supabase/auth";
-import { formatDate } from "@/lib/utils";
+import { formatCurrencyARS, formatDate } from "@/lib/utils";
 import {
+  ADMIN_REPORT_STATUSES,
   getAdminOverview,
+  type AdminReportStatus,
+  type AdminOfferPreview,
   type AdminOverview,
+  type AdminProductPreview,
+  type AdminStorePreview,
 } from "@/services/adminService";
 
 type SummaryCardProps = {
@@ -30,6 +35,18 @@ const reportReasonLabels: Record<string, string> = {
   suspicious_offer: "Oferta sospechosa",
   wrong_product_match: "Producto mal relacionado",
 };
+const reportStatusLabels: Record<string, string> = {
+  DISMISSED: "Descartado",
+  OPEN: "Abierto",
+  RESOLVED: "Resuelto",
+  REVIEWED: "Revisado",
+};
+const reportStatusDescriptions: Record<AdminReportStatus, string> = {
+  DISMISSED: "Reportes cerrados sin accion.",
+  OPEN: "Pendientes de revision inicial.",
+  RESOLVED: "Reportes corregidos o verificados.",
+  REVIEWED: "Revisados y esperando cierre.",
+};
 
 function formatCount(value: number) {
   return numberFormatter.format(value);
@@ -37,6 +54,12 @@ function formatCount(value: number) {
 
 function getCountValue(overview: AdminOverview, value: number) {
   return overview.status === "ready" ? formatCount(value) : "-";
+}
+
+function formatAdminPrice(value: string) {
+  const price = Number(value);
+
+  return Number.isFinite(price) ? formatCurrencyARS(price) : value;
 }
 
 function SummaryCard({ description, label, value }: SummaryCardProps) {
@@ -48,6 +71,28 @@ function SummaryCard({ description, label, value }: SummaryCardProps) {
       </p>
       <p className="mt-3 text-sm leading-6 text-slate-600">{description}</p>
     </Card>
+  );
+}
+
+function StatusPill({
+  label,
+  variant = "neutral",
+}: {
+  label: string;
+  variant?: "green" | "neutral" | "orange";
+}) {
+  const variants = {
+    green: "border-emerald-200 bg-emerald-50 text-emerald-700",
+    neutral: "border-slate-200 bg-slate-50 text-slate-600",
+    orange: "border-amber-200 bg-amber-50 text-amber-700",
+  };
+
+  return (
+    <span
+      className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${variants[variant]}`}
+    >
+      {label}
+    </span>
   );
 }
 
@@ -141,6 +186,106 @@ function getSections(overview: AdminOverview): AdminSection[] {
   ];
 }
 
+function ProductPreviewCard({ product }: { product: AdminProductPreview }) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <Link
+            className="font-semibold leading-6 text-slate-950 transition hover:text-blue-700"
+            href={`/producto/${product.slug}`}
+          >
+            {product.name}
+          </Link>
+          <p className="mt-1 text-sm text-slate-500">{product.categoryName}</p>
+        </div>
+        {product.isDemo ? <StatusPill label="Demo" variant="orange" /> : null}
+      </div>
+      <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold text-slate-500">
+        <StatusPill label={`${formatCount(product.offerCount)} ofertas`} />
+        <StatusPill label={`Actualizado ${formatDate(product.updatedAt)}`} />
+      </div>
+    </div>
+  );
+}
+
+function OfferPreviewCard({ offer }: { offer: AdminOfferPreview }) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="line-clamp-2 font-semibold leading-6 text-slate-950">
+            {offer.title}
+          </p>
+          <p className="mt-1 text-sm text-slate-500">
+            {offer.storeName} &middot; {offer.productName}
+          </p>
+        </div>
+        <StatusPill
+          label={offer.available ? "Disponible" : "Sin stock"}
+          variant={offer.available ? "green" : "neutral"}
+        />
+      </div>
+      <div className="mt-4 flex items-end justify-between gap-3">
+        <p className="text-xl font-bold text-slate-950">
+          {formatAdminPrice(offer.price)}
+        </p>
+        <p className="text-xs font-medium text-slate-500">
+          {formatDate(offer.updatedAt)}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function StorePreviewCard({ store }: { store: AdminStorePreview }) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="font-semibold text-slate-950">{store.name}</p>
+          <p className="mt-1 text-sm text-slate-500">{store.slug}</p>
+        </div>
+        <StatusPill
+          label={store.active ? "Activa" : "Inactiva"}
+          variant={store.active ? "green" : "neutral"}
+        />
+      </div>
+      <div className="mt-4 flex flex-wrap gap-2">
+        <StatusPill label={`${formatCount(store.offerCount)} ofertas`} />
+        {store.isDemo ? <StatusPill label="Demo" variant="orange" /> : null}
+        {store.affiliateEnabled ? <StatusPill label="Afiliados" /> : null}
+      </div>
+    </div>
+  );
+}
+
+function ReportStatusCard({
+  count,
+  status,
+}: {
+  count: number;
+  status: AdminReportStatus;
+}) {
+  const variant = status === "OPEN" ? "orange" : status === "RESOLVED" ? "green" : "neutral";
+
+  return (
+    <Card className="border-slate-200 p-5 shadow-[0_14px_34px_rgba(15,23,42,0.05)]">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h3 className="text-lg font-semibold text-slate-950">
+            {reportStatusLabels[status]}
+          </h3>
+          <p className="mt-2 text-sm leading-6 text-slate-600">
+            {reportStatusDescriptions[status]}
+          </p>
+        </div>
+        <StatusPill label={formatCount(count)} variant={variant} />
+      </div>
+    </Card>
+  );
+}
+
 export default async function AdminPage() {
   const user = await requireAdmin();
   const overview = await getAdminOverview();
@@ -219,6 +364,97 @@ export default async function AdminPage() {
           ))}
         </section>
 
+        {overview.status === "ready" ? (
+          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {ADMIN_REPORT_STATUSES.map((status) => (
+              <ReportStatusCard
+                count={overview.reportStatusCounts[status]}
+                key={status}
+                status={status}
+              />
+            ))}
+          </section>
+        ) : null}
+
+        {overview.status === "ready" ? (
+          <section className="grid gap-4 xl:grid-cols-3">
+            <Card className="border-slate-200 p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-slate-950">
+                    Productos recientes
+                  </h2>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    Ultimos productos actualizados en catalogo.
+                  </p>
+                </div>
+                <Badge variant="neutral">{formatCount(overview.products.length)}</Badge>
+              </div>
+              <div className="mt-5 space-y-3">
+                {overview.products.length > 0 ? (
+                  overview.products.map((product) => (
+                    <ProductPreviewCard key={product.id} product={product} />
+                  ))
+                ) : (
+                  <p className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+                    Todavia no hay productos en catalogo.
+                  </p>
+                )}
+              </div>
+            </Card>
+
+            <Card className="border-slate-200 p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-slate-950">
+                    Ofertas recientes
+                  </h2>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    Ofertas actualizadas por tienda y producto.
+                  </p>
+                </div>
+                <Badge variant="neutral">{formatCount(overview.offers.length)}</Badge>
+              </div>
+              <div className="mt-5 space-y-3">
+                {overview.offers.length > 0 ? (
+                  overview.offers.map((offer) => (
+                    <OfferPreviewCard key={offer.id} offer={offer} />
+                  ))
+                ) : (
+                  <p className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+                    Todavia no hay ofertas cargadas.
+                  </p>
+                )}
+              </div>
+            </Card>
+
+            <Card className="border-slate-200 p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-slate-950">
+                    Tiendas
+                  </h2>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    Estado de tiendas y providers disponibles.
+                  </p>
+                </div>
+                <Badge variant="neutral">{formatCount(overview.stores.length)}</Badge>
+              </div>
+              <div className="mt-5 space-y-3">
+                {overview.stores.length > 0 ? (
+                  overview.stores.map((store) => (
+                    <StorePreviewCard key={store.id} store={store} />
+                  ))
+                ) : (
+                  <p className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+                    Todavia no hay tiendas cargadas.
+                  </p>
+                )}
+              </div>
+            </Card>
+          </section>
+        ) : null}
+
         <section className="grid gap-4 xl:grid-cols-3">
           <Card className="border-slate-200 p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
             <div className="flex items-start justify-between gap-4">
@@ -282,7 +518,7 @@ export default async function AdminPage() {
                         {reportReasonLabels[report.reason] ?? report.reason}
                       </p>
                       <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
-                        {report.status}
+                        {reportStatusLabels[report.status] ?? report.status}
                       </span>
                     </div>
                     <p className="mt-1 line-clamp-2 text-sm leading-6 text-slate-500">
