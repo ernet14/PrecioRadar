@@ -89,6 +89,20 @@ export type EvaluateAlertsResult =
   | { status: "database_unavailable"; reason: string }
   | { status: "error" };
 
+export type EvaluateAllAlertsResult =
+  | {
+      status: "evaluated";
+      createdCount: number;
+      emailFailedCount: number;
+      emailSentCount: number;
+      emailSkippedCount: number;
+      evaluatedCount: number;
+      failedUserCount: number;
+      userCount: number;
+    }
+  | { status: "database_unavailable"; reason: string }
+  | { status: "error" };
+
 const missingDatabaseReason =
   "Falta configurar DATABASE_URL o DIRECT_URL con la conexion Postgres de Supabase.";
 
@@ -649,6 +663,64 @@ export async function evaluateUserAlerts(
     };
   } catch (error) {
     console.error("Unable to evaluate alerts.", error);
+    return { status: "error" };
+  }
+}
+
+export async function evaluateAllUserAlerts(): Promise<EvaluateAllAlertsResult> {
+  const prisma = getPrismaClient();
+
+  if (!prisma) {
+    return { status: "database_unavailable", reason: missingDatabaseReason };
+  }
+
+  try {
+    const activeAlerts = await prisma.alert.findMany({
+      orderBy: {
+        createdAt: "asc",
+      },
+      select: {
+        userId: true,
+      },
+      where: {
+        active: true,
+        paused: false,
+      },
+    });
+    const userIds = Array.from(
+      new Set(activeAlerts.map((alert) => alert.userId)),
+    );
+    const totals = {
+      createdCount: 0,
+      emailFailedCount: 0,
+      emailSentCount: 0,
+      emailSkippedCount: 0,
+      evaluatedCount: 0,
+      failedUserCount: 0,
+    };
+
+    for (const userId of userIds) {
+      const result = await evaluateUserAlerts(userId);
+
+      if (result.status !== "evaluated") {
+        totals.failedUserCount += 1;
+        continue;
+      }
+
+      totals.createdCount += result.createdCount;
+      totals.emailFailedCount += result.emailFailedCount;
+      totals.emailSentCount += result.emailSentCount;
+      totals.emailSkippedCount += result.emailSkippedCount;
+      totals.evaluatedCount += result.evaluatedCount;
+    }
+
+    return {
+      ...totals,
+      status: "evaluated",
+      userCount: userIds.length,
+    };
+  } catch (error) {
+    console.error("Unable to evaluate all alerts.", error);
     return { status: "error" };
   }
 }

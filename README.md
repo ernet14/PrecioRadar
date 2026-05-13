@@ -39,6 +39,22 @@ upserted through `src/services/userSyncService.ts`. If `DATABASE_URL` still has
 placeholder values, auth can compile and the sync is skipped until the real
 database is configured.
 
+## Local Codex skills
+
+Project-local agent skills are intentionally ignored by Git. To recreate the
+marketing skills locally, run:
+
+```bash
+npx skills add coreyhaines31/marketingskills --skill product-marketing-context page-cro copywriting seo-audit site-architecture schema-markup social-content cold-email
+```
+
+## Internal alert evaluation endpoint
+
+The MVP alert evaluator is exposed at `/api/internal/evaluate-alerts` for cron
+jobs or manual internal runs. Configure `CRON_SECRET` server-side and call it
+with either `Authorization: Bearer <CRON_SECRET>` or `x-cron-secret:
+<CRON_SECRET>`.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

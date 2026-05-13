@@ -59,3 +59,7 @@ node_modules/
 .env
 .env.local
 
+# Agent-local skills and lockfile
+.agents/
+skills-lock.json
+
