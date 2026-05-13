@@ -1,0 +1,927 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PrecioRadar - prueba visual de estilos</title>
+    <style>
+      :root {
+        --ink: #111827;
+        --muted: #64748b;
+        --line: #dbe3ee;
+        --surface: #ffffff;
+        --page: #f4f7fb;
+        --blue: #2563eb;
+        --green: #059669;
+        --orange: #f97316;
+        --red: #dc2626;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--page);
+        color: var(--ink);
+        font-family: Arial, Helvetica, sans-serif;
+        line-height: 1.5;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .page {
+        margin: 0 auto;
+        max-width: 1440px;
+        padding: 32px 20px 48px;
+      }
+
+      .intro {
+        display: grid;
+        gap: 20px;
+        grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+        margin-bottom: 28px;
+      }
+
+      .intro-copy,
+      .decision {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 22px;
+      }
+
+      .eyebrow {
+        color: var(--blue);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0;
+        margin: 0 0 10px;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: 34px;
+        line-height: 1.12;
+        max-width: 820px;
+      }
+
+      .lead {
+        color: var(--muted);
+        margin-top: 12px;
+        max-width: 780px;
+      }
+
+      .decision h2 {
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+
+      .decision ol {
+        color: var(--muted);
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      .style-grid {
+        display: grid;
+        gap: 24px;
+      }
+
+      .style {
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      .style-header {
+        align-items: end;
+        display: grid;
+        gap: 18px;
+        grid-template-columns: minmax(0, 1fr) minmax(240px, 360px);
+        padding: 24px;
+      }
+
+      .style-title {
+        font-size: 28px;
+        line-height: 1.18;
+      }
+
+      .style-summary {
+        margin-top: 8px;
+        max-width: 780px;
+      }
+
+      .tokens {
+        display: grid;
+        gap: 8px;
+      }
+
+      .token-row {
+        align-items: center;
+        display: grid;
+        gap: 8px;
+        grid-template-columns: 72px 1fr;
+      }
+
+      .swatches {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .swatch {
+        border: 1px solid rgba(17, 24, 39, 0.16);
+        border-radius: 8px;
+        height: 28px;
+        width: 48px;
+      }
+
+      .screens {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        padding: 0 24px 24px;
+      }
+
+      .screen {
+        border-radius: 8px;
+        min-height: 420px;
+        overflow: hidden;
+      }
+
+      .screen-top {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        min-height: 44px;
+        padding: 12px 14px;
+      }
+
+      .screen-label {
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .dotline {
+        display: flex;
+        gap: 4px;
+      }
+
+      .dotline span {
+        border-radius: 999px;
+        display: block;
+        height: 6px;
+        width: 6px;
+      }
+
+      .screen-body {
+        display: grid;
+        gap: 12px;
+        padding: 14px;
+      }
+
+      .mini-card {
+        border-radius: 8px;
+        padding: 12px;
+      }
+
+      .searchbar {
+        align-items: center;
+        border-radius: 8px;
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 1fr 76px;
+        min-height: 46px;
+        padding: 6px;
+      }
+
+      .search-input,
+      .search-button {
+        border-radius: 6px;
+        min-height: 34px;
+      }
+
+      .hero-product {
+        align-items: center;
+        display: grid;
+        gap: 12px;
+        grid-template-columns: 92px 1fr;
+      }
+
+      .product-visual {
+        align-items: center;
+        aspect-ratio: 1;
+        border-radius: 8px;
+        display: flex;
+        font-size: 14px;
+        font-weight: 700;
+        justify-content: center;
+      }
+
+      .price {
+        font-size: 24px;
+        font-weight: 800;
+        line-height: 1.1;
+      }
+
+      .tiny {
+        font-size: 12px;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .offer-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .offer-row {
+        align-items: center;
+        border-radius: 8px;
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 1fr auto;
+        min-height: 46px;
+        padding: 9px 10px;
+      }
+
+      .badge-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .pill {
+        border-radius: 999px;
+        display: inline-flex;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        padding: 7px 9px;
+      }
+
+      .metric-grid {
+        display: grid;
+        gap: 8px;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .metric {
+        border-radius: 8px;
+        min-height: 74px;
+        padding: 10px;
+      }
+
+      .chart {
+        align-items: end;
+        border-radius: 8px;
+        display: flex;
+        gap: 7px;
+        height: 112px;
+        padding: 12px;
+      }
+
+      .bar {
+        border-radius: 999px 999px 2px 2px;
+        flex: 1;
+      }
+
+      .split {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .recommendation {
+        border-radius: 8px;
+        padding: 12px;
+      }
+
+      .style-a {
+        background: #edf4ff;
+        border: 1px solid #bfdbfe;
+      }
+
+      .style-a .style-header,
+      .style-a .screen {
+        background: #ffffff;
+        border: 1px solid #cbdff7;
+      }
+
+      .style-a .style-summary,
+      .style-a .token-row,
+      .style-a .tiny,
+      .style-a .muted {
+        color: #53657d;
+      }
+
+      .style-a .screen-top {
+        background: #f8fbff;
+        border-bottom: 1px solid #d8e6f7;
+      }
+
+      .style-a .dotline span {
+        background: #2563eb;
+      }
+
+      .style-a .mini-card,
+      .style-a .offer-row,
+      .style-a .metric,
+      .style-a .searchbar {
+        background: #f8fbff;
+        border: 1px solid #d8e6f7;
+      }
+
+      .style-a .search-input {
+        background: #ffffff;
+        border: 1px solid #cbdff7;
+      }
+
+      .style-a .search-button,
+      .style-a .bar,
+      .style-a .pill.primary {
+        background: #2563eb;
+        color: #ffffff;
+      }
+
+      .style-a .pill.good,
+      .style-a .recommendation {
+        background: #e9fbf3;
+        color: #047857;
+      }
+
+      .style-a .product-visual {
+        background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        border: 1px solid #bfdbfe;
+        color: #1d4ed8;
+      }
+
+      .style-b {
+        background: #0d1726;
+        border: 1px solid #26374f;
+        color: #f8fafc;
+      }
+
+      .style-b .style-header,
+      .style-b .screen {
+        background: #101c2e;
+        border: 1px solid #2d405a;
+      }
+
+      .style-b .style-summary,
+      .style-b .token-row,
+      .style-b .tiny,
+      .style-b .muted {
+        color: #a8b4c7;
+      }
+
+      .style-b .screen-top {
+        background: #0a1321;
+        border-bottom: 1px solid #2d405a;
+      }
+
+      .style-b .dotline span {
+        background: #2dd4bf;
+      }
+
+      .style-b .mini-card,
+      .style-b .offer-row,
+      .style-b .metric,
+      .style-b .searchbar {
+        background: #15243a;
+        border: 1px solid #2d405a;
+      }
+
+      .style-b .search-input {
+        background: #0e1828;
+        border: 1px solid #344a68;
+      }
+
+      .style-b .search-button,
+      .style-b .bar,
+      .style-b .pill.primary {
+        background: #2dd4bf;
+        color: #06231f;
+      }
+
+      .style-b .pill.good,
+      .style-b .recommendation {
+        background: rgba(34, 197, 94, 0.14);
+        border: 1px solid rgba(34, 197, 94, 0.24);
+        color: #86efac;
+      }
+
+      .style-b .product-visual {
+        background: linear-gradient(135deg, #172554, #0f766e);
+        border: 1px solid #2d405a;
+        color: #ccfbf1;
+      }
+
+      .style-c {
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+      }
+
+      .style-c .style-header,
+      .style-c .screen {
+        background: #fffdf8;
+        border: 1px solid #f3d7b6;
+      }
+
+      .style-c .style-summary,
+      .style-c .token-row,
+      .style-c .tiny,
+      .style-c .muted {
+        color: #6f5c4b;
+      }
+
+      .style-c .screen-top {
+        background: #fff7ed;
+        border-bottom: 1px solid #f3d7b6;
+      }
+
+      .style-c .dotline span {
+        background: #f97316;
+      }
+
+      .style-c .mini-card,
+      .style-c .offer-row,
+      .style-c .metric,
+      .style-c .searchbar {
+        background: #fffaf3;
+        border: 1px solid #f3d7b6;
+      }
+
+      .style-c .search-input {
+        background: #ffffff;
+        border: 1px solid #e8c7a5;
+      }
+
+      .style-c .search-button,
+      .style-c .bar,
+      .style-c .pill.primary {
+        background: #f97316;
+        color: #ffffff;
+      }
+
+      .style-c .pill.good,
+      .style-c .recommendation {
+        background: #e9fbf3;
+        border: 1px solid #bbf7d0;
+        color: #047857;
+      }
+
+      .style-c .product-visual {
+        background: linear-gradient(135deg, #ffedd5, #ccfbf1);
+        border: 1px solid #f3d7b6;
+        color: #9a3412;
+      }
+
+      @media (max-width: 1100px) {
+        .screens {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 760px) {
+        .page {
+          padding: 20px 12px 36px;
+        }
+
+        .intro,
+        .style-header,
+        .screens {
+          grid-template-columns: 1fr;
+        }
+
+        h1 {
+          font-size: 28px;
+        }
+
+        .style-title {
+          font-size: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="intro">
+        <div class="intro-copy">
+          <p class="eyebrow">Documento Maestro v2 · etapa visual</p>
+          <h1>3 direcciones visuales para definir el estilo final de PrecioRadar</h1>
+          <p class="lead">
+            Propuesta aislada para comparar Home, resultados, detalle y dashboard
+            sin tocar la app actual. Todas mantienen foco en confianza, precio,
+            historial, alertas y claridad para usuarios de Argentina.
+          </p>
+        </div>
+        <aside class="decision">
+          <h2>Criterio recomendado</h2>
+          <ol>
+            <li>Priorizar lectura rápida de precio y tienda.</li>
+            <li>Evitar estética demasiado financiera o demasiado promocional.</li>
+            <li>Elegir un sistema que escale a admin, reportes y MercadoLibre real.</li>
+          </ol>
+        </aside>
+      </section>
+
+      <div class="style-grid">
+        <section class="style style-a">
+          <header class="style-header">
+            <div>
+              <p class="eyebrow">Opción A</p>
+              <h2 class="style-title">Claro confiable</h2>
+              <p class="style-summary">
+                La evolución más cercana al MVP actual: blanca, ordenada y
+                directa. Sirve si el objetivo es publicar rápido sin que parezca
+                una herramienta técnica.
+              </p>
+            </div>
+            <div class="tokens">
+              <div class="token-row">
+                <strong>Paleta</strong>
+                <div class="swatches">
+                  <span class="swatch" style="background:#ffffff"></span>
+                  <span class="swatch" style="background:#eff6ff"></span>
+                  <span class="swatch" style="background:#2563eb"></span>
+                  <span class="swatch" style="background:#059669"></span>
+                </div>
+              </div>
+              <div class="token-row">
+                <strong>Uso</strong>
+                <span>Marketplace confiable, comparador general, MVP público.</span>
+              </div>
+            </div>
+          </header>
+          <div class="screens">
+            <article class="screen">
+              <div class="screen-top">
+                <span class="screen-label">Home</span>
+                <span class="dotline"><span></span><span></span><span></span></span>
+              </div>
+              <div class="screen-body">
+                <div class="mini-card">
+                  <span class="pill primary">Argentina · ARS</span>
+                  <h3 style="margin-top:12px">Comprá al mejor precio</h3>
+                  <p class="tiny muted">Historial, alertas y comparación por tienda.</p>
+                </div>
+                <div class="searchbar">
+                  <div class="search-input"></div>
+                  <div class="search-button"></div>
+                </div>
+                <div class="hero-product mini-card">
+                  <div class="product-visual">A55</div>
+                  <div>
+                    <p class="tiny muted">Samsung Galaxy A55</p>
+                    <p class="price">$619.999</p>
+                    <span class="pill good">Buen precio</span>
+                  </div>
+                </div>
+                <div class="offer-list">
+                  <div class="offer-row"><strong>MercadoLibre</strong><span>$619.999</span></div>
+                  <div class="offer-row"><strong>Musimundo</strong><span>$639.999</span></div>
+                  <div class="offer-row"><strong>Frávega</strong><span>$649.999</span></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="screen">
+              <div class="screen-top">
+                <span class="screen-label">Resultados</span>
+                <span class="dotline"><span></span><span></span><span></span></span>
+              </div>
+              <div class="screen-body">
+                <div class="searchbar">
+                  <div class="search-input"></div>
+                  <div class="search-button"></div>
+                </div>
+                <div class="mini-card hero-product">
+                  <div class="product-visual">TV</div>
+                  <div>
+                    <div class="badge-row">
+                      <span class="pill primary">Exacto</span>
+                      <span class="pill good">Demo</span>
+                    </div>
+                    <h3>Smart TV Samsung 55</h3>
+                    <p class="price">$759.999</p>
+                  </div>
+                </div>
+                <div class="offer-list">
+                  <div class="offer-row"><strong>Mejor tienda</strong><span>MercadoLibre</span></div>
+                  <div class="offer-row"><strong>Ofertas</strong><span>3 disponibles</span></div>
+                  <div class="offer-row"><strong>Seguimiento</strong><span>Oferta puntual</span></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="screen">
+              <div class="screen-top">
+                <span class="screen-label">Detalle</span>
+                <span class="dotline"><span></span><span></span><span></span></span>
+              </div>
+              <div class="screen-body">
+                <div class="mini-card">
+                  <div class="product-visual" style="width:100%">A55</div>
+                </div>
+                <div class="mini-card">
+                  <div class="badge-row">
+                    <span class="pill primary">Demo</span>
+                    <span class="pill good">Conviene</span>
+                  </div>
+                  <h3 style="margin-top:10px">Samsung Galaxy A55 256GB</h3>
+                  <p class="price">$619.999</p>
+                </div>
+                <div class="chart">
+                  <span class="bar" style="height:72%"></span>
+                  <span class="bar" style="height:54%"></span>
+                  <span class="bar" style="height:63%"></span>
+                  <span class="bar" style="height:44%"></span>
+                  <span class="bar" style="height:48%"></span>
+                </div>
+                <div class="recommendation tiny">Está cerca del mejor precio demo.</div>
+              </div>
+            </article>
+
+            <article class="screen">
+              <div class="screen-top">
+                <span class="screen-label">Dashboard</span>
+                <span class="dotline"><span></span><span></span><span></span></span>
+              </div>
+              <div class="screen-body">
+                <div class="metric-grid">
+                  <div class="metric"><span class="tiny muted">Ofertas</span><p class="price">2</p></div>
+                  <div class="metric"><span class="tiny muted">Alertas</span><p class="price">1</p></div>
+                  <div class="metric"><span class="tiny muted">Avisos</span><p class="price">3</p></div>
+                  <div class="metric"><span class="tiny muted">Estado</span><p class="price">OK</p></div>
+                </div>
+                <div class="mini-card hero-product">
+                  <div class="product-visual">NB</div>
+                  <div>
+                    <h3>Lenovo Slim 5</h3>
+                    <p class="tiny muted">Oferta seguida · MercadoLibre</p>
+                  </div>
+                </div>
+                <div class="offer-row"><strong>Alerta activa</strong><span>$850.000</span></div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="style style-b">
+          <header class="style-header">
+            <div>
+              <p class="eyebrow">Opción B</p>
+              <h2 class="style-title">Radar oscuro de datos</h2>
+              <p class="style-summary">
+                Más distintiva y premium. Conviene si PrecioRadar quiere
+                posicionarse como herramienta inteligente de decisión, con
+                historial y señales de compra como protagonistas.
+              </p>
+            </div>
+            <div class="tokens">
+              <div class="token-row">
+                <strong>Paleta</strong>
+                <div class="swatches">
+                  <span class="swatch" style="background:#0d1726"></span>
+                  <span class="swatch" style="background:#15243a"></span>
+                  <span class="swatch" style="background:#2dd4bf"></span>
+                  <span class="swatch" style="background:#86efac"></span>
+                </div>
+              </div>
+              <div class="token-row">
+                <strong>Uso</strong>
+                <span>Usuarios intensivos, dashboards, alertas y señales fuertes.</span>
+              </div>
+            </div>
+          </header>
+          <div class="screens">
+            <article class="screen">
+              <div class="screen-top">
+                <span class="screen-label">Home</span>
+                <span class="dotline"><span></span><span></span><span></span></span>
+              </div>
+              <div class="screen-body">
+                <div class="mini-card">
+                  <span class="pill primary">Radar activo</span>
+                  <h3 style="margin-top:12px">Precio, historial y alerta</h3>
+                  <p class="tiny muted">Una lectura rápida para decidir compra.</p>
+                </div>
+                <div class="searchbar">
+                  <div class="search-input"></div>
+                  <div class="search-button"></div>
+                </div>
+                <div class="split">
+                  <div class="product-visual">RTX</div>
+                  <div class="mini-card">
+                    <p class="tiny muted">Mejor oferta</p>
+                    <p class="price">$1.129.999</p>
+                    <span class="pill good">Señal positiva</span>
+                  </div>
+                </div>
+                <div class="chart">
+                  <span class="bar" style="height:80%"></span>
+                  <span class="bar" style="height:65%"></span>
+                  <span class="bar" style="height:58%"></span>
+                  <span class="bar" style="height:45%"></span>
+                  <span class="bar" style="height:50%"></span>
+                </div>
+              </div>
+            </article>
+
+            <article class="screen">
+              <div class="screen-top">
+                <span class="screen-label">Resultados</span>
+                <span class="dotline"><span></span><span></span><span></span></span>
+              </div>
+              <div class="screen-body">
+                <div class="offer-list">
+                  <div class="offer-row"><strong>Exacto</strong><span>RTX 5070</span></div>
+                  <div class="offer-row"><strong>Menor precio</strong><span>$1.129.999</span></div>
+                  <div class="offer-row"><strong>Tiendas</strong><span>2 activas</span></div>
+                </div>
+                <div class="mini-card hero-product">
+                  <div class="product-visual">RTX</div>
+                  <div>
+                    <h3>NVIDIA GeForce RTX 5070</h3>
+                    <p class="tiny muted">Hardware · comparación directa</p>
+                  </div>
+                </div>
+                <div class="recommendation tiny">Seguir oferta puntual y esperar alerta.</div>
+              </div>
+            </article>
+
+            <article class="screen">
+              <div class="screen-top">
+                <span class="screen-label">Detalle</span>
+                <span class="dotline"><span></span><span></span><span></span></span>
+              </div>
+              <div class="screen-body">
+                <div class="metric-grid">
+                  <div class="metric"><span class="tiny muted">Actual</span><p class="price">$1.12M</p></div>
+                  <div class="metric"><span class="tiny muted">Tiendas</span><p class="price">2</p></div>
+                </div>
+                <div class="chart">
+                  <span class="bar" style="height:90%"></span>
+                  <span class="bar" style="height:76%"></span>
+                  <span class="bar" style="height:70%"></span>
+                  <span class="bar" style="height:62%"></span>
+                  <span class="bar" style="height:59%"></span>
+                </div>
+                <div class="offer-list">
+                  <div class="offer-row"><strong>MercadoLibre</strong><span>$1.129.999</span></div>
+                  <div class="offer-row"><strong>Megatone</strong><span>$1.199.999</span></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="screen">
+              <div class="screen-top">
+                <span class="screen-label">Dashboard</span>
+                <span class="dotline"><span></span><span></span><span></span></span>
+              </div>
+              <div class="screen-body">
+                <div class="mini-card">
+                  <span class="pill primary">Panel inteligente</span>
+                  <h3 style="margin-top:12px">Alertas y señales</h3>
+                  <p class="tiny muted">Vista pensada para usuarios recurrentes.</p>
+                </div>
+                <div class="metric-grid">
+                  <div class="metric"><span class="tiny muted">Seguidas</span><p class="price">4</p></div>
+                  <div class="metric"><span class="tiny muted">Activas</span><p class="price">2</p></div>
+                </div>
+                <div class="recommendation tiny">Una alerta cumplida requiere revisión.</div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="style style-c">
+          <header class="style-header">
+            <div>
+              <p class="eyebrow">Opción C</p>
+              <h2 class="style-title">Retail cercano</h2>
+              <p class="style-summary">
+                Más cálida y comercial. Funciona si el producto necesita sentirse
+                masivo, simple y amigable para compradores no técnicos, sin perder
+                señales de confianza.
+              </p>
+            </div>
+            <div class="tokens">
+              <div class="token-row">
+                <strong>Paleta</strong>
+                <div class="swatches">
+                  <span class="swatch" style="background:#fffdf8"></span>
+                  <span class="swatch" style="background:#ffedd5"></span>
+                  <span class="swatch" style="background:#f97316"></span>
+                  <span class="swatch" style="background:#0f766e"></span>
+                </div>
+              </div>
+              <div class="token-row">
+                <strong>Uso</strong>
+                <span>Compradores casuales, campañas Hot Sale, páginas SEO.</span>
+              </div>
+            </div>
+          </header>
+          <div class="screens">
+            <article class="screen">
+              <div class="screen-top">
+                <span class="screen-label">Home</span>
+                <span class="dotline"><span></span><span></span><span></span></span>
+              </div>
+              <div class="screen-body">
+                <div class="mini-card">
+                  <span class="pill primary">Compará mejor</span>
+                  <h3 style="margin-top:12px">Encontrá cuándo conviene comprar</h3>
+                  <p class="tiny muted">Precio, tiendas y alertas explicadas simple.</p>
+                </div>
+                <div class="searchbar">
+                  <div class="search-input"></div>
+                  <div class="search-button"></div>
+                </div>
+                <div class="hero-product mini-card">
+                  <div class="product-visual">PS5</div>
+                  <div>
+                    <p class="tiny muted">PlayStation 5 Slim</p>
+                    <p class="price">$1.099.999</p>
+                    <span class="pill good">Oferta clara</span>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="screen">
+              <div class="screen-top">
+                <span class="screen-label">Resultados</span>
+                <span class="dotline"><span></span><span></span><span></span></span>
+              </div>
+              <div class="screen-body">
+                <div class="mini-card hero-product">
+                  <div class="product-visual">JBL</div>
+                  <div>
+                    <span class="pill primary">Audio</span>
+                    <h3>Auriculares JBL Tune 520BT</h3>
+                    <p class="price">$89.999</p>
+                  </div>
+                </div>
+                <div class="offer-list">
+                  <div class="offer-row"><strong>MercadoLibre</strong><span>$89.999</span></div>
+                  <div class="offer-row"><strong>Musimundo</strong><span>$94.999</span></div>
+                  <div class="offer-row"><strong>Frávega</strong><span>$97.999</span></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="screen">
+              <div class="screen-top">
+                <span class="screen-label">Detalle</span>
+                <span class="dotline"><span></span><span></span><span></span></span>
+              </div>
+              <div class="screen-body">
+                <div class="product-visual">JBL</div>
+                <div class="mini-card">
+                  <h3>JBL Tune 520BT</h3>
+                  <p class="price">$89.999</p>
+                  <p class="tiny muted">Mejor oferta en MercadoLibre.</p>
+                </div>
+                <div class="recommendation tiny">Precio por debajo de la referencia demo.</div>
+                <div class="offer-row"><strong>Crear alerta</strong><span>2 disponibles</span></div>
+              </div>
+            </article>
+
+            <article class="screen">
+              <div class="screen-top">
+                <span class="screen-label">Dashboard</span>
+                <span class="dotline"><span></span><span></span><span></span></span>
+              </div>
+              <div class="screen-body">
+                <div class="mini-card">
+                  <h3>Mis seguimientos</h3>
+                  <p class="tiny muted">Lenguaje simple para usuarios no técnicos.</p>
+                </div>
+                <div class="metric-grid">
+                  <div class="metric"><span class="tiny muted">Ofertas</span><p class="price">2</p></div>
+                  <div class="metric"><span class="tiny muted">Alertas</span><p class="price">1</p></div>
+                </div>
+                <div class="offer-row"><strong>JBL Tune 520BT</strong><span>$89.999</span></div>
+                <div class="offer-row"><strong>PS5 Slim</strong><span>$1.09M</span></div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>
