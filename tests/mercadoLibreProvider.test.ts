@@ -3,22 +3,36 @@ import test, { afterEach } from "node:test";
 import { mercadoLibreProvider } from "../src/providers/stores/mercadoLibreProvider";
 
 const originalFetch = globalThis.fetch;
+const originalDatabaseUrl = process.env.DATABASE_URL;
+const originalDirectUrl = process.env.DIRECT_URL;
 
 function mockJsonFetch(
   handler: (input: RequestInfo | URL, init?: RequestInit) => unknown,
+  status = 200,
 ) {
   globalThis.fetch = (async (input, init) => {
     return new Response(JSON.stringify(handler(input, init)), {
       headers: { "content-type": "application/json" },
-      status: 200,
+      status,
     });
   }) as typeof fetch;
+}
+
+function restoreEnv(key: string, value: string | undefined) {
+  if (value === undefined) {
+    delete process.env[key];
+    return;
+  }
+
+  process.env[key] = value;
 }
 
 afterEach(() => {
   globalThis.fetch = originalFetch;
   delete process.env.MERCADOLIBRE_ACCESS_TOKEN;
   delete process.env.MERCADOLIBRE_SITE_ID;
+  restoreEnv("DATABASE_URL", originalDatabaseUrl);
+  restoreEnv("DIRECT_URL", originalDirectUrl);
 });
 
 test("searches MercadoLibre MLA and normalizes results", async () => {
@@ -116,4 +130,15 @@ test("gets current price from a MercadoLibre external id", async () => {
   assert.equal(price?.externalId, "MLA123456789");
   assert.equal(price?.price, 799999);
   assert.equal(price?.available, true);
+});
+
+test("returns an empty MercadoLibre result on provider HTTP errors", async () => {
+  delete process.env.DATABASE_URL;
+  delete process.env.DIRECT_URL;
+
+  mockJsonFetch(() => ({ message: "internal error" }), 500);
+
+  const products = await mercadoLibreProvider.searchProducts("Galaxy A55");
+
+  assert.deepEqual(products, []);
 });

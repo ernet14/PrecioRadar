@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "node --import tsx --test tests/TrackProductButton.test.tsx tests/clickTrackingService.test.ts tests/mercadoLibreProvider.test.ts tests/searchLogService.test.ts tests/searchService.test.ts",
+    "test": "node --import tsx --test tests/TrackProductButton.test.tsx tests/clickTrackingService.test.ts tests/mercadoLibreProvider.test.ts tests/providerLogService.test.ts tests/searchLogService.test.ts tests/searchService.test.ts",
     "lint": "eslint",
     "db:generate": "prisma generate",
     "predb:seed": "prisma generate",

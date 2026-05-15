@@ -5,6 +5,10 @@ import type {
   ProviderProduct,
   StoreProvider,
 } from "@/providers/stores/types";
+import {
+  getProviderErrorMessage,
+  recordProviderLog,
+} from "@/services/providerLogService";
 
 type MercadoLibreConfig = {
   accessToken?: string;
@@ -27,6 +31,11 @@ type MercadoLibreRawProduct = {
 
 type MercadoLibreSearchResponse = {
   results?: unknown;
+};
+
+type MercadoLibreFetchResult = {
+  data: unknown | null;
+  errorMessage?: string;
 };
 
 const providerName = "mercadolibre";
@@ -106,7 +115,10 @@ function getHeaders(config: MercadoLibreConfig) {
   return headers;
 }
 
-async function fetchMercadoLibreJson(path: string, config: MercadoLibreConfig) {
+async function fetchMercadoLibreJson(
+  path: string,
+  config: MercadoLibreConfig,
+): Promise<MercadoLibreFetchResult> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), requestTimeoutMs);
 
@@ -117,15 +129,31 @@ async function fetchMercadoLibreJson(path: string, config: MercadoLibreConfig) {
     });
 
     if (!response.ok) {
-      return null;
+      return {
+        data: null,
+        errorMessage: `HTTP ${response.status} desde MercadoLibre.`,
+      };
     }
 
-    return response.json();
-  } catch {
-    return null;
+    return { data: await response.json() };
+  } catch (error) {
+    return {
+      data: null,
+      errorMessage: getProviderErrorMessage(error),
+    };
   } finally {
     clearTimeout(timeout);
   }
+}
+
+async function recordMercadoLibreFailure(action: string, errorMessage: string) {
+  await recordProviderLog({
+    action,
+    errorMessage,
+    provider: providerName,
+    status: "failed",
+    storeSlug: "mercadolibre",
+  });
 }
 
 function normalizeCondition(condition: unknown): ProviderProduct["condition"] {
@@ -213,26 +241,50 @@ export const mercadoLibreProvider: StoreProvider = {
         limit: String(searchLimit),
         q: query.trim(),
       });
-      const data = await fetchMercadoLibreJson(
+      const result = await fetchMercadoLibreJson(
         `/sites/${encodeURIComponent(config.siteId)}/search?${searchParams.toString()}`,
         config,
       );
-      const searchResponse = asMercadoLibreSearchResponse(data);
 
-      if (!searchResponse || !Array.isArray(searchResponse.results)) {
+      if (result.errorMessage) {
+        await recordMercadoLibreFailure("searchProducts", result.errorMessage);
         return [];
       }
 
-      return searchResponse.results
-        .map((result) => {
-          try {
-            return this.normalizeProductData(result);
-          } catch {
-            return null;
-          }
-        })
-        .filter((product): product is ProviderProduct => Boolean(product));
-    } catch {
+      const searchResponse = asMercadoLibreSearchResponse(result.data);
+
+      if (!searchResponse || !Array.isArray(searchResponse.results)) {
+        await recordMercadoLibreFailure(
+          "searchProducts",
+          "MercadoLibre devolvio una respuesta de busqueda invalida.",
+        );
+        return [];
+      }
+
+      const products: ProviderProduct[] = [];
+      let invalidResults = 0;
+
+      for (const item of searchResponse.results) {
+        try {
+          products.push(this.normalizeProductData(item));
+        } catch {
+          invalidResults += 1;
+        }
+      }
+
+      if (invalidResults > 0) {
+        await recordMercadoLibreFailure(
+          "searchProducts",
+          `${invalidResults} resultados de MercadoLibre no se pudieron normalizar.`,
+        );
+      }
+
+      return products;
+    } catch (error) {
+      await recordMercadoLibreFailure(
+        "searchProducts",
+        getProviderErrorMessage(error),
+      );
       return [];
     }
   },
@@ -247,16 +299,29 @@ export const mercadoLibreProvider: StoreProvider = {
       const itemId = extractMercadoLibreItemId(url);
 
       if (!itemId) {
+        await recordMercadoLibreFailure(
+          "getProductByUrl",
+          "No se pudo extraer item id del link de MercadoLibre.",
+        );
         return null;
       }
 
-      const data = await fetchMercadoLibreJson(
+      const result = await fetchMercadoLibreJson(
         `/items/${encodeURIComponent(itemId)}`,
         config,
       );
 
-      return data ? this.normalizeProductData(data) : null;
-    } catch {
+      if (result.errorMessage) {
+        await recordMercadoLibreFailure("getProductByUrl", result.errorMessage);
+        return null;
+      }
+
+      return result.data ? this.normalizeProductData(result.data) : null;
+    } catch (error) {
+      await recordMercadoLibreFailure(
+        "getProductByUrl",
+        getProviderErrorMessage(error),
+      );
       return null;
     }
   },
@@ -273,16 +338,29 @@ export const mercadoLibreProvider: StoreProvider = {
         (input.url ? extractMercadoLibreItemId(input.url) : null);
 
       if (!itemId) {
+        await recordMercadoLibreFailure(
+          "getCurrentPrice",
+          "No se pudo resolver item id para consultar precio actual.",
+        );
         return null;
       }
 
-      const data = await fetchMercadoLibreJson(
+      const result = await fetchMercadoLibreJson(
         `/items/${encodeURIComponent(itemId)}`,
         config,
       );
 
-      return data ? toProviderPrice(this.normalizeProductData(data)) : null;
-    } catch {
+      if (result.errorMessage) {
+        await recordMercadoLibreFailure("getCurrentPrice", result.errorMessage);
+        return null;
+      }
+
+      return result.data ? toProviderPrice(this.normalizeProductData(result.data)) : null;
+    } catch (error) {
+      await recordMercadoLibreFailure(
+        "getCurrentPrice",
+        getProviderErrorMessage(error),
+      );
       return null;
     }
   },
