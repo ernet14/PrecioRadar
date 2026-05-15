@@ -351,7 +351,11 @@ function createRecommendation(
 
   return {
     level: isLowestPrice ? "GOOD_PRICE" : "NORMAL_PRICE",
-    label: isLowestPrice ? "Mejor precio demo" : "Precio disponible",
+    label: isLowestPrice
+      ? product.isDemo
+        ? "Mejor precio demo"
+        : "Mejor precio"
+      : "Precio disponible",
     reason: product.isDemo
       ? "Resultado de demostracion provisto por mockProvider."
       : "Resultado disponible desde el provider configurado.",
