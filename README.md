@@ -55,6 +55,11 @@ jobs or manual internal runs. Configure `CRON_SECRET` server-side and call it
 with either `Authorization: Bearer <CRON_SECRET>` or `x-cron-secret:
 <CRON_SECRET>`.
 
+## MVP QA and deploy
+
+Use [`docs/mvp-qa-deploy-checklist.md`](docs/mvp-qa-deploy-checklist.md) before
+public deploys or demos.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
