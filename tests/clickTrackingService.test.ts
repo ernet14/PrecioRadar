@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test, { afterEach } from "node:test";
 import {
   buildOfferClickHref,
+  getAffiliateDestination,
   getOfferClickTarget,
   recordOfferClick,
 } from "../src/services/clickTrackingService";
@@ -61,4 +62,65 @@ test("keeps outbound links working when database is unavailable", async () => {
     result.url,
     "https://www.mercadolibre.com.ar/demo/samsung-galaxy-a55",
   );
+});
+
+test("keeps normal product URL when affiliates are disabled", () => {
+  const destination = getAffiliateDestination({
+    affiliateEnabled: false,
+    affiliateLinks: [
+      {
+        affiliateUrl: "https://affiliate.test/a55",
+        originalUrl: "https://store.test/a55",
+        productId: "product-a55",
+      },
+    ],
+    offerAffiliateUrl: "https://affiliate.test/direct-a55",
+    productId: "product-a55",
+    productUrl: "https://store.test/a55",
+  });
+
+  assert.equal(destination.isAffiliate, false);
+  assert.equal(destination.url, "https://store.test/a55");
+});
+
+test("uses direct offer affiliate URL first when enabled", () => {
+  const destination = getAffiliateDestination({
+    affiliateEnabled: true,
+    affiliateLinks: [
+      {
+        affiliateUrl: "https://affiliate.test/a55",
+        originalUrl: "https://store.test/a55",
+        productId: "product-a55",
+      },
+    ],
+    offerAffiliateUrl: "https://affiliate.test/direct-a55",
+    productId: "product-a55",
+    productUrl: "https://store.test/a55",
+  });
+
+  assert.equal(destination.isAffiliate, true);
+  assert.equal(destination.url, "https://affiliate.test/direct-a55");
+});
+
+test("prefers product affiliate links over original URL links", () => {
+  const destination = getAffiliateDestination({
+    affiliateEnabled: true,
+    affiliateLinks: [
+      {
+        affiliateUrl: "https://affiliate.test/url-a55",
+        originalUrl: "https://store.test/a55",
+        productId: null,
+      },
+      {
+        affiliateUrl: "https://affiliate.test/product-a55",
+        originalUrl: "https://store.test/other-a55",
+        productId: "product-a55",
+      },
+    ],
+    productId: "product-a55",
+    productUrl: "https://store.test/a55",
+  });
+
+  assert.equal(destination.isAffiliate, true);
+  assert.equal(destination.url, "https://affiliate.test/product-a55");
 });

@@ -12,6 +12,12 @@ export type OfferClickTarget = {
   productSlug: string;
 };
 
+export type AffiliateLinkCandidate = {
+  affiliateUrl: string;
+  originalUrl: string;
+  productId: string | null;
+};
+
 export type RecordOfferClickResult =
   | { isAffiliate: boolean; status: "tracked"; url: string }
   | { isAffiliate: false; status: "database_unavailable"; url: string }
@@ -56,6 +62,48 @@ export function getOfferClickTarget({
     offer,
     productSlug: product.slug,
   };
+}
+
+export function getAffiliateDestination({
+  affiliateEnabled,
+  affiliateLinks,
+  offerAffiliateUrl,
+  productId,
+  productUrl,
+}: {
+  affiliateEnabled: boolean;
+  affiliateLinks: AffiliateLinkCandidate[];
+  offerAffiliateUrl?: string | null;
+  productId: string;
+  productUrl: string;
+}) {
+  if (!affiliateEnabled) {
+    return { isAffiliate: false, url: productUrl };
+  }
+
+  const directAffiliateUrl = offerAffiliateUrl?.trim();
+
+  if (directAffiliateUrl) {
+    return { isAffiliate: true, url: directAffiliateUrl };
+  }
+
+  const productAffiliateUrl = affiliateLinks.find(
+    (link) => link.productId === productId && link.affiliateUrl.trim(),
+  )?.affiliateUrl;
+
+  if (productAffiliateUrl) {
+    return { isAffiliate: true, url: productAffiliateUrl };
+  }
+
+  const urlAffiliateUrl = affiliateLinks.find(
+    (link) => link.originalUrl === productUrl && link.affiliateUrl.trim(),
+  )?.affiliateUrl;
+
+  if (urlAffiliateUrl) {
+    return { isAffiliate: true, url: urlAffiliateUrl };
+  }
+
+  return { isAffiliate: false, url: productUrl };
 }
 
 export async function recordOfferClick({
@@ -126,26 +174,46 @@ export async function recordOfferClick({
       };
     }
 
-    const isAffiliate = Boolean(
-      storedOffer.affiliateUrl && storedOffer.store.affiliateEnabled,
-    );
-    const url = isAffiliate ? storedOffer.affiliateUrl! : storedOffer.productUrl;
+    const affiliateLinks = storedOffer.store.affiliateEnabled
+      ? await prisma.affiliateLink.findMany({
+          select: {
+            affiliateUrl: true,
+            originalUrl: true,
+            productId: true,
+          },
+          where: {
+            active: true,
+            storeId: storedOffer.storeId,
+            OR: [
+              { productId: storedOffer.productId },
+              { originalUrl: storedOffer.productUrl },
+            ],
+          },
+        })
+      : [];
+    const destination = getAffiliateDestination({
+      affiliateEnabled: storedOffer.store.affiliateEnabled,
+      affiliateLinks,
+      offerAffiliateUrl: storedOffer.affiliateUrl,
+      productId: storedOffer.productId,
+      productUrl: storedOffer.productUrl,
+    });
 
     await prisma.clickTracking.create({
       data: {
-        isAffiliate,
+        isAffiliate: destination.isAffiliate,
         offerId: storedOffer.id,
         productId: storedOffer.productId,
         storeId: storedOffer.storeId,
-        url,
+        url: destination.url,
         userId: userId ?? null,
       },
     });
 
     return {
-      isAffiliate,
+      isAffiliate: destination.isAffiliate,
       status: "tracked",
-      url,
+      url: destination.url,
     };
   } catch (error) {
     console.error("Unable to record offer click.", error);
