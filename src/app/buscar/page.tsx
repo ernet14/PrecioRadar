@@ -9,6 +9,10 @@ import { Card } from "@/components/ui/Card";
 import { formatCurrencyARS, formatDate } from "@/lib/utils";
 import { getCurrentUser } from "@/lib/supabase/auth";
 import { buildOfferClickHref } from "@/services/clickTrackingService";
+import {
+  getSearchLogCategorySlug,
+  recordSearchLog,
+} from "@/services/searchLogService";
 import { searchProducts } from "@/services/searchService";
 import {
   getTrackingOverviewForUser,
@@ -355,6 +359,12 @@ export default async function BuscarPage({ searchParams }: BuscarPageProps) {
   const trackingStatus = getQueryValue(params.tracking);
   const result = await searchProducts(query);
   const user = await getCurrentUser();
+  await recordSearchLog({
+    categorySlug: getSearchLogCategorySlug(result),
+    detectedType: result.detectedType,
+    query,
+    userId: user?.id,
+  });
   const trackingOverview = await getTrackingOverviewForUser(user?.id);
   const returnTo = query ? `/buscar?q=${encodeURIComponent(query)}` : "/buscar";
 
