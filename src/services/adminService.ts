@@ -79,6 +79,11 @@ export type AdminReportStatus = (typeof ADMIN_REPORT_STATUSES)[number];
 
 export type AdminReportStatusCounts = Record<AdminReportStatus, number>;
 
+export type AdminReportListItem = AdminRecentReport & {
+  updatedAt: Date;
+  userEmail: string | null;
+};
+
 export type AdminReportDetail =
   | {
       report: {
@@ -109,6 +114,23 @@ export type UpdateAdminReportStatusResult =
   | { status: "invalid" }
   | { status: "not_found" }
   | { status: "error" };
+
+export type AdminReportList =
+  | {
+      reportStatusCounts: AdminReportStatusCounts;
+      reports: AdminReportListItem[];
+      selectedStatus: AdminReportStatus | null;
+      status: "ready";
+      totalCount: number;
+    }
+  | {
+      reason: string;
+      reportStatusCounts: AdminReportStatusCounts;
+      reports: [];
+      selectedStatus: AdminReportStatus | null;
+      status: "database_unavailable" | "error";
+      totalCount: 0;
+    };
 
 export type AdminOverview =
   | {
@@ -161,6 +183,21 @@ function createEmptyReportStatusCounts(): AdminReportStatusCounts {
   };
 }
 
+function createReportStatusCounts(
+  statusGroups: Array<{
+    _count: { _all: number };
+    status: AdminReportStatus;
+  }>,
+) {
+  const counts = createEmptyReportStatusCounts();
+
+  for (const statusGroup of statusGroups) {
+    counts[statusGroup.status] = statusGroup._count._all;
+  }
+
+  return counts;
+}
+
 function isAdminReportStatus(value: string): value is AdminReportStatus {
   return ADMIN_REPORT_STATUSES.includes(value as AdminReportStatus);
 }
@@ -206,7 +243,6 @@ export async function getAdminOverview(): Promise<AdminOverview> {
   }
 
   try {
-    const reportStatusCounts = createEmptyReportStatusCounts();
     const products = await prisma.product.count();
     const offers = await prisma.productOffer.count();
     const stores = await prisma.store.count();
@@ -333,9 +369,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       take: 8,
     });
 
-    for (const statusGroup of reportStatusGroups) {
-      reportStatusCounts[statusGroup.status] = statusGroup._count._all;
-    }
+    const reportStatusCounts = createReportStatusCounts(reportStatusGroups);
 
     return {
       counts: {
@@ -406,6 +440,92 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       stores: [],
       reason: "No pudimos cargar el panel admin por un error inesperado.",
       status: "error",
+    };
+  }
+}
+
+export async function listAdminReports(
+  statusFilter: string,
+): Promise<AdminReportList> {
+  const prisma = getPrismaClient();
+  const selectedStatus = isAdminReportStatus(statusFilter) ? statusFilter : null;
+
+  if (!prisma) {
+    return {
+      reason: missingDatabaseReason,
+      reportStatusCounts: createEmptyReportStatusCounts(),
+      reports: [],
+      selectedStatus,
+      status: "database_unavailable",
+      totalCount: 0,
+    };
+  }
+
+  try {
+    const reportStatusGroups = await prisma.productReport.groupBy({
+      by: ["status"],
+      _count: {
+        _all: true,
+      },
+    });
+    const reportStatusCounts = createReportStatusCounts(reportStatusGroups);
+    const where = selectedStatus ? { status: selectedStatus } : {};
+    const totalCount = await prisma.productReport.count({ where });
+    const reports = await prisma.productReport.findMany({
+      orderBy: { createdAt: "desc" },
+      select: {
+        createdAt: true,
+        id: true,
+        message: true,
+        offer: {
+          select: {
+            title: true,
+          },
+        },
+        product: {
+          select: {
+            name: true,
+          },
+        },
+        reason: true,
+        status: true,
+        updatedAt: true,
+        user: {
+          select: {
+            email: true,
+          },
+        },
+      },
+      take: 50,
+      where,
+    });
+
+    return {
+      reportStatusCounts,
+      reports: reports.map((report) => ({
+        createdAt: report.createdAt,
+        id: report.id,
+        message: report.message,
+        offerTitle: report.offer?.title ?? null,
+        productName: report.product?.name ?? null,
+        reason: report.reason,
+        status: report.status,
+        updatedAt: report.updatedAt,
+        userEmail: report.user?.email ?? null,
+      })),
+      selectedStatus,
+      status: "ready",
+      totalCount,
+    };
+  } catch (error) {
+    console.error("Unable to list admin reports.", error);
+    return {
+      reason: "No pudimos cargar los reportes por un error inesperado.",
+      reportStatusCounts: createEmptyReportStatusCounts(),
+      reports: [],
+      selectedStatus,
+      status: "error",
+      totalCount: 0,
     };
   }
 }

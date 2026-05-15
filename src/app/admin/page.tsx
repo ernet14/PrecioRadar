@@ -270,19 +270,21 @@ function ReportStatusCard({
   const variant = status === "OPEN" ? "orange" : status === "RESOLVED" ? "green" : "neutral";
 
   return (
-    <Card className="border-slate-200 p-5 shadow-[0_14px_34px_rgba(15,23,42,0.05)]">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h3 className="text-lg font-semibold text-slate-950">
-            {reportStatusLabels[status]}
-          </h3>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            {reportStatusDescriptions[status]}
-          </p>
+    <Link className="block" href={`/admin/reportes?status=${status}`}>
+      <Card className="h-full border-slate-200 p-5 shadow-[0_14px_34px_rgba(15,23,42,0.05)] transition hover:border-blue-200 hover:shadow-[0_18px_42px_rgba(15,23,42,0.08)]">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h3 className="text-lg font-semibold text-slate-950">
+              {reportStatusLabels[status]}
+            </h3>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              {reportStatusDescriptions[status]}
+            </p>
+          </div>
+          <StatusPill label={formatCount(count)} variant={variant} />
         </div>
-        <StatusPill label={formatCount(count)} variant={variant} />
-      </div>
-    </Card>
+      </Card>
+    </Link>
   );
 }
 
