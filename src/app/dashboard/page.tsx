@@ -16,6 +16,7 @@ import { Card } from "@/components/ui/Card";
 import { TrackingFeedback } from "@/components/product/TrackingFeedback";
 import { requireUser } from "@/lib/supabase/auth";
 import { formatDate } from "@/lib/utils";
+import { buildOfferClickHref } from "@/services/clickTrackingService";
 import { syncAuthUserToPrisma } from "@/services/userSyncService";
 import {
   getTrackingOverviewForUser,
@@ -138,6 +139,12 @@ function TrackedProductCard({
   product: TrackedProductListItem;
 }) {
   const isLegacyTracking = product.trackingScope === "product";
+  const offerHref = product.offerKey
+    ? buildOfferClickHref({
+        offerKey: product.offerKey,
+        productSlug: product.slug,
+      })
+    : product.productUrl;
 
   return (
     <Card className="overflow-hidden border-slate-200 shadow-[0_18px_45px_rgba(15,23,42,0.07)]">
@@ -193,7 +200,7 @@ function TrackedProductCard({
           <div className="mt-5 grid gap-2">
             <Link
               className="inline-flex h-10 items-center justify-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
-              href={product.productUrl}
+              href={offerHref}
               rel="noreferrer"
               target="_blank"
             >

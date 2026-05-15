@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { formatCurrencyARS, formatDate } from "@/lib/utils";
 import { getCurrentUser } from "@/lib/supabase/auth";
+import { buildOfferClickHref } from "@/services/clickTrackingService";
 import { searchProducts } from "@/services/searchService";
 import {
   getTrackingOverviewForUser,
@@ -179,6 +180,13 @@ function ResultCard({
                 {topOffers.map((topOffer) => {
                   const offerKey = getOfferKey(topOffer);
                   const storeName = topOffer.store?.name ?? "Tienda demo";
+                  const offerHref =
+                    topOffer.isDemo && item.product.slug && offerKey
+                      ? buildOfferClickHref({
+                          offerKey,
+                          productSlug: item.product.slug,
+                        })
+                      : topOffer.productUrl;
 
                   return (
                     <div
@@ -230,7 +238,7 @@ function ResultCard({
                       <div>
                         <a
                           className="inline-flex h-11 w-full items-center justify-center rounded-lg border border-blue-200 bg-white px-3 text-sm font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50"
-                          href={topOffer.productUrl}
+                          href={offerHref}
                           rel="noreferrer"
                           target="_blank"
                         >

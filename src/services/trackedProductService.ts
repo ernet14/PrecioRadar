@@ -52,6 +52,7 @@ export type TrackedProductListItem = {
   id: string;
   slug: string;
   name: string;
+  offerKey: string | null;
   imageUrl?: string | null;
   priceLabel: string;
   storeName: string;
@@ -74,7 +75,7 @@ function createCategoryName(slug: string) {
     .join(" ");
 }
 
-async function ensureProductForTracking(slug: string) {
+export async function ensureProductForSlug(slug: string) {
   const prisma = getPrismaClient();
 
   if (!prisma) {
@@ -132,11 +133,11 @@ async function ensureProductForTracking(slug: string) {
   });
 }
 
-function getOfferKey(storeSlug: string, externalId: string) {
+export function getOfferKey(storeSlug: string, externalId: string) {
   return `${storeSlug}:${externalId}`;
 }
 
-function parseOfferKey(offerKey: string) {
+export function parseOfferKey(offerKey: string) {
   const [storeSlug, ...externalIdParts] = offerKey.split(":");
 
   return {
@@ -145,7 +146,7 @@ function parseOfferKey(offerKey: string) {
   };
 }
 
-function findProductOffer(product: ProductDetail, offerKey: string) {
+export function findProductOffer(product: ProductDetail, offerKey: string) {
   const { externalId, storeSlug } = parseOfferKey(offerKey);
 
   if (!storeSlug || !externalId) {
@@ -194,7 +195,7 @@ async function ensureStoreForOffer(offer: ProviderProduct) {
   });
 }
 
-async function ensureProductOfferForTracking({
+export async function ensureProductOffer({
   offer,
   productId,
 }: {
@@ -262,6 +263,7 @@ function createTrackedProductListItem(
     id,
     slug: product.slug,
     name: product.name,
+    offerKey: offer.externalId ? getOfferKey(offer.storeSlug, offer.externalId) : null,
     imageUrl: product.imageUrl ?? offer.imageUrl,
     priceLabel: formatCurrencyARS(offer.price),
     storeName: offer.storeName,
@@ -391,13 +393,13 @@ export async function followProduct(
       return { status: "not_found" };
     }
 
-    const product = await ensureProductForTracking(slug);
+    const product = await ensureProductForSlug(slug);
 
     if (!product) {
       return { status: "not_found" };
     }
 
-    const productOffer = await ensureProductOfferForTracking({
+    const productOffer = await ensureProductOffer({
       productId: product.id,
       offer,
     });

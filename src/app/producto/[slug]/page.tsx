@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { formatCurrencyARS, formatDate } from "@/lib/utils";
 import { getCurrentUser } from "@/lib/supabase/auth";
+import { buildOfferClickHref } from "@/services/clickTrackingService";
 import {
   getAllMockProductSlugs,
   getMockProductDetailBySlug,
@@ -200,6 +201,7 @@ function OfferRow({
   trackingOverview: TrackingOverview;
 }) {
   const offerKey = getOfferKey(offer);
+  const offerHref = buildOfferClickHref({ offerKey, productSlug });
 
   return (
     <div
@@ -248,7 +250,7 @@ function OfferRow({
       <div>
         <a
           className="inline-flex h-11 w-full items-center justify-center rounded-lg border border-blue-200 bg-white px-3 text-sm font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50"
-          href={offer.productUrl}
+          href={offerHref}
           rel="noreferrer"
           target="_blank"
         >
