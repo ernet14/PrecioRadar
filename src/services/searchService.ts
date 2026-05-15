@@ -583,6 +583,24 @@ async function searchText(query: string, searchedAt: Date) {
     });
   }
 
+  const mercadoLibreProducts = await mercadoLibreProvider.searchProducts(query);
+  const mercadoLibreMatches = splitMatches(mercadoLibreProducts, query);
+  const mercadoLibreTotal =
+    mercadoLibreMatches.exactMatches.length +
+    mercadoLibreMatches.similarMatches.length;
+
+  if (mercadoLibreTotal > 0) {
+    return createBaseResult({
+      query,
+      detectedType: "text",
+      ...mercadoLibreMatches,
+      status: "ready",
+      message: "Resultados reales obtenidos desde MercadoLibre.",
+      usedDemoFallback: false,
+      searchedAt,
+    });
+  }
+
   const products = await mockProvider.searchProducts(query);
   const matches = splitMatches(products, query);
   const total = matches.exactMatches.length + matches.similarMatches.length;
@@ -672,7 +690,7 @@ async function searchMercadoLibreUrl(query: string, searchedAt: Date) {
       query,
       detectedType: "mercadolibre_url",
       status: "coming_soon",
-      message: `MercadoLibre real todavia no esta integrado. ${comingSoonCategory.label} queda para una etapa proxima.`,
+      message: `No pudimos resolver el link con MercadoLibre. ${comingSoonCategory.label} queda para una etapa proxima.`,
       usedDemoFallback: true,
       searchedAt,
     });
@@ -689,7 +707,7 @@ async function searchMercadoLibreUrl(query: string, searchedAt: Date) {
     ...matches,
     status: "mercadolibre_pending",
     message:
-      "MercadoLibre real todavia no esta integrado; se llamo al provider preparado y se muestra fallback demo cuando el link permite inferir una busqueda.",
+      "No pudimos resolver el link con MercadoLibre; se muestra fallback demo cuando el link permite inferir una busqueda.",
     usedDemoFallback: true,
     searchedAt,
   });
