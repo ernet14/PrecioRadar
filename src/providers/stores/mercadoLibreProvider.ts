@@ -1,4 +1,5 @@
 import { isMercadoLibreUrl, normalizeProductName } from "@/lib/utils";
+import { getMercadoLibreToken } from "@/lib/mercadolibre/oauth";
 import type {
   ProviderPrice,
   ProviderPriceInput,
@@ -9,11 +10,6 @@ import {
   getProviderErrorMessage,
   recordProviderLog,
 } from "@/services/providerLogService";
-
-type MercadoLibreConfig = {
-  accessToken?: string;
-  siteId: string;
-};
 
 type MercadoLibreRawProduct = {
   attributes?: unknown;
@@ -44,11 +40,8 @@ const defaultSiteId = "MLA";
 const requestTimeoutMs = 5000;
 const searchLimit = 10;
 
-function getMercadoLibreConfig(): MercadoLibreConfig {
-  return {
-    accessToken: process.env.MERCADOLIBRE_ACCESS_TOKEN,
-    siteId: process.env.MERCADOLIBRE_SITE_ID ?? defaultSiteId,
-  };
+function getSiteId() {
+  return process.env.MERCADOLIBRE_SITE_ID ?? defaultSiteId;
 }
 
 function parseUrl(input: string) {
@@ -103,28 +96,22 @@ function getAttributeValue(attributes: unknown, id: string) {
   return null;
 }
 
-function getHeaders(config: MercadoLibreConfig) {
-  const headers: Record<string, string> = {
-    Accept: "application/json",
-  };
-
-  if (config.accessToken) {
-    headers.Authorization = `Bearer ${config.accessToken}`;
-  }
-
-  return headers;
-}
-
 async function fetchMercadoLibreJson(
   path: string,
-  config: MercadoLibreConfig,
 ): Promise<MercadoLibreFetchResult> {
+  const token = await getMercadoLibreToken();
+  const headers: Record<string, string> = { Accept: "application/json" };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), requestTimeoutMs);
 
   try {
     const response = await fetch(`${apiBaseUrl}${path}`, {
-      headers: getHeaders(config),
+      headers,
       signal: controller.signal,
     });
 
@@ -236,14 +223,12 @@ export const mercadoLibreProvider: StoreProvider = {
         return [];
       }
 
-      const config = getMercadoLibreConfig();
       const searchParams = new URLSearchParams({
         limit: String(searchLimit),
         q: query.trim(),
       });
       const result = await fetchMercadoLibreJson(
-        `/sites/${encodeURIComponent(config.siteId)}/search?${searchParams.toString()}`,
-        config,
+        `/sites/${encodeURIComponent(getSiteId())}/search?${searchParams.toString()}`,
       );
 
       if (result.errorMessage) {
@@ -295,7 +280,6 @@ export const mercadoLibreProvider: StoreProvider = {
         return null;
       }
 
-      const config = getMercadoLibreConfig();
       const itemId = extractMercadoLibreItemId(url);
 
       if (!itemId) {
@@ -308,7 +292,6 @@ export const mercadoLibreProvider: StoreProvider = {
 
       const result = await fetchMercadoLibreJson(
         `/items/${encodeURIComponent(itemId)}`,
-        config,
       );
 
       if (result.errorMessage) {
@@ -332,7 +315,6 @@ export const mercadoLibreProvider: StoreProvider = {
         return null;
       }
 
-      const config = getMercadoLibreConfig();
       const itemId =
         input.externalId ??
         (input.url ? extractMercadoLibreItemId(input.url) : null);
@@ -347,7 +329,6 @@ export const mercadoLibreProvider: StoreProvider = {
 
       const result = await fetchMercadoLibreJson(
         `/items/${encodeURIComponent(itemId)}`,
-        config,
       );
 
       if (result.errorMessage) {
