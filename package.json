@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
+    "postinstall": "prisma generate",
     "start": "next start",
     "test": "node --import tsx --test tests/TrackProductButton.test.tsx tests/clickTrackingService.test.ts tests/mercadoLibreProvider.test.ts tests/providerLogService.test.ts tests/searchLogService.test.ts tests/searchService.test.ts",
     "lint": "eslint",
