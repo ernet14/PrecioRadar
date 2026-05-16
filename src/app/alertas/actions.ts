@@ -13,6 +13,12 @@ import {
   type CreateAlertResult,
   type UpdateAlertStatusResult,
 } from "@/services/alertService";
+import {
+  alertIdSchema,
+  createAlertSchema,
+} from "@/lib/validation/schemas";
+
+const DEFAULT_RETURN_TO = "/alertas";
 
 function getStringValue(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -31,7 +37,7 @@ function getNumberValue(formData: FormData, key: string) {
 
 function getSafeReturnTo(value: string) {
   if (!value.startsWith("/") || value.startsWith("//")) {
-    return "/alertas";
+    return DEFAULT_RETURN_TO;
   }
 
   return value;
@@ -49,78 +55,38 @@ function redirectWithAlertStatus(returnTo: string, status: string): never {
 }
 
 function mapCreateStatus(result: CreateAlertResult) {
-  if (result.status === "created") {
-    return "created";
-  }
-
-  if (result.status === "limit_reached") {
-    return "limit";
-  }
-
-  if (result.status === "not_found") {
-    return "not-found";
-  }
-
-  if (result.status === "invalid") {
-    return "invalid";
-  }
-
-  if (result.status === "database_unavailable") {
-    return "unavailable";
-  }
-
+  if (result.status === "created") return "created";
+  if (result.status === "limit_reached") return "limit";
+  if (result.status === "not_found") return "not-found";
+  if (result.status === "invalid") return "invalid";
+  if (result.status === "database_unavailable") return "unavailable";
   return "error";
 }
 
 function mapUpdateStatus(result: UpdateAlertStatusResult) {
-  if (result.status === "paused") {
-    return "paused";
-  }
-
-  if (result.status === "reactivated") {
-    return "reactivated";
-  }
-
-  if (result.status === "deleted") {
-    return "deleted";
-  }
-
-  if (result.status === "limit_reached") {
-    return "limit";
-  }
-
-  if (result.status === "not_found") {
-    return "not-found";
-  }
-
-  if (result.status === "database_unavailable") {
-    return "unavailable";
-  }
-
+  if (result.status === "paused") return "paused";
+  if (result.status === "reactivated") return "reactivated";
+  if (result.status === "deleted") return "deleted";
+  if (result.status === "limit_reached") return "limit";
+  if (result.status === "not_found") return "not-found";
+  if (result.status === "database_unavailable") return "unavailable";
   return "error";
 }
 
-function getCreateAlertInput(formData: FormData): CreateAlertInput | null {
-  const productSlug = getStringValue(formData, "slug");
+function parseCreateAlertInput(formData: FormData): CreateAlertInput | null {
   const alertType = getStringValue(formData, "alertType");
+  const productSlug = getStringValue(formData, "slug");
 
-  if (alertType === "TARGET_PRICE") {
-    return {
-      alertType,
-      productSlug,
-      targetPrice: getNumberValue(formData, "targetPrice"),
-    };
-  }
+  const parsed = createAlertSchema.safeParse(
+    alertType === "TARGET_PRICE"
+      ? { alertType, productSlug, targetPrice: getNumberValue(formData, "targetPrice") }
+      : { alertType, productSlug, targetPercentage: getNumberValue(formData, "targetPercentage") },
+  );
 
-  if (alertType === "PERCENTAGE_DROP") {
-    return {
-      alertType,
-      productSlug,
-      targetPercentage: getNumberValue(formData, "targetPercentage"),
-    };
-  }
+  if (!parsed.success) return null;
 
-  return null;
+  const { returnTo: _returnTo, ...input } = parsed.data;
+  return input as CreateAlertInput;
 }
 
 export async function createAlertAction(formData: FormData) {
@@ -131,7 +97,7 @@ export async function createAlertAction(formData: FormData) {
     redirect(`/login?next=${encodeURIComponent(returnTo)}`);
   }
 
-  const input = getCreateAlertInput(formData);
+  const input = parseCreateAlertInput(formData);
 
   if (!input) {
     redirectWithAlertStatus(returnTo, "invalid");
@@ -147,45 +113,54 @@ export async function createAlertAction(formData: FormData) {
 }
 
 export async function pauseAlertAction(formData: FormData) {
-  const alertId = getStringValue(formData, "alertId");
   const returnTo = getSafeReturnTo(getStringValue(formData, "returnTo"));
+  const parsed = alertIdSchema.safeParse({ alertId: getStringValue(formData, "alertId") });
+
+  if (!parsed.success) redirectWithAlertStatus(returnTo, "invalid");
+
   const user = await getCurrentUser();
 
   if (!user) {
     redirect(`/login?next=${encodeURIComponent(returnTo)}`);
   }
 
-  const result = await pauseAlert(user.id, alertId);
+  const result = await pauseAlert(user.id, parsed.data.alertId);
   revalidatePath("/alertas");
   revalidatePath("/dashboard");
   redirectWithAlertStatus(returnTo, mapUpdateStatus(result));
 }
 
 export async function reactivateAlertAction(formData: FormData) {
-  const alertId = getStringValue(formData, "alertId");
   const returnTo = getSafeReturnTo(getStringValue(formData, "returnTo"));
+  const parsed = alertIdSchema.safeParse({ alertId: getStringValue(formData, "alertId") });
+
+  if (!parsed.success) redirectWithAlertStatus(returnTo, "invalid");
+
   const user = await getCurrentUser();
 
   if (!user) {
     redirect(`/login?next=${encodeURIComponent(returnTo)}`);
   }
 
-  const result = await reactivateAlert(user.id, alertId);
+  const result = await reactivateAlert(user.id, parsed.data.alertId);
   revalidatePath("/alertas");
   revalidatePath("/dashboard");
   redirectWithAlertStatus(returnTo, mapUpdateStatus(result));
 }
 
 export async function deleteAlertAction(formData: FormData) {
-  const alertId = getStringValue(formData, "alertId");
   const returnTo = getSafeReturnTo(getStringValue(formData, "returnTo"));
+  const parsed = alertIdSchema.safeParse({ alertId: getStringValue(formData, "alertId") });
+
+  if (!parsed.success) redirectWithAlertStatus(returnTo, "invalid");
+
   const user = await getCurrentUser();
 
   if (!user) {
     redirect(`/login?next=${encodeURIComponent(returnTo)}`);
   }
 
-  const result = await deleteAlert(user.id, alertId);
+  const result = await deleteAlert(user.id, parsed.data.alertId);
   revalidatePath("/alertas");
   revalidatePath("/dashboard");
   redirectWithAlertStatus(returnTo, mapUpdateStatus(result));

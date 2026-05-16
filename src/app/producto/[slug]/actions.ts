@@ -8,6 +8,7 @@ import {
   type CreateProductReportResult,
 } from "@/services/reportService";
 import { syncAuthUserToPrisma } from "@/services/userSyncService";
+import { reportProductSchema } from "@/lib/validation/schemas";
 
 function getStringValue(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -29,27 +30,26 @@ function redirectWithReportStatus(returnTo: string, status: string): never {
 }
 
 function mapReportStatus(result: CreateProductReportResult) {
-  if (result.status === "created") {
-    return "created";
-  }
-
-  if (result.status === "invalid") {
-    return "invalid";
-  }
-
-  if (result.status === "not_found") {
-    return "not-found";
-  }
-
-  if (result.status === "database_unavailable") {
-    return "unavailable";
-  }
-
+  if (result.status === "created") return "created";
+  if (result.status === "invalid") return "invalid";
+  if (result.status === "not_found") return "not-found";
+  if (result.status === "database_unavailable") return "unavailable";
   return "error";
 }
 
 export async function reportProductProblemAction(formData: FormData) {
   const returnTo = getSafeReturnTo(getStringValue(formData, "returnTo"));
+  const parsed = reportProductSchema.safeParse({
+    productSlug: getStringValue(formData, "productSlug"),
+    offerKey: getStringValue(formData, "offerKey"),
+    reason: getStringValue(formData, "reason"),
+    message: getStringValue(formData, "message"),
+  });
+
+  if (!parsed.success) {
+    redirectWithReportStatus(returnTo, "invalid");
+  }
+
   const user = await getCurrentUser();
   let reportUserId: string | null = null;
 
@@ -59,10 +59,10 @@ export async function reportProductProblemAction(formData: FormData) {
   }
 
   const result = await createProductReport(reportUserId, {
-    message: getStringValue(formData, "message"),
-    offerKey: getStringValue(formData, "offerKey"),
-    productSlug: getStringValue(formData, "productSlug"),
-    reason: getStringValue(formData, "reason"),
+    message: parsed.data.message,
+    offerKey: parsed.data.offerKey,
+    productSlug: parsed.data.productSlug,
+    reason: parsed.data.reason,
   });
 
   revalidatePath("/admin");

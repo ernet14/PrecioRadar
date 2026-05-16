@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getCurrentUser } from "@/lib/supabase/auth";
 import { recordOfferClick } from "@/services/clickTrackingService";
 import { syncAuthUserToPrisma } from "@/services/userSyncService";
+import { outRouteSchema } from "@/lib/validation/schemas";
 
 export const dynamic = "force-dynamic";
 
@@ -16,15 +17,19 @@ function redirectTo(url: string) {
 }
 
 export async function GET(request: NextRequest) {
-  const productSlug = request.nextUrl.searchParams.get("slug")?.trim() ?? "";
-  const offerKey = request.nextUrl.searchParams.get("offer")?.trim() ?? "";
+  const parsed = outRouteSchema.safeParse({
+    slug: request.nextUrl.searchParams.get("slug"),
+    offer: request.nextUrl.searchParams.get("offer"),
+  });
 
-  if (!productSlug || !offerKey) {
+  if (!parsed.success) {
     return Response.json(
       { reason: "missing_offer", status: "error" },
       { headers: noStoreHeaders, status: 400 },
     );
   }
+
+  const { slug: productSlug, offer: offerKey } = parsed.data;
 
   const user = await getCurrentUser();
   const syncResult = user ? await syncAuthUserToPrisma(user) : null;
