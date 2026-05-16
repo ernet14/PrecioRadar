@@ -17,6 +17,9 @@ export function Footer() {
             <Link className="transition hover:text-slate-950" href="/terminos">
               T&eacute;rminos
             </Link>
+            <Link className="transition hover:text-slate-950" href="/cookies">
+              Cookies
+            </Link>
           </nav>
         </div>
         <p className="font-medium text-slate-700">PrecioRadar</p>

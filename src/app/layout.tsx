@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { CookieBanner } from "@/components/legal/CookieBanner";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -21,6 +22,7 @@ export default function RootLayout({
           <div className="flex-1">{children}</div>
           <Footer />
         </div>
+        <CookieBanner />
       </body>
     </html>
   );

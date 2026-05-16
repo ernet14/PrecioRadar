@@ -2,45 +2,79 @@ import type { Metadata } from "next";
 import { LegalPage } from "@/components/legal/LegalPage";
 
 export const metadata: Metadata = {
-  title: "Terminos | PrecioRadar",
+  title: "Términos y condiciones | PrecioRadar",
   description:
-    "Terminos basicos de uso de PrecioRadar para comparacion de precios, alertas y enlaces externos.",
+    "Condiciones de uso de PrecioRadar: comparador de precios, alertas, enlaces externos y limitaciones del servicio.",
 };
 
 const sections = [
   {
-    title: "Uso del servicio",
+    title: "Descripción del servicio",
     body: [
-      "PrecioRadar es una herramienta para comparar precios, revisar historial y crear alertas. No vende productos directamente.",
-      "La compra se realiza en la tienda externa elegida por el usuario y esta sujeta a sus condiciones comerciales, stock, envio, garantia y medios de pago.",
+      "PrecioRadar es un comparador de precios en línea que muestra ofertas de tiendas externas, permite crear alertas de precio y seguir productos de interés.",
+      "PrecioRadar no es una tienda: no vende productos, no procesa pagos y no interviene en las transacciones entre el usuario y las tiendas externas.",
+      "La compra se realiza en la tienda elegida por el usuario y queda sujeta a sus condiciones comerciales, stock, envío, garantía, cuotas e impuestos.",
     ],
   },
   {
-    title: "Precios e informacion",
+    title: "Exactitud de la información",
     body: [
-      "Los precios pueden cambiar sin aviso en las tiendas externas. Antes de comprar, verifica precio final, cuotas, envio, impuestos, stock y condiciones en la tienda.",
-      "Durante el MVP pueden existir datos demo o datos incompletos. La interfaz debe identificarlos cuando correspondan.",
+      "Los precios, disponibilidad y condiciones de las ofertas se obtienen de fuentes externas y pueden cambiar sin previo aviso.",
+      "PrecioRadar no garantiza que los precios mostrados sean los vigentes en el momento de la compra. Verificá siempre el precio final, las cuotas, el costo de envío y el stock directamente en la tienda antes de comprar.",
+      "Algunas funciones pueden mostrar un estado 'Recolectando datos' cuando no hay información suficiente. No mostramos recomendaciones de compra sin datos reales que las respalden.",
+    ],
+  },
+  {
+    title: "Cuentas de usuario",
+    body: [
+      "Para usar funciones como alertas y seguimiento de productos necesitás crear una cuenta con un email válido.",
+      "Sos responsable de mantener la confidencialidad de tu contraseña y de las actividades que ocurran bajo tu cuenta.",
+      "PrecioRadar puede suspender cuentas que violen estos términos, intenten vulnerar el servicio o proporcionen información falsa.",
     ],
   },
   {
     title: "Alertas y notificaciones",
     body: [
-      "Las alertas ayudan a detectar condiciones de precio, pero no garantizan disponibilidad, reserva de precio ni exactitud absoluta.",
-      "PrecioRadar puede limitar la cantidad de alertas gratuitas, pausar funciones o modificar reglas para mantener estable el servicio.",
+      "Las alertas detectan variaciones de precio según la configuración del usuario, pero no garantizan disponibilidad del producto, reserva del precio ni exactitud absoluta.",
+      "PrecioRadar puede limitar la cantidad de alertas gratuitas por cuenta para mantener estable el servicio.",
+      "Las notificaciones por email dependen de que el servicio de correo esté correctamente configurado y de que los emails no queden en spam.",
     ],
   },
   {
-    title: "Cuentas y reportes",
+    title: "Uso aceptable",
     body: [
-      "El usuario debe usar datos reales para su cuenta y no intentar afectar el funcionamiento del servicio.",
-      "Los reportes de errores, productos o precios pueden revisarse desde el panel admin para mejorar la calidad del comparador.",
+      "Está prohibido usar PrecioRadar para scraping automatizado, pruebas de carga no autorizadas, intentos de acceso no autorizado o cualquier uso que perjudique el servicio o a otros usuarios.",
+      "No está permitido usar el servicio para actividades ilegales según la legislación argentina.",
+      "Reservamos el derecho de limitar el acceso a usuarios o IPs que generen tráfico abusivo.",
+    ],
+  },
+  {
+    title: "Propiedad intelectual",
+    body: [
+      "El código, diseño, marca y contenido propio de PrecioRadar son propiedad de sus creadores y no pueden reproducirse sin autorización.",
+      "Los nombres, logos y marcas de las tiendas externas son propiedad de sus respectivos dueños. Su aparición en PrecioRadar es de carácter descriptivo e informativo, sin implicar afiliación salvo cuando se indique explícitamente.",
     ],
   },
   {
     title: "Enlaces afiliados",
     body: [
-      "Algunos enlaces externos pueden generar una comision para PrecioRadar sin costo adicional para el usuario.",
-      "La existencia de una comision no reemplaza la necesidad de comparar y verificar la oferta en la tienda final.",
+      "Algunos enlaces a tiendas externas pueden incluir parámetros de afiliado. Si realizás una compra a través de esos enlaces, PrecioRadar puede recibir una comisión por parte de la tienda, sin costo adicional para vos.",
+      "La existencia de comisiones no afecta los precios mostrados ni implica recomendación o garantía del producto o tienda. Siempre verificá la oferta antes de comprar.",
+    ],
+  },
+  {
+    title: "Limitación de responsabilidad",
+    body: [
+      "PrecioRadar brinda el servicio 'tal como está' y no garantiza disponibilidad continua, exactitud de los datos ni idoneidad para un fin particular.",
+      "En la máxima medida permitida por la Ley 24.240 y la legislación aplicable, PrecioRadar no es responsable por daños derivados del uso de la información mostrada, decisiones de compra, fallas en la comunicación de alertas o interrupciones del servicio.",
+    ],
+  },
+  {
+    title: "Modificaciones",
+    body: [
+      "Podemos actualizar estos términos ante cambios en el servicio, legales o de negocio. Los cambios materiales se notificarán por email o mediante un aviso destacado en el sitio.",
+      "La fecha de vigencia al inicio del documento refleja la versión actual. Continuar usando el servicio después de un cambio implica aceptación de los nuevos términos.",
+      "Fecha de vigencia: 15 de mayo de 2026. Para consultas: privacidad@precioradar.com.ar",
     ],
   },
 ];
@@ -48,10 +82,10 @@ const sections = [
 export default function TerminosPage() {
   return (
     <LegalPage
-      badge="Terminos"
-      description="Condiciones basicas para usar PrecioRadar como comparador, sistema de seguimiento y alertas de precio."
+      badge="Términos"
+      description="Condiciones de uso de PrecioRadar como comparador de precios, sistema de alertas y seguimiento de ofertas."
       sections={sections}
-      title="Terminos y condiciones"
+      title="Términos y condiciones"
     />
   );
 }
