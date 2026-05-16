@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import type { Metadata } from "next";
 import { Container } from "@/components/layout/Container";
 import { AlertFeedback } from "@/components/alerts/AlertFeedback";
 import { CreateAlertPanel } from "@/components/product/CreateAlertPanel";
@@ -20,6 +21,7 @@ import {
   type ProductDetail,
   type ProductSummary,
 } from "@/services/productService";
+import { buildProductJsonLd } from "@/lib/seo/jsonLd";
 import {
   getTrackingOverviewForUser,
   type TrackingOverview,
@@ -47,6 +49,45 @@ const offerGridStyle = {
 
 export function generateStaticParams() {
   return getAllMockProductSlugs().map((slug) => ({ slug }));
+}
+
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://precioradar.com.ar";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProductDetailBySlug(slug);
+
+  if (!product) {
+    return { title: "Producto no encontrado — PrecioRadar" };
+  }
+
+  const title = `${product.name} — Mejor precio en Argentina | PrecioRadar`;
+  const description = `Compará el precio de ${product.name} en ${product.offers.length} tienda${product.offers.length === 1 ? "" : "s"}. Mejor precio: ${new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(product.bestOffer.price)} en ${product.bestOffer.storeName}. Historial y alertas de precio gratis.`;
+  const canonicalUrl = `${siteUrl}/producto/${slug}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: canonicalUrl },
+    openGraph: {
+      title,
+      description,
+      url: canonicalUrl,
+      siteName: "PrecioRadar",
+      locale: "es_AR",
+      type: "website",
+      ...(product.imageUrl ? { images: [{ url: product.imageUrl, alt: product.name }] } : {}),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
 }
 
 function ProductImage({
@@ -324,8 +365,17 @@ export default async function ProductoPage({
   const selectedReportOfferKey = getQueryValue(queryParams.reportOffer);
   const trackingStatus = getQueryValue(queryParams.tracking);
 
+  const jsonLd = buildProductJsonLd(product);
+
   return (
     <main className="bg-[#f4f7fb] py-8 text-slate-950">
+      {jsonLd.map((schema, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
       <Container className="space-y-10">
         <Link
           className="inline-flex text-sm font-semibold text-blue-700 transition hover:text-blue-800"
