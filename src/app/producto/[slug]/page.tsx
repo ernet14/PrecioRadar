@@ -16,7 +16,7 @@ import { getCurrentUser } from "@/lib/supabase/auth";
 import { buildOfferClickHref } from "@/services/clickTrackingService";
 import {
   getAllMockProductSlugs,
-  getMockProductDetailBySlug,
+  getProductDetailBySlug,
   type ProductDetail,
   type ProductSummary,
 } from "@/services/productService";
@@ -310,7 +310,7 @@ export default async function ProductoPage({
 }: ProductoPageProps) {
   const { slug } = await params;
   const queryParams = await searchParams;
-  const product = getMockProductDetailBySlug(slug);
+  const product = await getProductDetailBySlug(slug);
 
   if (!product) {
     return <NotFoundState />;

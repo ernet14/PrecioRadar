@@ -155,7 +155,7 @@ export function calculatePriceHistoryStats(
     averagePrice,
     variationPercent,
     pointsCount: sortedHistory.length,
-    isSufficient: sortedHistory.length >= 7,
+    isSufficient: sortedHistory.length >= 14,
     lastUpdatedAt: sortedHistory[sortedHistory.length - 1].recordedAt,
   };
 }

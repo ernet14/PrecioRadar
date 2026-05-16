@@ -1,13 +1,15 @@
 import { mockStoreProducts } from "@/data/mockStoreProducts";
 import type { ProviderProduct } from "@/providers/stores";
 import { normalizeProductName, slugify } from "@/lib/utils";
-import type { Recommendation } from "@/types";
+import type { CurrencyCode, Recommendation } from "@/types";
 import {
   calculatePriceHistoryStats,
   type PriceHistoryPoint,
   type PriceHistoryStats,
 } from "@/services/priceHistoryService";
 import { getPurchaseRecommendation } from "@/services/recommendationService";
+import { getPrismaClient } from "@/lib/prisma";
+import { persistProductOfferView } from "@/services/priceSnapshotService";
 
 export type ProductDetail = {
   slug: string;
@@ -158,5 +160,74 @@ export function getMockProductDetailBySlug(
     recommendation,
     historyMessage: createHistoryMessage({ stats: priceHistoryStats }),
     similarProducts,
+  };
+}
+
+async function getRealPriceHistoryForOffer(
+  externalId: string,
+  storeSlug: string,
+): Promise<PriceHistoryPoint[]> {
+  const prisma = getPrismaClient();
+
+  if (!prisma) return [];
+
+  try {
+    const store = await prisma.store.findUnique({ where: { slug: storeSlug } });
+
+    if (!store) return [];
+
+    const offer = await prisma.productOffer.findFirst({
+      where: { storeId: store.id, externalId },
+    });
+
+    if (!offer) return [];
+
+    const records = await prisma.priceHistory.findMany({
+      where: { offerId: offer.id, isDemo: false },
+      orderBy: { recordedAt: "asc" },
+      take: 200,
+    });
+
+    return records.map((record) => ({
+      date: record.recordedAt.toISOString().slice(0, 10),
+      recordedAt: record.recordedAt.toISOString(),
+      price: Number(record.price),
+      currency: record.currency as CurrencyCode,
+      source: record.source,
+      isDemo: false,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export async function getProductDetailBySlug(slug: string): Promise<ProductDetail | null> {
+  const mockDetail = getMockProductDetailBySlug(slug);
+
+  if (!mockDetail) return null;
+
+  // Persist fire-and-forget so the cron can refresh prices later
+  persistProductOfferView(mockDetail.bestOffer).catch(() => {});
+
+  const realHistory = await getRealPriceHistoryForOffer(
+    mockDetail.bestOffer.externalId,
+    mockDetail.bestOffer.storeSlug,
+  );
+
+  if (realHistory.length === 0) return mockDetail;
+
+  const priceHistoryStats = calculatePriceHistoryStats(realHistory, mockDetail.bestOffer.price);
+  const recommendation = getPurchaseRecommendation({
+    product: mockDetail.bestOffer,
+    history: realHistory,
+    currentPrice: mockDetail.bestOffer.price,
+  });
+
+  return {
+    ...mockDetail,
+    priceHistory: realHistory,
+    priceHistoryStats,
+    recommendation,
+    historyMessage: createHistoryMessage({ stats: priceHistoryStats }),
   };
 }

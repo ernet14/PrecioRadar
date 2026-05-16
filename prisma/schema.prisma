@@ -122,7 +122,7 @@ model ProductOffer {
   storeId        String           @db.Uuid
   externalId     String?
   title          String
-  price          Decimal          @db.Decimal(12, 2)
+  price          Decimal          @db.Decimal(14, 2)
   currency       String           @default("ARS")
   productUrl     String
   affiliateUrl   String?
@@ -153,7 +153,7 @@ model PriceHistory {
   productId  String        @db.Uuid
   storeId    String        @db.Uuid
   offerId    String?       @db.Uuid
-  price      Decimal       @db.Decimal(12, 2)
+  price      Decimal       @db.Decimal(14, 2)
   currency   String        @default("ARS")
   source     String
   isDemo     Boolean       @default(false)
@@ -190,7 +190,7 @@ model Alert {
   userId              String              @db.Uuid
   productId           String              @db.Uuid
   alertType           AlertType
-  targetPrice         Decimal?            @db.Decimal(12, 2)
+  targetPrice         Decimal?            @db.Decimal(14, 2)
   targetPercentage    Decimal?            @db.Decimal(5, 2)
   notificationChannel NotificationChannel
   active              Boolean             @default(true)
