@@ -4,7 +4,6 @@ import { normalizeProductName, slugify } from "@/lib/utils";
 import type { Recommendation } from "@/types";
 import {
   calculatePriceHistoryStats,
-  getMockPriceHistoryForProduct,
   type PriceHistoryPoint,
   type PriceHistoryStats,
 } from "@/services/priceHistoryService";
@@ -67,19 +66,9 @@ function sortOffers(offers: ProviderProduct[]) {
   });
 }
 
-function createHistoryMessage({
-  offers,
-  stats,
-}: {
-  offers: ProviderProduct[];
-  stats: PriceHistoryStats;
-}) {
+function createHistoryMessage({ stats }: { stats: PriceHistoryStats }) {
   if (!stats.isSufficient) {
-    return "Todavia no hay historial suficiente para calcular una referencia real.";
-  }
-
-  if (offers.every((offer) => offer.isDemo)) {
-    return "El historial es demo y sirve solo como referencia visual para esta etapa.";
+    return "Recolectando datos. Volvé en unos días para ver la evolución real del precio.";
   }
 
   return "El historial disponible todavia es limitado para este producto.";
@@ -88,10 +77,9 @@ function createHistoryMessage({
 function toSummary(group: ProviderProduct[]): ProductSummary {
   const sortedOffers = sortOffers(group);
   const bestOffer = sortedOffers[0];
-  const priceHistory = getMockPriceHistoryForProduct(bestOffer);
   const recommendation = getPurchaseRecommendation({
     product: bestOffer,
-    history: priceHistory,
+    history: [],
     currentPrice: bestOffer.price,
   });
 
@@ -128,7 +116,7 @@ export function getMockProductDetailBySlug(
   const groupedProducts = groupByNormalizedName(mockStoreProducts);
   const offers = sortOffers(groupedProducts.get(product.normalizedName) ?? [product]);
   const bestOffer = offers[0];
-  const priceHistory = getMockPriceHistoryForProduct(bestOffer);
+  const priceHistory: PriceHistoryPoint[] = [];
   const priceHistoryStats = calculatePriceHistoryStats(
     priceHistory,
     bestOffer.price,
@@ -168,7 +156,7 @@ export function getMockProductDetailBySlug(
     priceHistory,
     priceHistoryStats,
     recommendation,
-    historyMessage: createHistoryMessage({ offers, stats: priceHistoryStats }),
+    historyMessage: createHistoryMessage({ stats: priceHistoryStats }),
     similarProducts,
   };
 }

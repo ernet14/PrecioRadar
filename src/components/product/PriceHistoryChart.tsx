@@ -155,7 +155,7 @@ export function PriceHistoryChart({
             Historial de precio
           </h2>
           <p className="mt-1 text-sm text-slate-500">
-            Precio minimo diario en datos demo.
+            Precio minimo diario registrado.
           </p>
         </div>
 
@@ -231,8 +231,7 @@ export function PriceHistoryChart({
         </div>
       ) : (
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-5 text-sm leading-6 text-slate-600">
-          Todav&iacute;a no hay historial suficiente para calcular una referencia
-          real.
+          Recolectando datos. Volv&eacute; en unos d&iacute;as para ver la evoluci&oacute;n del precio.
         </div>
       )}
 
