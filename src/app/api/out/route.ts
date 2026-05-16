@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/supabase/auth";
 import { recordOfferClick } from "@/services/clickTrackingService";
 import { syncAuthUserToPrisma } from "@/services/userSyncService";
 import { outRouteSchema } from "@/lib/validation/schemas";
+import { rateLimit } from "@/lib/ratelimit";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +18,16 @@ function redirectTo(url: string) {
 }
 
 export async function GET(request: NextRequest) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "anonymous";
+  const { success } = await rateLimit("out", ip);
+
+  if (!success) {
+    return Response.json(
+      { reason: "rate_limited", status: "error" },
+      { headers: noStoreHeaders, status: 429 },
+    );
+  }
+
   const parsed = outRouteSchema.safeParse({
     slug: request.nextUrl.searchParams.get("slug"),
     offer: request.nextUrl.searchParams.get("offer"),

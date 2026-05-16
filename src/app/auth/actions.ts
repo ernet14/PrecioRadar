@@ -1,13 +1,20 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import {
   getSupabaseConfigErrorMessage,
   isSupabaseConfigured,
 } from "@/lib/supabase/config";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { syncAuthUserToPrisma } from "@/services/userSyncService";
+import { rateLimit } from "@/lib/ratelimit";
 import type { AuthFormState } from "@/types/auth";
+
+async function getIp() {
+  const hdrs = await headers();
+  return hdrs.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "anonymous";
+}
 
 function getStringValue(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -73,6 +80,17 @@ export async function loginAction(
     return validationError;
   }
 
+  const ip = await getIp();
+  const { success } = await rateLimit("login", ip);
+
+  if (!success) {
+    return {
+      status: "error",
+      message: "Demasiados intentos. Esperá un minuto antes de reintentar.",
+      fields: { email },
+    };
+  }
+
   if (!isSupabaseConfigured()) {
     return {
       status: "error",
@@ -113,6 +131,17 @@ export async function registerAction(
     return {
       ...validationError,
       fields: { ...validationError.fields, name },
+    };
+  }
+
+  const ip = await getIp();
+  const { success } = await rateLimit("register", ip);
+
+  if (!success) {
+    return {
+      status: "error",
+      message: "Demasiados intentos de registro. Intentá de nuevo en una hora.",
+      fields: { email, name },
     };
   }
 

@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const securityHeaders = [
   { key: "X-DNS-Prefetch-Control", value: "off" },
@@ -25,6 +26,19 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "http2.mlstatic.com" },
+      { protocol: "https", hostname: "*.mlstatic.com" },
+      { protocol: "https", hostname: "fravega.com" },
+      { protocol: "https", hostname: "*.fravega.com" },
+    ],
+  },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  silent: true,
+  sourcemaps: { disable: true },
+});
