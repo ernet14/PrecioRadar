@@ -611,3 +611,110 @@ Etapa 10 — Monetización (afiliados MeLi)
 •	Disclaimers en cards y footer
 •	Solo después de aprobación MeLi y monotributo en orden
 
+24. Detector de ofertas falsas
+El detector de ofertas falsas es uno de los diferenciales más importantes de PrecioRadar para el mercado argentino, donde la práctica de inflar precios antes de un descuento es ampliamente conocida y criticada.
+
+Objetivo
+Mostrarle al usuario si un descuento anunciado es real o si el precio fue inflado previamente para simular una rebaja. El tono debe ser claro, directo y sin alarmismo.
+
+Algoritmo base (disponible desde v2)
+La detección compara el precio actual contra la media móvil de los últimos 60 días. Requiere historial real persistente — no puede activarse con datos mock o sintéticos.
+
+Condición	Etiqueta	Mensaje al usuario
+Precio actual ≤ 90% del promedio 60 días	✅ Oferta real	El precio está genuinamente por debajo de su promedio reciente.
+Precio actual entre 90% y 100% del promedio	⚠️ Descuento menor	El descuento es pequeño o marginal respecto al promedio.
+Precio actual > 100% del promedio 60 días	🚫 Oferta inflada	El precio subió antes del supuesto descuento. Revisar condiciones.
+Historial insuficiente (menos de 14 puntos)	🔹 Sin datos suficientes	Aún no hay historial suficiente para evaluar este precio.
+
+Ejemplo de mensaje en la UI
+“Este celular costó en promedio $850.000 los últimos 60 días. Hace 15 días subió a $1.100.000 y ahora figura en ‘oferta’ a $999.000. Hoy estás pagando más que el promedio histórico.”
+
+Umbrales configurables desde el admin
+Los porcentajes (90%, 100%) deben ser configurables por el admin para ajustarlos según categoría o período estacional. Durante Hot Sale puede convenir usar umbrales más amplios.
+
+Dependencia técnica
+•	Requiere historial de precios persistente con cron job activo (Etapa 5 del plan de trabajo).
+•	No puede activarse con datos mock. Los mensajes de recomendación deben estar desactivados hasta tener ≥14 puntos de historial real.
+•	Integración con alertas honestas: cuando se detecta oferta inflada, puede disparar una alerta al usuario que sigue ese producto.
+
+Impacto en riesgo legal
+Al mostrar recomendaciones únicamente sobre historial real y etiquetar correctamente las ofertas infladas, PrecioRadar reduce activamente el riesgo de incumplir los arts. 4 y 8 de la Ley 24.240 identificados en la sección 4.2 de este informe.
+
+
+25. Calendario de promos bancarias
+El mercado argentino tiene un comportamiento de compra fuertemente condicionado por promociones bancarias diarias: descuentos en supermercados ciertos días, reintegros en combustibles, cuotas sin interés por banco en determinados comercios. Esta información está dispersa y es difícil de centralizar. Es un diferencial único de PrecioRadar en el mercado actual.
+
+Objetivo
+Mostrarle al usuario qué descuento o beneficio adicional puede aplicar hoy al comprar un producto, según su banco o billetera. El sistema debe integrarse con el buscador y el detalle de producto.
+
+Entidades cubiertas desde v2
+Bancos: Nación, Galicia, Macro, Santander, BBVA, ICBC, Comafi.
+Billeteras digitales: Mercado Pago, Ualá, Personal Pay, Naranja X.
+
+Estructura de cada entrada del calendario
+Campo	Descripción
+Entidad	Banco o billetera (ej. Banco Nación, Naranja X).
+Día(s) válido(s)	Días de la semana o fechas específicas.
+Tipo de descuento	Porcentaje, reintegro, cuotas sin interés.
+Porcentaje / monto	Valor del beneficio.
+Categorías aplicables	Supermercados, combustible, electrodomésticos, etc.
+Tope de reintegro	Monto máximo del beneficio si aplica.
+Tiendas aplicables	Online, física o ambas.
+Medio de pago requerido	Tarjeta de débito, crédito, QR, app.
+Vigencia	Fecha desde/hasta. Renovación mensual si aplica.
+Fuente	URL oficial del banco o billetera.
+
+Integración con el detalle de producto
+Cuando el usuario ve una oferta, PrecioRadar muestra automáticamente si hoy hay alguna promo bancaria aplicable a esa tienda o categoría, cuánto quedaría el precio final con ese beneficio, y el medio de pago requerido.
+Ejemplo: “Comprá este lavarropas en Frávega con Banco Macro hoy lunes y ahorrás un 25% adicional. Precio con descuento: $X. Requiere tarjeta Macro Selecta.”
+
+Mantenimiento
+•	Primera etapa: actualización manual desde el admin. Las promos bancarias cambian mensualmente.
+•	Futuro: scraping de los sitios oficiales de bancos y billeteras para automatizar la actualización.
+•	Crowdsourcing futuro: los usuarios podrán reportar promos nuevas o vencidas, con validación manual antes de publicar.
+
+Ubicación en el roadmap
+Versión 2. Requiere CMS de promos en el admin (sección 5 del plan de trabajo, Etapa admin) y la integración en el detalle de producto. No depende del historial de precios pero sí del panel admin básico.
+
+
+26. Diversificación de afiliados
+PrecioRadar inicia con MercadoLibre como único programa de afiliados. Esto genera un riesgo estratégico real: si MercadoLibre modifica comisiones, suspende la cuenta o cambia sus términos, el modelo de monetización queda sin soporte. El programa MeLi fue lanzado en noviembre 2025 y admite solo monotributistas, con comisión hasta 15% según categoría y solo para productos con reputación verde.
+
+Reglas que no cambian
+•	El mejor precio real siempre se muestra, tenga afiliado o no.
+•	Nunca se prioriza una oferta por comisión sobre una más conveniente para el usuario.
+•	El aviso de afiliados en footer y textos legales se mantiene en todos los programas.
+•	Los links afiliados no deben agregar redirecciones confusas ni degradar la UX.
+
+Programas a activar (orden de prioridad)
+Programa	Relevancia AR	Comisión estimada	Moneda
+Awin	Alta — Falabella, Sodimac, marcas internacionales	3–6%	EUR/USD
+Amazon Afiliados (ES/MX)	Alta — argentinos que compran del exterior	1–10% según categoría	USD
+Impact	Media — marcas D2C modernas, Shein	Variable	USD
+CJ Affiliate	Media — Lenovo, GoDaddy y otras marcas globales	Variable	USD
+Rakuten Advertising	Media — marcas premium internacionales	Variable	USD
+Temu Affiliate	Alta — crecimiento explosivo en AR 2025	5–30%	USD
+Shein Affiliate	Alta — especialmente en ropa y accesorios	10–20%	USD
+MercadoLibre Afiliados	Muy alta — programa actual, mantener activo	Hasta 15%	ARS/USD
+
+Tiendas argentinas sin programa de afiliados
+Frávega, Garbarino, Cetrogar, Coto Digital y Carrefour AR no tienen programas de afiliados oficiales. Su inclusión en PrecioRadar sirve para dar valor al usuario mediante la comparación, aunque no generen comisión directa. Esto alimenta la base de datos de historial y refuerza la confianza, que es el activo principal del producto.
+
+Ingresos en dólares — consideración especial
+Awin, Amazon, CJ, Rakuten e Impact pagan en USD o EUR. Para el contexto argentino esto tiene un valor adicional significativo. El cobro se puede gestionar vía Payoneer o Wise. Esta fuente de ingresos en moneda extranjera debe gestionarse de forma separada a la facturación en pesos (factura tipo E de exportación de servicios, exenta de algunos impuestos).
+
+Arquitectura del AffiliateService
+•	Cada provider debe saber si tiene un link de afiliado disponible y cuál usar.
+•	La lógica de construcción del link afiliado debe estar encapsulada en el provider, no en la UI.
+•	El AffiliateService existente debe evolucionar para soportar múltiples programas en paralelo.
+•	El click tracking ya modelado en Prisma debe atribuir correctamente a qué programa corresponde cada click.
+
+Timing de implementación
+El alta en los programas (Awin, Amazon, Impact) se puede gestionar en paralelo al desarrollo sin requerir cambios en el código. La integración de los links en el producto va en la Etapa 10 del plan de trabajo (monetización), una vez que el régimen fiscal esté en orden y haya historial real para respaldar los clicks.
+
+
+
+
+
+
+
