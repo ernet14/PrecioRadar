@@ -249,6 +249,7 @@ model AffiliateLink {
   productId    String?  @db.Uuid
   originalUrl  String
   affiliateUrl String
+  program      String?  @default("mercadolibre")
   active       Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -326,4 +327,26 @@ model NewsletterSubscription {
 
   @@index([confirmed])
   @@index([createdAt])
+}
+
+model BankPromo {
+  id          String    @id @default(uuid()) @db.Uuid
+  entity      String
+  entitySlug  String
+  dayOfWeek   Int[]
+  discountPct Int
+  promoType   String    @default("percentage")
+  maxAmount   Int?
+  storeSlug   String?
+  paymentType String    @default("cualquiera")
+  validFrom   DateTime  @default(now())
+  validUntil  DateTime?
+  sourceUrl   String?
+  active      Boolean   @default(true)
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([entitySlug, active])
+  @@index([active])
 }

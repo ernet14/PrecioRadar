@@ -65,7 +65,8 @@ export const ModelName = {
   SearchLog: 'SearchLog',
   ProviderLog: 'ProviderLog',
   ProductReport: 'ProductReport',
-  NewsletterSubscription: 'NewsletterSubscription'
+  NewsletterSubscription: 'NewsletterSubscription',
+  BankPromo: 'BankPromo'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -243,6 +244,7 @@ export const AffiliateLinkScalarFieldEnum = {
   productId: 'productId',
   originalUrl: 'originalUrl',
   affiliateUrl: 'affiliateUrl',
+  program: 'program',
   active: 'active',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -302,6 +304,28 @@ export const NewsletterSubscriptionScalarFieldEnum = {
 } as const
 
 export type NewsletterSubscriptionScalarFieldEnum = (typeof NewsletterSubscriptionScalarFieldEnum)[keyof typeof NewsletterSubscriptionScalarFieldEnum]
+
+
+export const BankPromoScalarFieldEnum = {
+  id: 'id',
+  entity: 'entity',
+  entitySlug: 'entitySlug',
+  dayOfWeek: 'dayOfWeek',
+  discountPct: 'discountPct',
+  promoType: 'promoType',
+  maxAmount: 'maxAmount',
+  storeSlug: 'storeSlug',
+  paymentType: 'paymentType',
+  validFrom: 'validFrom',
+  validUntil: 'validUntil',
+  sourceUrl: 'sourceUrl',
+  active: 'active',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BankPromoScalarFieldEnum = (typeof BankPromoScalarFieldEnum)[keyof typeof BankPromoScalarFieldEnum]
 
 
 export const SortOrder = {

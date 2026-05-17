@@ -31,6 +31,12 @@ import {
   getAlertOverviewForUser,
   type AlertOverview,
 } from "@/services/alertService";
+import {
+  getActivePromosForToday,
+  isTodayEligible,
+  formatDayOfWeek,
+  type BankPromo,
+} from "@/services/bankPromoService";
 import type { ProviderProduct } from "@/providers/stores";
 import type { RecommendationLevel } from "@/types";
 
@@ -201,6 +207,53 @@ function ActionPanel({
   );
 }
 
+function BankPromosCard({ promos }: { promos: BankPromo[] }) {
+  if (promos.length === 0) return null;
+
+  return (
+    <Card className="overflow-hidden border-emerald-100 bg-emerald-50 shadow-[0_18px_45px_rgba(5,150,105,0.07)]">
+      <div className="px-5 py-4">
+        <p className="text-xs font-semibold uppercase tracking-normal text-emerald-700">
+          Promos bancarias hoy
+        </p>
+        <div className="mt-3 space-y-3">
+          {promos.map((promo) => (
+            <div
+              className="flex items-start justify-between gap-3 rounded-lg border border-emerald-100 bg-white px-4 py-3"
+              key={promo.id}
+            >
+              <div>
+                <p className="text-sm font-semibold text-slate-950">
+                  {promo.entity} &middot; {promo.discountPct}% OFF
+                </p>
+                <p className="mt-0.5 text-xs text-slate-500">
+                  {formatDayOfWeek(promo.dayOfWeek)} &middot; Pago: {promo.paymentType}
+                  {promo.maxAmount
+                    ? ` · Tope $${promo.maxAmount.toLocaleString("es-AR")}`
+                    : ""}
+                </p>
+                {promo.notes ? (
+                  <p className="mt-1 text-xs text-slate-400">{promo.notes}</p>
+                ) : null}
+              </div>
+              {promo.sourceUrl ? (
+                <a
+                  className="shrink-0 text-xs font-semibold text-emerald-700 hover:underline"
+                  href={promo.sourceUrl}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Ver
+                </a>
+              ) : null}
+            </div>
+          ))}
+        </div>
+      </div>
+    </Card>
+  );
+}
+
 function getRecommendationClass(level: RecommendationLevel) {
   if (level === "EXCELLENT_PRICE" || level === "GOOD_PRICE") {
     return "border-emerald-200 bg-emerald-50 text-emerald-800";
@@ -363,8 +416,12 @@ export default async function ProductoPage({
   }
 
   const user = await getCurrentUser();
-  const trackingOverview = await getTrackingOverviewForUser(user?.id);
-  const alertOverview = await getAlertOverviewForUser(user?.id);
+  const [trackingOverview, alertOverview, allPromos] = await Promise.all([
+    getTrackingOverviewForUser(user?.id),
+    getAlertOverviewForUser(user?.id),
+    getActivePromosForToday(product.bestOffer.storeSlug),
+  ]);
+  const promos = allPromos.filter(isTodayEligible);
   const alertStatus = getQueryValue(queryParams.alert);
   const reportStatus = getQueryValue(queryParams.report);
   const selectedReportOfferKey = getQueryValue(queryParams.reportOffer);
@@ -475,6 +532,8 @@ export default async function ProductoPage({
                 {product.historyMessage}
               </div>
             </Card>
+
+            <BankPromosCard promos={promos} />
 
             <Card className="overflow-hidden border-slate-200 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
               <div className="bg-slate-950 px-5 py-4 text-white">

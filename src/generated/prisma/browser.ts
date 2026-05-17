@@ -92,3 +92,8 @@ export type ProductReport = Prisma.ProductReportModel
  * 
  */
 export type NewsletterSubscription = Prisma.NewsletterSubscriptionModel
+/**
+ * Model BankPromo
+ * 
+ */
+export type BankPromo = Prisma.BankPromoModel

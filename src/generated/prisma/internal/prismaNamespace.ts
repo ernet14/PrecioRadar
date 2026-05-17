@@ -398,7 +398,8 @@ export const ModelName = {
   SearchLog: 'SearchLog',
   ProviderLog: 'ProviderLog',
   ProductReport: 'ProductReport',
-  NewsletterSubscription: 'NewsletterSubscription'
+  NewsletterSubscription: 'NewsletterSubscription',
+  BankPromo: 'BankPromo'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -414,7 +415,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "affiliateLink" | "searchLog" | "providerLog" | "productReport" | "newsletterSubscription"
+    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "affiliateLink" | "searchLog" | "providerLog" | "productReport" | "newsletterSubscription" | "bankPromo"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1528,6 +1529,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    BankPromo: {
+      payload: Prisma.$BankPromoPayload<ExtArgs>
+      fields: Prisma.BankPromoFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BankPromoFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankPromoPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BankPromoFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankPromoPayload>
+        }
+        findFirst: {
+          args: Prisma.BankPromoFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankPromoPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BankPromoFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankPromoPayload>
+        }
+        findMany: {
+          args: Prisma.BankPromoFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankPromoPayload>[]
+        }
+        create: {
+          args: Prisma.BankPromoCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankPromoPayload>
+        }
+        createMany: {
+          args: Prisma.BankPromoCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BankPromoCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankPromoPayload>[]
+        }
+        delete: {
+          args: Prisma.BankPromoDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankPromoPayload>
+        }
+        update: {
+          args: Prisma.BankPromoUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankPromoPayload>
+        }
+        deleteMany: {
+          args: Prisma.BankPromoDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BankPromoUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BankPromoUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankPromoPayload>[]
+        }
+        upsert: {
+          args: Prisma.BankPromoUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankPromoPayload>
+        }
+        aggregate: {
+          args: Prisma.BankPromoAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBankPromo>
+        }
+        groupBy: {
+          args: Prisma.BankPromoGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BankPromoGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BankPromoCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BankPromoCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1726,6 +1801,7 @@ export const AffiliateLinkScalarFieldEnum = {
   productId: 'productId',
   originalUrl: 'originalUrl',
   affiliateUrl: 'affiliateUrl',
+  program: 'program',
   active: 'active',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1785,6 +1861,28 @@ export const NewsletterSubscriptionScalarFieldEnum = {
 } as const
 
 export type NewsletterSubscriptionScalarFieldEnum = (typeof NewsletterSubscriptionScalarFieldEnum)[keyof typeof NewsletterSubscriptionScalarFieldEnum]
+
+
+export const BankPromoScalarFieldEnum = {
+  id: 'id',
+  entity: 'entity',
+  entitySlug: 'entitySlug',
+  dayOfWeek: 'dayOfWeek',
+  discountPct: 'discountPct',
+  promoType: 'promoType',
+  maxAmount: 'maxAmount',
+  storeSlug: 'storeSlug',
+  paymentType: 'paymentType',
+  validFrom: 'validFrom',
+  validUntil: 'validUntil',
+  sourceUrl: 'sourceUrl',
+  active: 'active',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BankPromoScalarFieldEnum = (typeof BankPromoScalarFieldEnum)[keyof typeof BankPromoScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1937,6 +2035,13 @@ export type ListEnumReportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
 
 
 /**
+ * Reference to a field of type 'Int[]'
+ */
+export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
  * Reference to a field of type 'Int'
  */
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -1944,9 +2049,16 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
 
 
 /**
- * Reference to a field of type 'Int[]'
+ * Reference to a field of type 'Float'
  */
-export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
+ * Reference to a field of type 'Float[]'
+ */
+export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 /**
@@ -2074,6 +2186,7 @@ export type GlobalOmitConfig = {
   providerLog?: Prisma.ProviderLogOmit
   productReport?: Prisma.ProductReportOmit
   newsletterSubscription?: Prisma.NewsletterSubscriptionOmit
+  bankPromo?: Prisma.BankPromoOmit
 }
 
 /* Types for Logging */
