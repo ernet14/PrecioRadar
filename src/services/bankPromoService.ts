@@ -24,16 +24,24 @@ export function isTodayEligible(promo: BankPromo): boolean {
 
 export async function getActivePromosForToday(storeSlug?: string): Promise<BankPromo[]> {
   const now = new Date();
+  const prisma = getPrismaClient();
 
-  return db().bankPromo.findMany({
-    where: {
-      active: true,
-      validFrom: { lte: now },
-      OR: [{ validUntil: null }, { validUntil: { gte: now } }],
-      ...(storeSlug ? { OR: [{ storeSlug }, { storeSlug: null }] } : {}),
-    },
-    orderBy: [{ discountPct: "desc" }, { entity: "asc" }],
-  });
+  if (!prisma) return [];
+
+  try {
+    return await prisma.bankPromo.findMany({
+      where: {
+        active: true,
+        validFrom: { lte: now },
+        OR: [{ validUntil: null }, { validUntil: { gte: now } }],
+        ...(storeSlug ? { OR: [{ storeSlug }, { storeSlug: null }] } : {}),
+      },
+      orderBy: [{ discountPct: "desc" }, { entity: "asc" }],
+    });
+  } catch (error) {
+    console.error("Unable to load active bank promos.", error);
+    return [];
+  }
 }
 
 export async function listAllBankPromos(): Promise<BankPromo[]> {

@@ -14,7 +14,7 @@ test("register page renders name, email and password fields", async ({ page }) =
   await expect(page.getByLabel(/nombre/i)).toBeVisible();
   await expect(page.getByLabel(/email/i)).toBeVisible();
   await expect(page.getByLabel(/contrase/i)).toBeVisible();
-  await expect(page.getByRole("button", { name: /crear/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /registrarme/i })).toBeVisible();
 });
 
 test("login form shows error on empty submission", async ({ page }) => {

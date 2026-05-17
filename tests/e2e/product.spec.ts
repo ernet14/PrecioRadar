@@ -9,7 +9,7 @@ test("product page renders name, price and offers table", async ({ page }) => {
 
   await expect(page.getByText(/MercadoLibre/i).first()).toBeVisible();
 
-  await expect(page.getByText(/\$ [\d.]+/)).toBeVisible();
+  await expect(page.locator("main").getByText(/\$\s*[\d.]+/).first()).toBeVisible();
 });
 
 test("product page has JSON-LD structured data", async ({ page }) => {
