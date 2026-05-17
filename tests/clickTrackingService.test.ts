@@ -102,6 +102,22 @@ test("uses direct offer affiliate URL first when enabled", () => {
   assert.equal(destination.url, "https://affiliate.test/direct-a55");
 });
 
+test("appends affiliate tag to URL when enabled and no specific link exists", () => {
+  const destination = getAffiliateDestination({
+    affiliateEnabled: true,
+    affiliateLinks: [],
+    affiliateTag: "precioradar",
+    productId: "product-a55",
+    productUrl: "https://www.mercadolibre.com.ar/MLA-123456789-samsung-galaxy-a55-_JM",
+  });
+
+  assert.equal(destination.isAffiliate, true);
+  assert.equal(
+    destination.url,
+    "https://www.mercadolibre.com.ar/MLA-123456789-samsung-galaxy-a55-_JM?custom_id=precioradar",
+  );
+});
+
 test("prefers product affiliate links over original URL links", () => {
   const destination = getAffiliateDestination({
     affiliateEnabled: true,

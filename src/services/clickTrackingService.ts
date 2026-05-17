@@ -67,12 +67,14 @@ export function getOfferClickTarget({
 export function getAffiliateDestination({
   affiliateEnabled,
   affiliateLinks,
+  affiliateTag,
   offerAffiliateUrl,
   productId,
   productUrl,
 }: {
   affiliateEnabled: boolean;
   affiliateLinks: AffiliateLinkCandidate[];
+  affiliateTag?: string;
   offerAffiliateUrl?: string | null;
   productId: string;
   productUrl: string;
@@ -101,6 +103,16 @@ export function getAffiliateDestination({
 
   if (urlAffiliateUrl) {
     return { isAffiliate: true, url: urlAffiliateUrl };
+  }
+
+  if (affiliateTag) {
+    try {
+      const tagged = new URL(productUrl);
+      tagged.searchParams.set("custom_id", affiliateTag);
+      return { isAffiliate: true, url: tagged.toString() };
+    } catch {
+      // URL inválida — caer al fallback
+    }
   }
 
   return { isAffiliate: false, url: productUrl };
@@ -191,9 +203,11 @@ export async function recordOfferClick({
           },
         })
       : [];
+    const affiliateTag = process.env.MERCADOLIBRE_AFFILIATE_TAG?.trim() || undefined;
     const destination = getAffiliateDestination({
       affiliateEnabled: storedOffer.store.affiliateEnabled,
       affiliateLinks,
+      affiliateTag,
       offerAffiliateUrl: storedOffer.affiliateUrl,
       productId: storedOffer.productId,
       productUrl: storedOffer.productUrl,
