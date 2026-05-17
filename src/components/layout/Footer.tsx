@@ -11,6 +11,9 @@ export function Footer() {
             PrecioRadar, sin costo extra para vos.
           </p>
           <nav className="mt-3 flex flex-wrap gap-4 font-medium text-slate-700">
+            <Link className="transition hover:text-slate-950" href="/guias">
+              Gu&iacute;as
+            </Link>
             <Link className="transition hover:text-slate-950" href="/privacidad">
               Privacidad
             </Link>

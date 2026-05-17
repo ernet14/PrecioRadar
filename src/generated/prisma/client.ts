@@ -111,3 +111,8 @@ export type ProviderLog = Prisma.ProviderLogModel
  * 
  */
 export type ProductReport = Prisma.ProductReportModel
+/**
+ * Model NewsletterSubscription
+ * 
+ */
+export type NewsletterSubscription = Prisma.NewsletterSubscriptionModel

@@ -397,7 +397,8 @@ export const ModelName = {
   AffiliateLink: 'AffiliateLink',
   SearchLog: 'SearchLog',
   ProviderLog: 'ProviderLog',
-  ProductReport: 'ProductReport'
+  ProductReport: 'ProductReport',
+  NewsletterSubscription: 'NewsletterSubscription'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -413,7 +414,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "affiliateLink" | "searchLog" | "providerLog" | "productReport"
+    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "affiliateLink" | "searchLog" | "providerLog" | "productReport" | "newsletterSubscription"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1453,6 +1454,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    NewsletterSubscription: {
+      payload: Prisma.$NewsletterSubscriptionPayload<ExtArgs>
+      fields: Prisma.NewsletterSubscriptionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.NewsletterSubscriptionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsletterSubscriptionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.NewsletterSubscriptionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsletterSubscriptionPayload>
+        }
+        findFirst: {
+          args: Prisma.NewsletterSubscriptionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsletterSubscriptionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.NewsletterSubscriptionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsletterSubscriptionPayload>
+        }
+        findMany: {
+          args: Prisma.NewsletterSubscriptionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsletterSubscriptionPayload>[]
+        }
+        create: {
+          args: Prisma.NewsletterSubscriptionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsletterSubscriptionPayload>
+        }
+        createMany: {
+          args: Prisma.NewsletterSubscriptionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.NewsletterSubscriptionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsletterSubscriptionPayload>[]
+        }
+        delete: {
+          args: Prisma.NewsletterSubscriptionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsletterSubscriptionPayload>
+        }
+        update: {
+          args: Prisma.NewsletterSubscriptionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsletterSubscriptionPayload>
+        }
+        deleteMany: {
+          args: Prisma.NewsletterSubscriptionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.NewsletterSubscriptionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.NewsletterSubscriptionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsletterSubscriptionPayload>[]
+        }
+        upsert: {
+          args: Prisma.NewsletterSubscriptionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsletterSubscriptionPayload>
+        }
+        aggregate: {
+          args: Prisma.NewsletterSubscriptionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateNewsletterSubscription>
+        }
+        groupBy: {
+          args: Prisma.NewsletterSubscriptionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NewsletterSubscriptionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.NewsletterSubscriptionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NewsletterSubscriptionCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1697,6 +1772,19 @@ export const ProductReportScalarFieldEnum = {
 } as const
 
 export type ProductReportScalarFieldEnum = (typeof ProductReportScalarFieldEnum)[keyof typeof ProductReportScalarFieldEnum]
+
+
+export const NewsletterSubscriptionScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  confirmed: 'confirmed',
+  confirmToken: 'confirmToken',
+  source: 'source',
+  createdAt: 'createdAt',
+  confirmedAt: 'confirmedAt'
+} as const
+
+export type NewsletterSubscriptionScalarFieldEnum = (typeof NewsletterSubscriptionScalarFieldEnum)[keyof typeof NewsletterSubscriptionScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1985,6 +2073,7 @@ export type GlobalOmitConfig = {
   searchLog?: Prisma.SearchLogOmit
   providerLog?: Prisma.ProviderLogOmit
   productReport?: Prisma.ProductReportOmit
+  newsletterSubscription?: Prisma.NewsletterSubscriptionOmit
 }
 
 /* Types for Logging */

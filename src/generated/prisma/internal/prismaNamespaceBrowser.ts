@@ -64,7 +64,8 @@ export const ModelName = {
   AffiliateLink: 'AffiliateLink',
   SearchLog: 'SearchLog',
   ProviderLog: 'ProviderLog',
-  ProductReport: 'ProductReport'
+  ProductReport: 'ProductReport',
+  NewsletterSubscription: 'NewsletterSubscription'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -288,6 +289,19 @@ export const ProductReportScalarFieldEnum = {
 } as const
 
 export type ProductReportScalarFieldEnum = (typeof ProductReportScalarFieldEnum)[keyof typeof ProductReportScalarFieldEnum]
+
+
+export const NewsletterSubscriptionScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  confirmed: 'confirmed',
+  confirmToken: 'confirmToken',
+  source: 'source',
+  createdAt: 'createdAt',
+  confirmedAt: 'confirmedAt'
+} as const
+
+export type NewsletterSubscriptionScalarFieldEnum = (typeof NewsletterSubscriptionScalarFieldEnum)[keyof typeof NewsletterSubscriptionScalarFieldEnum]
 
 
 export const SortOrder = {
