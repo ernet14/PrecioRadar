@@ -170,6 +170,7 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
 
   let updated = 0;
   let errors = 0;
+  const windowStart = new Date(Date.now() - 4 * 60 * 60 * 1000);
 
   for (const offer of offers) {
     try {
@@ -191,14 +192,11 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
         },
       });
 
-      const dayStart = new Date();
-      dayStart.setHours(0, 0, 0, 0);
-
-      const existingToday = await prisma.priceHistory.findFirst({
-        where: { offerId: offer.id, recordedAt: { gte: dayStart }, isDemo: false },
+      const existingInWindow = await prisma.priceHistory.findFirst({
+        where: { offerId: offer.id, recordedAt: { gte: windowStart }, isDemo: false },
       });
 
-      if (!existingToday) {
+      if (!existingInWindow) {
         await prisma.priceHistory.create({
           data: {
             productId: offer.productId,
@@ -217,6 +215,17 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
       errors += 1;
     }
   }
+
+  await prisma.providerLog.create({
+    data: {
+      storeId: store.id,
+      provider: "mercadolibre",
+      action: "cron.refreshPrices",
+      status: errors > 0 && updated === 0 ? "failed" : "success",
+      errorMessage:
+        errors > 0 ? `${errors} errores de ${offers.length} ofertas procesadas.` : null,
+    },
+  });
 
   return { status: "completed", processed: offers.length, updated, errors };
 }

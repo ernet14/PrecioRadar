@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/internal/refresh-prices",
+      "schedule": "0 */4 * * *"
+    },
+    {
+      "path": "/api/internal/evaluate-alerts",
+      "schedule": "*/30 * * * *"
+    }
+  ]
+}
