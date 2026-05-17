@@ -19,7 +19,12 @@
       "Bash(node -e \"require\\('@sentry/nextjs'\\); console.log\\('ok'\\)\")",
       "Bash(npm test *)",
       "Bash(node -e ' *)",
-      "Bash(git log *)"
+      "Bash(git log *)",
+      "Bash(Get-ChildItem D:\\\\Proyectos\\\\PrecioRadar -Depth 0)",
+      "Bash(Select-Object Name)",
+      "Bash(node *)",
+      "Bash(Get-ChildItem *)",
+      "Bash(dir D:ProyectosPrecioRadarprismamigrations *)"
     ]
   }
 }
