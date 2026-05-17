@@ -12,6 +12,7 @@
 
 # testing
 /coverage
+/test-results/
 
 # next.js
 /.next/
@@ -57,4 +58,3 @@ node_modules/
 # Agent-local skills and lockfile
 .agents/
 skills-lock.json
-

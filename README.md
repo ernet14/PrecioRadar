@@ -48,12 +48,18 @@ marketing skills locally, run:
 npx skills add coreyhaines31/marketingskills --skill product-marketing-context page-cro copywriting seo-audit site-architecture schema-markup social-content cold-email
 ```
 
-## Internal alert evaluation endpoint
+## Internal cron endpoints
 
-The MVP alert evaluator is exposed at `/api/internal/evaluate-alerts` for cron
-jobs or manual internal runs. Configure `CRON_SECRET` server-side and call it
-with either `Authorization: Bearer <CRON_SECRET>` or `x-cron-secret:
-<CRON_SECRET>`.
+Vercel Cron is configured in `vercel.json`:
+
+- `/api/internal/refresh-prices` runs every 4 hours and snapshots current
+  MercadoLibre prices for persisted offers.
+- `/api/internal/evaluate-alerts` runs every 30 minutes and evaluates active
+  user alerts.
+
+Configure `CRON_SECRET` server-side. Vercel sends it as
+`Authorization: Bearer <CRON_SECRET>`, and manual internal runs can also use
+`x-cron-secret: <CRON_SECRET>`.
 
 ## MVP QA and deploy
 

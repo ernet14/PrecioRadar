@@ -1,13 +1,17 @@
 import type { MetadataRoute } from "next";
 import { getAllMockProductSlugs } from "@/services/productService";
 import { getAllGuideSlugs } from "@/content/guides";
+import { getAbsoluteUrl } from "@/lib/seo/site";
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://precioradar.com.ar";
+const lastModified = new Date();
 
 const staticRoutes: MetadataRoute.Sitemap = [
-  { url: siteUrl, changeFrequency: "daily", priority: 1 },
-  { url: `${siteUrl}/buscar`, changeFrequency: "daily", priority: 0.8 },
-  { url: `${siteUrl}/guias`, changeFrequency: "weekly", priority: 0.7 },
+  { url: getAbsoluteUrl(), changeFrequency: "daily", lastModified, priority: 1 },
+  { url: getAbsoluteUrl("/buscar"), changeFrequency: "daily", lastModified, priority: 0.8 },
+  { url: getAbsoluteUrl("/guias"), changeFrequency: "weekly", lastModified, priority: 0.7 },
+  { url: getAbsoluteUrl("/privacidad"), changeFrequency: "yearly", lastModified, priority: 0.3 },
+  { url: getAbsoluteUrl("/terminos"), changeFrequency: "yearly", lastModified, priority: 0.3 },
+  { url: getAbsoluteUrl("/cookies"), changeFrequency: "yearly", lastModified, priority: 0.3 },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -15,14 +19,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const guideSlugs = getAllGuideSlugs();
 
   const productRoutes: MetadataRoute.Sitemap = productSlugs.map((slug) => ({
-    url: `${siteUrl}/producto/${slug}`,
+    url: getAbsoluteUrl(`/producto/${slug}`),
     changeFrequency: "hourly",
+    lastModified,
     priority: 0.9,
   }));
 
   const guideRoutes: MetadataRoute.Sitemap = guideSlugs.map((slug) => ({
-    url: `${siteUrl}/guias/${slug}`,
+    url: getAbsoluteUrl(`/guias/${slug}`),
     changeFrequency: "weekly",
+    lastModified,
     priority: 0.8,
   }));
 

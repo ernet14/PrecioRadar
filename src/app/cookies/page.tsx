@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { LegalPage } from "@/components/legal/LegalPage";
 
 export const metadata: Metadata = {
-  title: "Política de cookies | PrecioRadar",
+  title: "Politica de cookies",
   description:
     "Qué cookies usa PrecioRadar, para qué sirven y cómo administrar tu preferencia.",
+  alternates: { canonical: "/cookies" },
 };
 
 const sections = [

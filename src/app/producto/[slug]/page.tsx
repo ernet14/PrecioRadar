@@ -23,6 +23,7 @@ import {
   type ProductSummary,
 } from "@/services/productService";
 import { buildProductJsonLd } from "@/lib/seo/jsonLd";
+import { getAbsoluteUrl } from "@/lib/seo/site";
 import {
   getTrackingOverviewForUser,
   type TrackingOverview,
@@ -58,8 +59,6 @@ export function generateStaticParams() {
   return getAllMockProductSlugs().map((slug) => ({ slug }));
 }
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://precioradar.com.ar";
-
 export async function generateMetadata({
   params,
 }: {
@@ -69,12 +68,12 @@ export async function generateMetadata({
   const product = await getProductDetailBySlug(slug);
 
   if (!product) {
-    return { title: "Producto no encontrado — PrecioRadar" };
+    return { title: "Producto no encontrado" };
   }
 
-  const title = `${product.name} — Mejor precio en Argentina | PrecioRadar`;
+  const title = `${product.name} - Mejor precio en Argentina`;
   const description = `Compará el precio de ${product.name} en ${product.offers.length} tienda${product.offers.length === 1 ? "" : "s"}. Mejor precio: ${new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(product.bestOffer.price)} en ${product.bestOffer.storeName}. Historial y alertas de precio gratis.`;
-  const canonicalUrl = `${siteUrl}/producto/${slug}`;
+  const canonicalUrl = getAbsoluteUrl(`/producto/${slug}`);
 
   return {
     title,

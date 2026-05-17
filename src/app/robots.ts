@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
-
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://precioradar.com.ar";
+import { getAbsoluteUrl } from "@/lib/seo/site";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -12,13 +11,16 @@ export default function robots(): MetadataRoute.Robots {
           "/dashboard",
           "/admin",
           "/alertas",
+          "/auth",
           "/api/internal/",
           "/api/out",
           "/login",
+          "/notificaciones",
           "/registro",
+          "/tracked-products",
         ],
       },
     ],
-    sitemap: `${siteUrl}/sitemap.xml`,
+    sitemap: getAbsoluteUrl("/sitemap.xml"),
   };
 }

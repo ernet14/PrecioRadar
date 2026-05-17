@@ -4,7 +4,7 @@ import type { ProviderProduct } from "@/providers/stores/types";
 import { slugify } from "@/lib/utils";
 
 export type SnapshotResult = {
-  status: "completed" | "database_unavailable" | "no_offers";
+  status: "completed" | "database_unavailable" | "error" | "no_offers";
   processed: number;
   updated: number;
   errors: number;
@@ -153,79 +153,96 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
     return { status: "database_unavailable", processed: 0, updated: 0, errors: 0 };
   }
 
-  const store = await prisma.store.findUnique({ where: { slug: "mercadolibre" } });
+  try {
+    const store = await prisma.store.findUnique({ where: { slug: "mercadolibre" } });
 
-  if (!store) {
-    return { status: "no_offers", processed: 0, updated: 0, errors: 0 };
-  }
+    if (!store) {
+      return { status: "no_offers", processed: 0, updated: 0, errors: 0 };
+    }
 
-  const offers = await prisma.productOffer.findMany({
-    where: { storeId: store.id, isDemo: false, available: true },
-    take: 500,
-  });
+    const offers = await prisma.productOffer.findMany({
+      orderBy: [{ lastCheckedAt: "asc" }, { createdAt: "asc" }],
+      take: 500,
+      where: {
+        storeId: store.id,
+        isDemo: false,
+        available: true,
+        externalId: { not: null },
+      },
+    });
 
-  if (offers.length === 0) {
-    return { status: "no_offers", processed: 0, updated: 0, errors: 0 };
-  }
+    if (offers.length === 0) {
+      return { status: "no_offers", processed: 0, updated: 0, errors: 0 };
+    }
 
-  let updated = 0;
-  let errors = 0;
-  const windowStart = new Date(Date.now() - 4 * 60 * 60 * 1000);
+    let updated = 0;
+    let errors = 0;
+    const windowStart = new Date(Date.now() - 4 * 60 * 60 * 1000);
 
-  for (const offer of offers) {
-    try {
-      const currentPrice = await mercadoLibreProvider.getCurrentPrice({
-        externalId: offer.externalId ?? undefined,
-      });
+    for (const offer of offers) {
+      try {
+        const currentPrice = await mercadoLibreProvider.getCurrentPrice({
+          externalId: offer.externalId ?? undefined,
+        });
 
-      if (!currentPrice) {
-        errors += 1;
-        continue;
-      }
+        if (!currentPrice) {
+          errors += 1;
+          continue;
+        }
 
-      await prisma.productOffer.update({
-        where: { id: offer.id },
-        data: {
-          price: currentPrice.price,
-          available: currentPrice.available,
-          lastCheckedAt: currentPrice.lastCheckedAt,
-        },
-      });
-
-      const existingInWindow = await prisma.priceHistory.findFirst({
-        where: { offerId: offer.id, recordedAt: { gte: windowStart }, isDemo: false },
-      });
-
-      if (!existingInWindow) {
-        await prisma.priceHistory.create({
+        await prisma.productOffer.update({
+          where: { id: offer.id },
           data: {
-            productId: offer.productId,
-            storeId: store.id,
-            offerId: offer.id,
             price: currentPrice.price,
-            currency: currentPrice.currency,
-            source: "mercadolibre-cron",
-            isDemo: false,
+            available: currentPrice.available,
+            lastCheckedAt: currentPrice.lastCheckedAt,
           },
         });
+
+        const existingInWindow = await prisma.priceHistory.findFirst({
+          where: { offerId: offer.id, recordedAt: { gte: windowStart }, isDemo: false },
+        });
+
+        if (!existingInWindow) {
+          await prisma.priceHistory.create({
+            data: {
+              productId: offer.productId,
+              storeId: store.id,
+              offerId: offer.id,
+              price: currentPrice.price,
+              currency: currentPrice.currency,
+              source: "mercadolibre-cron",
+              isDemo: false,
+            },
+          });
+        }
+
+        updated += 1;
+      } catch {
+        errors += 1;
       }
-
-      updated += 1;
-    } catch {
-      errors += 1;
     }
+
+    try {
+      await prisma.providerLog.create({
+        data: {
+          storeId: store.id,
+          provider: "mercadolibre",
+          action: "cron.refreshPrices",
+          status: errors > 0 && updated === 0 ? "failed" : "success",
+          errorMessage:
+            errors > 0
+              ? `${errors} errores de ${offers.length} ofertas procesadas.`
+              : null,
+        },
+      });
+    } catch (error) {
+      console.error("Unable to record refresh prices provider log.", error);
+    }
+
+    return { status: "completed", processed: offers.length, updated, errors };
+  } catch (error) {
+    console.error("Unable to snapshot current prices.", error);
+    return { status: "error", processed: 0, updated: 0, errors: 1 };
   }
-
-  await prisma.providerLog.create({
-    data: {
-      storeId: store.id,
-      provider: "mercadolibre",
-      action: "cron.refreshPrices",
-      status: errors > 0 && updated === 0 ? "failed" : "success",
-      errorMessage:
-        errors > 0 ? `${errors} errores de ${offers.length} ofertas procesadas.` : null,
-    },
-  });
-
-  return { status: "completed", processed: offers.length, updated, errors };
 }

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   deleteAlertAction,
@@ -37,6 +38,11 @@ type DashboardPageProps = {
     notification?: string | string[];
     tracking?: string | string[];
   }>;
+};
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+  robots: { follow: false, index: false },
 };
 
 function getSearchParam(value: string | string[] | undefined) {

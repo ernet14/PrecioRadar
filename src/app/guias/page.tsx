@@ -5,10 +5,10 @@ import { Card } from "@/components/ui/Card";
 import { guides } from "@/content/guides";
 
 export const metadata: Metadata = {
-  title: "Guías de compra en Argentina 2026 | PrecioRadar",
+  title: "Guias de compra en Argentina 2026",
   description:
     "Guías prácticas para comprar tecnología y electrónica en Argentina sin pagar de más. Comparación de precios, historial y consejos actualizados en 2026.",
-  alternates: { canonical: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://precioradar.com.ar"}/guias` },
+  alternates: { canonical: "/guias" },
 };
 
 export default function GuiasPage() {

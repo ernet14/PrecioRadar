@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { LegalPage } from "@/components/legal/LegalPage";
 
 export const metadata: Metadata = {
-  title: "Términos y condiciones | PrecioRadar",
+  title: "Terminos y condiciones",
   description:
     "Condiciones de uso de PrecioRadar: comparador de precios, alertas, enlaces externos y limitaciones del servicio.",
+  alternates: { canonical: "/terminos" },
 };
 
 const sections = [

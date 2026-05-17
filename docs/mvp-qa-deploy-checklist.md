@@ -9,7 +9,7 @@ Checklist operativo para cerrar el MVP antes de deploy o demo publica.
 - `npm.cmd test`
 - `npm.cmd run lint`
 - `npm.cmd run build`
-- Revisar que `next build` liste estas rutas: `/`, `/buscar`, `/producto/[slug]`, `/dashboard`, `/alertas`, `/admin`, `/admin/reportes`, `/api/out`, `/api/internal/evaluate-alerts`.
+- Revisar que `next build` liste estas rutas: `/`, `/buscar`, `/producto/[slug]`, `/dashboard`, `/alertas`, `/admin`, `/admin/reportes`, `/api/out`, `/api/internal/refresh-prices`, `/api/internal/evaluate-alerts`.
 
 ## Variables de entorno
 
@@ -62,7 +62,8 @@ Checklist operativo para cerrar el MVP antes de deploy o demo publica.
 - En Supabase, configurar URLs de redirect para login y registro del dominio final.
 - Sincronizar schema solo si corresponde: `npx.cmd prisma db push`.
 - Ejecutar seed solo en entornos demo o staging: `npm.cmd run db:seed`.
-- Configurar cron externo para `/api/internal/evaluate-alerts` con `Authorization: Bearer <CRON_SECRET>`.
+- Confirmar crons de Vercel en `vercel.json`: `/api/internal/refresh-prices` cada 4 horas y `/api/internal/evaluate-alerts` cada 30 minutos.
+- Configurar `CRON_SECRET` en Vercel; Vercel lo envia como `Authorization: Bearer <CRON_SECRET>`.
 - Hacer smoke test post deploy: `/`, `/buscar?q=Samsung%20A55`, `/login`, `/dashboard`, `/admin`.
 
 ## No incluido en MVP

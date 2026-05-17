@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/layout/Container";
 import { AlertFeedback } from "@/components/alerts/AlertFeedback";
 import { AlertList } from "@/components/alerts/AlertList";
@@ -12,6 +13,11 @@ import {
 
 type AlertasPageProps = {
   searchParams: Promise<{ alert?: string | string[] }>;
+};
+
+export const metadata: Metadata = {
+  title: "Mis alertas",
+  robots: { follow: false, index: false },
 };
 
 function getSearchParam(value: string | string[] | undefined) {

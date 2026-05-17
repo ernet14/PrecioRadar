@@ -1,6 +1,7 @@
 import type { ProductDetail } from "@/services/productService";
+import { getAbsoluteUrl, getSiteUrl } from "@/lib/seo/site";
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://precioradar.com.ar";
+const siteUrl = getSiteUrl();
 
 export function buildProductJsonLd(product: ProductDetail) {
   const offers = product.offers
@@ -10,7 +11,7 @@ export function buildProductJsonLd(product: ProductDetail) {
       price: String(o.price),
       priceCurrency: "ARS",
       availability: "https://schema.org/InStock",
-      url: `${siteUrl}/producto/${product.slug}`,
+      url: getAbsoluteUrl(`/producto/${product.slug}`),
       seller: { "@type": "Organization", name: o.storeName },
     }));
 
@@ -51,13 +52,13 @@ export function buildProductJsonLd(product: ProductDetail) {
         "@type": "ListItem",
         position: 2,
         name: "Buscar",
-        item: `${siteUrl}/buscar`,
+        item: getAbsoluteUrl("/buscar"),
       },
       {
         "@type": "ListItem",
         position: 3,
         name: product.name,
-        item: `${siteUrl}/producto/${product.slug}`,
+        item: getAbsoluteUrl(`/producto/${product.slug}`),
       },
     ],
   };

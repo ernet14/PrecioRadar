@@ -6,8 +6,9 @@ import { Card } from "@/components/ui/Card";
 import { NewsletterForm } from "@/components/newsletter/NewsletterForm";
 import { getAllGuideSlugs, getGuideBySlug, guides } from "@/content/guides";
 import { getAllMockProductSlugs } from "@/services/productService";
+import { getAbsoluteUrl, getSiteUrl } from "@/lib/seo/site";
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://precioradar.com.ar";
+const siteUrl = getSiteUrl();
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -19,12 +20,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const guide = getGuideBySlug(slug);
 
-  if (!guide) return { title: "Guía no encontrada | PrecioRadar" };
+  if (!guide) return { title: "Guia no encontrada" };
 
-  const canonicalUrl = `${siteUrl}/guias/${slug}`;
+  const canonicalUrl = getAbsoluteUrl(`/guias/${slug}`);
 
   return {
-    title: `${guide.title} | PrecioRadar`,
+    title: guide.title,
     description: guide.description,
     alternates: { canonical: canonicalUrl },
     openGraph: {
@@ -57,7 +58,7 @@ function buildJsonLd(guide: ReturnType<typeof getGuideBySlug>) {
       name: "PrecioRadar",
       url: siteUrl,
     },
-    mainEntityOfPage: { "@type": "WebPage", "@id": `${siteUrl}/guias/${guide.slug}` },
+    mainEntityOfPage: { "@type": "WebPage", "@id": getAbsoluteUrl(`/guias/${guide.slug}`) },
   };
 
   const breadcrumbSchema = {
@@ -65,8 +66,8 @@ function buildJsonLd(guide: ReturnType<typeof getGuideBySlug>) {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Inicio", item: siteUrl },
-      { "@type": "ListItem", position: 2, name: "Guías", item: `${siteUrl}/guias` },
-      { "@type": "ListItem", position: 3, name: guide.title, item: `${siteUrl}/guias/${guide.slug}` },
+      { "@type": "ListItem", position: 2, name: "Guías", item: getAbsoluteUrl("/guias") },
+      { "@type": "ListItem", position: 3, name: guide.title, item: getAbsoluteUrl(`/guias/${guide.slug}`) },
     ],
   };
 

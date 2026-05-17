@@ -22,9 +22,11 @@ export function CookieBanner() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (!getStoredConsent()) {
-      setVisible(true);
-    }
+    const timer = window.setTimeout(() => {
+      setVisible(!getStoredConsent());
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
   if (!visible) return null;

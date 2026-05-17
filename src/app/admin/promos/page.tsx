@@ -7,8 +7,6 @@ import type { BankPromo } from "@/services/bankPromoService";
 import Link from "next/link";
 import { CreatePromoForm } from "./CreatePromoForm";
 
-const DAY_LABELS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
-
 function PromoRow({ promo }: { promo: BankPromo }) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4">

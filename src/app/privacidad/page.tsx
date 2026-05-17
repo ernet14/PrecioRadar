@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { LegalPage } from "@/components/legal/LegalPage";
 
 export const metadata: Metadata = {
-  title: "Política de privacidad | PrecioRadar",
+  title: "Politica de privacidad",
   description:
     "Cómo PrecioRadar recolecta, usa y protege tus datos personales según la Ley 25.326 de Argentina.",
+  alternates: { canonical: "/privacidad" },
 };
 
 const sections = [

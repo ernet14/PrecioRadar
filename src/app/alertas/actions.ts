@@ -85,8 +85,19 @@ function parseCreateAlertInput(formData: FormData): CreateAlertInput | null {
 
   if (!parsed.success) return null;
 
-  const { returnTo: _returnTo, ...input } = parsed.data;
-  return input as CreateAlertInput;
+  if (parsed.data.alertType === "TARGET_PRICE") {
+    return {
+      alertType: parsed.data.alertType,
+      productSlug: parsed.data.productSlug,
+      targetPrice: parsed.data.targetPrice,
+    };
+  }
+
+  return {
+    alertType: parsed.data.alertType,
+    productSlug: parsed.data.productSlug,
+    targetPercentage: parsed.data.targetPercentage,
+  };
 }
 
 export async function createAlertAction(formData: FormData) {

@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/layout/Container";
 import { TrackProductButton } from "@/components/product/TrackProductButton";
@@ -22,6 +23,13 @@ import type { ProductOffer, SearchResult, SearchResultItem } from "@/types";
 
 type BuscarPageProps = {
   searchParams: Promise<{ q?: string | string[]; tracking?: string | string[] }>;
+};
+
+export const metadata: Metadata = {
+  title: "Buscar productos y comparar precios",
+  description:
+    "Busca productos, compara ofertas por tienda y revisa recomendaciones de precio en PrecioRadar.",
+  alternates: { canonical: "/buscar" },
 };
 
 const detectedTypeLabels: Record<SearchResult["detectedType"], string> = {

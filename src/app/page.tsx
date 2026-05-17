@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/layout/Container";
 import { SearchForm } from "@/components/search/SearchForm";
@@ -14,6 +15,20 @@ const searchExamples = [
   "taladro",
   "TV 55",
 ];
+
+export const metadata: Metadata = {
+  title: "Comparador de precios con historial y alertas",
+  description:
+    "Compara precios en Argentina, revisa historial de productos y crea alertas para comprar cuando el precio conviene.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "PrecioRadar",
+    description:
+      "Comparador de precios en Argentina con historial, alertas y recomendaciones.",
+    type: "website",
+    url: "/",
+  },
+};
 
 const benefits = [
   {

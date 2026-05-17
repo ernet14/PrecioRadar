@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { Container } from "@/components/layout/Container";
@@ -6,6 +7,11 @@ import { getCurrentUser } from "@/lib/supabase/auth";
 
 type RegistroPageProps = {
   searchParams: Promise<{ next?: string | string[] }>;
+};
+
+export const metadata: Metadata = {
+  title: "Crear cuenta",
+  robots: { follow: false, index: false },
 };
 
 function getSearchParam(value: string | string[] | undefined) {

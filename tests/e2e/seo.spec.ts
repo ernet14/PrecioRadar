@@ -5,10 +5,10 @@ test("robots.txt is accessible and blocks private routes", async ({ request }) =
   expect(response.status()).toBe(200);
 
   const body = await response.text();
-  expect(body).toContain("User-agent");
+  expect(body).toContain("User-Agent");
   expect(body).toContain("/dashboard");
   expect(body).toContain("/admin");
-  expect(body).toContain("sitemap");
+  expect(body).toContain("Sitemap");
 });
 
 test("sitemap.xml is accessible and contains product URLs", async ({ request }) => {
@@ -31,5 +31,8 @@ test("product page has canonical link tag", async ({ page }) => {
   await page.goto("/producto/samsung-galaxy-a55-5g-256gb");
 
   const canonical = page.locator('link[rel="canonical"]');
-  await expect(canonical).toHaveAttribute("href", /\/producto\/samsung-galaxy-a55-5g-256gb/);
+  await expect(canonical).toHaveAttribute(
+    "href",
+    /\/producto\/samsung-galaxy-a55-5g-256gb/,
+  );
 });
