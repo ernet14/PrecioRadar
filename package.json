@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "test": "node --import tsx --test tests/TrackProductButton.test.tsx tests/clickTrackingService.test.ts tests/mercadoLibreProvider.test.ts tests/providerLogService.test.ts tests/searchLogService.test.ts tests/searchService.test.ts",
+    "test:e2e": "playwright test",
     "lint": "eslint",
     "db:generate": "prisma generate",
     "predb:seed": "prisma generate",
@@ -15,8 +16,11 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
+    "@sentry/nextjs": "^10.53.1",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.105.3",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.0",
     "next": "16.2.4",
     "pg": "^8.20.0",
     "react": "19.2.4",
@@ -25,6 +29,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
