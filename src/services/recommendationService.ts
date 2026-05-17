@@ -2,8 +2,11 @@ import type { ProviderProduct } from "@/providers/stores";
 import type { Recommendation } from "@/types";
 import {
   calculatePriceHistoryStats,
+  getAveragePrice,
   type PriceHistoryPoint,
 } from "@/services/priceHistoryService";
+
+const INFLATED_THRESHOLD = 1.0;  // currentPrice > avg60 → oferta inflada (sección 24)
 
 function countRecentDrops(history: PriceHistoryPoint[]) {
   const recentHistory = [...history]
@@ -88,6 +91,21 @@ export function getPurchaseRecommendation({
       minPrice: stats.minPrice,
       maxPrice: stats.maxPrice,
       averagePrice: stats.averagePrice,
+    };
+  }
+
+  const avg60 = getAveragePrice(history, 60);
+  if (avg60 !== null && currentPrice > avg60 * INFLATED_THRESHOLD) {
+    return {
+      level: "INFLATED_OFFER",
+      label: "Oferta inflada",
+      reason:
+        "El precio actual está por encima del promedio de los últimos 60 días. El descuento podría ser simulado.",
+      score: 20,
+      currentPrice,
+      minPrice: stats.minPrice,
+      maxPrice: stats.maxPrice,
+      averagePrice: avg60,
     };
   }
 

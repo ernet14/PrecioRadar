@@ -22,6 +22,19 @@ export type PriceHistoryStats = {
   lastUpdatedAt: string;
 };
 
+export function getAveragePrice(history: PriceHistoryPoint[], days: number): number | null {
+  if (history.length === 0) return null;
+
+  const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+  const filtered = history.filter(
+    (point) => new Date(point.recordedAt).getTime() >= cutoff,
+  );
+
+  if (filtered.length < 3) return null;
+
+  return filtered.reduce((total, point) => total + point.price, 0) / filtered.length;
+}
+
 export function getPriceHistoryForRange(
   history: PriceHistoryPoint[],
   rangeDays: PriceHistoryRangeDays,

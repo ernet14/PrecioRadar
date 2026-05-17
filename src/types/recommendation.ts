@@ -3,6 +3,7 @@ export type RecommendationLevel =
   | "GOOD_PRICE"
   | "NORMAL_PRICE"
   | "EXPENSIVE"
+  | "INFLATED_OFFER"
   | "WAIT";
 
 export type Recommendation = {
