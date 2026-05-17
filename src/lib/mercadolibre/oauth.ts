@@ -76,6 +76,13 @@ async function fetchNewToken(clientId: string, clientSecret: string): Promise<st
       expiresAt: Date.now() + expiresIn * 1000,
     };
 
+    await recordProviderLog({
+      action: "oauth.tokenRefreshed",
+      provider: "mercadolibre",
+      status: "success",
+      storeSlug: "mercadolibre",
+    });
+
     return cachedToken.accessToken;
   } catch (error) {
     await recordProviderLog({

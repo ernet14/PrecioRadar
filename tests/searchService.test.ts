@@ -17,9 +17,11 @@ function mockJsonFetch(
 
 afterEach(() => {
   globalThis.fetch = originalFetch;
+  delete process.env.MERCADOLIBRE_ACCESS_TOKEN;
 });
 
 test("labels real MercadoLibre best offers without demo copy", async () => {
+  process.env.MERCADOLIBRE_ACCESS_TOKEN = "test-token";
   mockJsonFetch(() => ({
     results: [
       {

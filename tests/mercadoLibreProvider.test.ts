@@ -84,6 +84,7 @@ test("searches MercadoLibre MLA and normalizes results", async () => {
 });
 
 test("resolves a MercadoLibre item URL through the item endpoint", async () => {
+  process.env.MERCADOLIBRE_ACCESS_TOKEN = "test-token";
   let requestedUrl = "";
 
   mockJsonFetch((input) => {
@@ -112,6 +113,7 @@ test("resolves a MercadoLibre item URL through the item endpoint", async () => {
 });
 
 test("gets current price from a MercadoLibre external id", async () => {
+  process.env.MERCADOLIBRE_ACCESS_TOKEN = "test-token";
   mockJsonFetch(() => ({
     id: "MLA123456789",
     title: "Samsung Galaxy A55 5G",
@@ -133,10 +135,44 @@ test("gets current price from a MercadoLibre external id", async () => {
 });
 
 test("returns an empty MercadoLibre result on provider HTTP errors", async () => {
+  process.env.MERCADOLIBRE_ACCESS_TOKEN = "test-token";
   delete process.env.DATABASE_URL;
   delete process.env.DIRECT_URL;
 
   mockJsonFetch(() => ({ message: "internal error" }), 500);
+
+  const products = await mercadoLibreProvider.searchProducts("Galaxy A55");
+
+  assert.deepEqual(products, []);
+});
+
+test("returns empty result when MercadoLibre token is absent", async () => {
+  delete process.env.DATABASE_URL;
+  delete process.env.DIRECT_URL;
+
+  const products = await mercadoLibreProvider.searchProducts("Galaxy A55");
+
+  assert.deepEqual(products, []);
+});
+
+test("returns empty result on MercadoLibre 403 auth rejection", async () => {
+  process.env.MERCADOLIBRE_ACCESS_TOKEN = "test-token";
+  delete process.env.DATABASE_URL;
+  delete process.env.DIRECT_URL;
+
+  mockJsonFetch(() => ({ message: "Forbidden" }), 403);
+
+  const products = await mercadoLibreProvider.searchProducts("Galaxy A55");
+
+  assert.deepEqual(products, []);
+});
+
+test("returns empty result on MercadoLibre 401 invalid token", async () => {
+  process.env.MERCADOLIBRE_ACCESS_TOKEN = "expired-token";
+  delete process.env.DATABASE_URL;
+  delete process.env.DIRECT_URL;
+
+  mockJsonFetch(() => ({ message: "Unauthorized" }), 401);
 
   const products = await mercadoLibreProvider.searchProducts("Galaxy A55");
 

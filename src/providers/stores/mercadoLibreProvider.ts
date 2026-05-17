@@ -100,11 +100,19 @@ async function fetchMercadoLibreJson(
   path: string,
 ): Promise<MercadoLibreFetchResult> {
   const token = await getMercadoLibreToken();
-  const headers: Record<string, string> = { Accept: "application/json" };
 
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
+  if (!token) {
+    await recordMercadoLibreFailure(
+      "fetch.missingToken",
+      "Token de MercadoLibre no disponible. Configurar credenciales OAuth o ACCESS_TOKEN.",
+    );
+    return { data: null, errorMessage: "Token de MercadoLibre no disponible." };
   }
+
+  const headers: Record<string, string> = {
+    Accept: "application/json",
+    Authorization: `Bearer ${token}`,
+  };
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), requestTimeoutMs);
@@ -114,6 +122,12 @@ async function fetchMercadoLibreJson(
       headers,
       signal: controller.signal,
     });
+
+    if (response.status === 401 || response.status === 403) {
+      const message = `HTTP ${response.status}: token rechazado por MercadoLibre.`;
+      await recordMercadoLibreFailure("fetch.authRejected", message);
+      return { data: null, errorMessage: message };
+    }
 
     if (!response.ok) {
       return {
