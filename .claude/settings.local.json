@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"d:/Proyectos/PrecioRadar\" ls-files)",
+      "PowerShell(git *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git add *)",
+      "PowerShell(New-Item *)",
+      "Bash(npm i *)",
+      "Bash(claude *)",
+      "Bash(npm list *)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(git commit *)",
+      "Bash(npx prisma *)",
+      "Bash(git push *)",
+      "Bash(Get-ChildItem -Path D:\\\\Proyectos\\\\PrecioRadar\\\\app -Recurse -Name)",
+      "Bash(node -e \"require\\('@upstash/ratelimit'\\); console.log\\('ok'\\)\")",
+      "Bash(node -e \"require\\('@sentry/nextjs'\\); console.log\\('ok'\\)\")",
+      "Bash(npm test *)",
+      "Bash(node -e ' *)",
+      "Bash(git log *)"
+    ]
+  }
+}

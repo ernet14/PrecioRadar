@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { Container } from "@/components/layout/Container";
@@ -116,16 +117,16 @@ function ProductImage({
   }
 
   return (
-    <div
-      aria-label={name}
-      className={
-        isLarge
-          ? "aspect-square rounded-lg bg-white bg-contain bg-center bg-no-repeat"
-          : "h-28 w-full rounded-lg bg-white bg-contain bg-center bg-no-repeat"
-      }
-      role="img"
-      style={{ backgroundImage: `url(${imageUrl})` }}
-    />
+    <div className={isLarge ? "relative aspect-square" : "relative h-28 w-full"}>
+      <Image
+        src={imageUrl}
+        alt={name}
+        fill
+        sizes={isLarge ? "(max-width: 768px) 100vw, 400px" : "112px"}
+        className="rounded-lg object-contain"
+        priority={isLarge}
+      />
+    </div>
   );
 }
 
