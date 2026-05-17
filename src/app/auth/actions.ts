@@ -9,16 +9,12 @@ import {
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { syncAuthUserToPrisma } from "@/services/userSyncService";
 import { rateLimit } from "@/lib/ratelimit";
+import { loginSchema } from "@/lib/validation/schemas";
 import type { AuthFormState } from "@/types/auth";
 
 async function getIp() {
   const hdrs = await headers();
   return hdrs.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "anonymous";
-}
-
-function getStringValue(formData: FormData, key: string) {
-  const value = formData.get(key);
-  return typeof value === "string" ? value.trim() : "";
 }
 
 function getSafeRedirectPath(value: string) {
@@ -27,26 +23,6 @@ function getSafeRedirectPath(value: string) {
   }
 
   return value;
-}
-
-function validateCredentials(email: string, password: string): AuthFormState | null {
-  if (!email || !email.includes("@")) {
-    return {
-      status: "error",
-      message: "Ingresa un email valido.",
-      fields: { email },
-    };
-  }
-
-  if (password.length < 6) {
-    return {
-      status: "error",
-      message: "La contrasena debe tener al menos 6 caracteres.",
-      fields: { email },
-    };
-  }
-
-  return null;
 }
 
 function mapAuthError(message: string) {
@@ -71,14 +47,20 @@ export async function loginAction(
   _previousState: AuthFormState,
   formData: FormData,
 ): Promise<AuthFormState> {
-  const email = getStringValue(formData, "email").toLowerCase();
-  const password = getStringValue(formData, "password");
-  const nextPath = getSafeRedirectPath(getStringValue(formData, "next"));
-  const validationError = validateCredentials(email, password);
+  const parsed = loginSchema.safeParse(Object.fromEntries(formData));
 
-  if (validationError) {
-    return validationError;
+  if (!parsed.success) {
+    const email = String(formData.get("email") ?? "").trim();
+    return {
+      status: "error",
+      message: parsed.error.issues[0]?.message ?? "Datos inválidos.",
+      fields: { email },
+    };
   }
+
+  const { email: rawEmail, password } = parsed.data;
+  const email = rawEmail.toLowerCase();
+  const nextPath = getSafeRedirectPath(String(formData.get("next") ?? "").trim());
 
   const ip = await getIp();
   const { success } = await rateLimit("login", ip);
@@ -121,18 +103,21 @@ export async function registerAction(
   _previousState: AuthFormState,
   formData: FormData,
 ): Promise<AuthFormState> {
-  const name = getStringValue(formData, "name");
-  const email = getStringValue(formData, "email").toLowerCase();
-  const password = getStringValue(formData, "password");
-  const nextPath = getSafeRedirectPath(getStringValue(formData, "next"));
-  const validationError = validateCredentials(email, password);
+  const parsed = loginSchema.safeParse(Object.fromEntries(formData));
+  const name = String(formData.get("name") ?? "").trim();
 
-  if (validationError) {
+  if (!parsed.success) {
+    const email = String(formData.get("email") ?? "").trim();
     return {
-      ...validationError,
-      fields: { ...validationError.fields, name },
+      status: "error",
+      message: parsed.error.issues[0]?.message ?? "Datos inválidos.",
+      fields: { email, name },
     };
   }
+
+  const { email: rawEmail, password } = parsed.data;
+  const email = rawEmail.toLowerCase();
+  const nextPath = getSafeRedirectPath(String(formData.get("next") ?? "").trim());
 
   const ip = await getIp();
   const { success } = await rateLimit("register", ip);

@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "node:crypto";
 import { evaluateAllUserAlerts } from "@/services/alertService";
 
 export const dynamic = "force-dynamic";
@@ -17,6 +18,15 @@ function getBearerToken(request: Request) {
   return match?.[1]?.trim() ?? "";
 }
 
+function secretsMatch(a: string, b: string) {
+  if (!a || !b) return false;
+  try {
+    return timingSafeEqual(Buffer.from(a), Buffer.from(b));
+  } catch {
+    return false;
+  }
+}
+
 function isAuthorized(request: Request) {
   const cronSecret = getCronSecret();
 
@@ -27,7 +37,7 @@ function isAuthorized(request: Request) {
   const headerSecret = request.headers.get("x-cron-secret")?.trim() ?? "";
   const bearerToken = getBearerToken(request);
 
-  if (bearerToken === cronSecret || headerSecret === cronSecret) {
+  if (secretsMatch(bearerToken, cronSecret) || secretsMatch(headerSecret, cronSecret)) {
     return { status: 200 } as const;
   }
 

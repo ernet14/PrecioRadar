@@ -52,3 +52,11 @@ export const reportProductSchema = z.object({
   message: z.string().trim().max(2000).optional().default(""),
   returnTo: safeReturnTo.optional(),
 });
+
+export const loginSchema = z.object({
+  email: z.string().trim().email("Ingresa un email válido."),
+  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres."),
+  returnTo: safeReturnTo.optional(),
+});
+
+export const registerSchema = loginSchema;
