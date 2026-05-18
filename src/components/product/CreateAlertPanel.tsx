@@ -42,7 +42,7 @@ export function CreateAlertPanel({
           Crear alerta
         </Link>
         <p className="text-xs font-medium leading-5 text-slate-500">
-          Inici&aacute; sesion para crear alertas
+          Iniciá sesion para crear alertas
         </p>
       </div>
     );
@@ -68,7 +68,7 @@ export function CreateAlertPanel({
       <div>
         <p className="text-sm font-semibold text-slate-950">Crear alerta</p>
         <p className="mt-1 text-xs font-medium leading-5 text-slate-500">
-          Segu&iacute; cambios importantes sin revisar todos los d&iacute;as.
+          Seguí cambios importantes sin revisar todos los días.
         </p>
       </div>
       <p className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium leading-5 text-slate-600">
@@ -76,7 +76,7 @@ export function CreateAlertPanel({
       </p>
       {hasReachedLimit ? (
         <p className="text-xs font-medium leading-5 text-slate-500">
-          L&iacute;mite de {alertOverview.limit} alertas alcanzado. Pausa o elimina una
+          Límite de {alertOverview.limit} alertas alcanzado. Pausa o elimina una
           alerta para crear otra.
         </p>
       ) : (

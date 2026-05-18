@@ -32,27 +32,27 @@ export const metadata: Metadata = {
 
 const benefits = [
   {
-    title: "Compar&aacute; precios entre tiendas",
+    title: "Compará precios entre tiendas",
     description:
-      "Ves ofertas agrupadas por producto para elegir con menos ruido y m&aacute;s contexto.",
+      "Ves ofertas agrupadas por producto para elegir con menos ruido y más contexto.",
     kicker: "Comparacion",
   },
   {
-    title: "Revis&aacute; historial de precios",
+    title: "Revisá historial de precios",
     description:
-      "El historial ayuda a entender si el precio actual est&aacute; cerca de una buena referencia.",
+      "El historial ayuda a entender si el precio actual está cerca de una buena referencia.",
     kicker: "Historial",
   },
   {
-    title: "Cre&aacute; alertas",
+    title: "Creá alertas",
     description:
-      "Segu&iacute; ofertas y recib&iacute; avisos internos cuando una condici&oacute;n de compra se cumple.",
+      "Seguí ofertas y recibí avisos internos cuando una condición de compra se cumple.",
     kicker: "Alertas",
   },
   {
-    title: "Detect&aacute; ofertas reales",
+    title: "Detectá ofertas reales",
     description:
-      "La recomendaci&oacute;n simple separa precios convenientes de promociones poco claras.",
+      "La recomendación simple separa precios convenientes de promociones poco claras.",
     kicker: "Confianza",
   },
 ];
@@ -84,7 +84,7 @@ const categoryDetails = [
   },
   {
     query: "lavarropas",
-    description: "Electrodom&eacute;sticos con historial demo.",
+    description: "Electrodomésticos con historial demo.",
   },
   {
     query: "taladro",
@@ -94,19 +94,19 @@ const categoryDetails = [
 
 const steps = [
   {
-    title: "Busc&aacute;",
+    title: "Buscá",
     description:
-      "Ingres&aacute; un producto o peg&aacute; un link para encontrar resultados comparables.",
+      "Ingresá un producto o pegá un link para encontrar resultados comparables.",
   },
   {
-    title: "Compar&aacute;",
+    title: "Compará",
     description:
-      "Revis&aacute; tiendas, precios, historial y recomendaci&oacute;n antes de decidir.",
+      "Revisá tiendas, precios, historial y recomendación antes de decidir.",
   },
   {
-    title: "Segu&iacute; y recib&iacute; alertas",
+    title: "Seguí y recibí alertas",
     description:
-      "Guard&aacute; ofertas espec&iacute;ficas y dej&aacute; que PrecioRadar te avise cuando convenga mirar.",
+      "Guardá ofertas específicas y dejá que PrecioRadar te avise cuando convenga mirar.",
   },
 ];
 
@@ -166,15 +166,15 @@ export default function Home() {
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_420px] lg:items-center">
             <div className="min-w-0">
               <Badge className="border-blue-400/40 bg-blue-400/10 text-blue-100">
-                Argentina &middot; ARS &middot; Beta abierta
+                Argentina · ARS · Beta abierta
               </Badge>
               <h1 className="mt-6 max-w-4xl text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
-                Compr&aacute; con m&aacute;s contexto: precio real, historial y alertas
+                Comprá con más contexto: precio real, historial y alertas
               </h1>
               <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-300">
-                Hoy compar&aacute;mos precios reales de MercadoLibre y sumamos m&aacute;s
-                tiendas todas las semanas. Mientras tanto, te mostramos un cat&aacute;logo
-                demo para que veas c&oacute;mo funcionar&aacute; el comparador.
+                Hoy comparamos precios reales de MercadoLibre y sumamos más
+                tiendas todas las semanas. Mientras tanto, te mostramos un catálogo
+                demo para que veas cómo funcionará el comparador.
               </p>
 
               <Card
@@ -208,7 +208,7 @@ export default function Home() {
                     Vista marketplace
                   </p>
                   <h2 className="mt-2 text-xl font-bold text-slate-950">
-                    Comparaci&oacute;n clara por tienda
+                    Comparación clara por tienda
                   </h2>
                 </div>
                 <Badge variant="neutral">Catálogo demo</Badge>
@@ -255,7 +255,7 @@ export default function Home() {
                   heroProduct ? `/producto/${heroProduct.slug}` : "/buscar?q=a55"
                 }
               >
-                Ver comparaci&oacute;n
+                Ver comparación
               </Link>
             </Card>
           </div>
@@ -290,15 +290,15 @@ export default function Home() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <Badge variant="brand" className="bg-blue-50 text-blue-700">
-                Categor&iacute;as populares
+                Categorías populares
               </Badge>
               <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-950">
-                Explor&aacute; productos para comparar
+                Explorá productos para comparar
               </h2>
             </div>
             <p className="max-w-xl text-sm leading-6 text-slate-600">
-              El MVP prioriza categor&iacute;as donde precio, historial y alertas
-              aportan una decisi&oacute;n de compra m&aacute;s confiable.
+              El MVP prioriza categorías donde precio, historial y alertas
+              aportan una decisión de compra más confiable.
             </p>
           </div>
 
@@ -339,8 +339,8 @@ export default function Home() {
                 Productos destacados para comparar
               </h2>
               <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600">
-                Cat&aacute;logo de demostraci&oacute;n mientras sumamos tiendas reales.
-                Las b&uacute;squedas en MercadoLibre ya devuelven precios actuales.
+                Catálogo de demostración mientras sumamos tiendas reales.
+                Las búsquedas en MercadoLibre ya devuelven precios actuales.
               </p>
             </div>
             <Link
@@ -365,7 +365,7 @@ export default function Home() {
                         {product.name}
                       </h3>
                       <p className="mt-2 text-sm text-slate-500">
-                        {product.offers.length} ofertas &middot; mejor tienda{" "}
+                        {product.offers.length} ofertas · mejor tienda{" "}
                         {product.bestOffer.storeName}
                       </p>
                     </div>
@@ -386,7 +386,7 @@ export default function Home() {
                     className="mt-5 inline-flex h-10 w-full items-center justify-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
                     href={`/producto/${product.slug}`}
                   >
-                    Ver comparaci&oacute;n
+                    Ver comparación
                   </Link>
                 </div>
               </Card>
@@ -398,9 +398,9 @@ export default function Home() {
       <section id="como-funciona" className="bg-white py-14">
         <Container>
           <div className="max-w-2xl">
-            <Badge variant="neutral">C&oacute;mo funciona</Badge>
+            <Badge variant="neutral">Cómo funciona</Badge>
             <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-950">
-              Tres pasos para comprar con m&aacute;s contexto
+              Tres pasos para comprar con más contexto
             </h2>
           </div>
 
@@ -436,8 +436,8 @@ export default function Home() {
             <div className="grid gap-3 text-sm leading-6 text-slate-300 sm:grid-cols-2">
               <p>Los precios pueden cambiar en la tienda externa.</p>
               <p>La compra se realiza fuera de PrecioRadar.</p>
-              <p>Algunos enlaces pueden generar comisi&oacute;n sin costo extra.</p>
-              <p>Los datos demo est&aacute;n identificados durante el desarrollo MVP.</p>
+              <p>Algunos enlaces pueden generar comisión sin costo extra.</p>
+              <p>Los datos demo están identificados durante el desarrollo MVP.</p>
             </div>
           </Card>
         </Container>

@@ -62,8 +62,8 @@ function createEmailHtml({
 
   return `
     <div style="font-family: Arial, sans-serif; color: #0f172a; line-height: 1.5;">
-      <h1 style="font-size: 22px; margin: 0 0 16px;">Tu alerta de PrecioRadar se cumpli&oacute;</h1>
-      <p style="margin: 0 0 12px;">Encontramos una oferta que cumple la condici&oacute;n que configuraste.</p>
+      <h1 style="font-size: 22px; margin: 0 0 16px;">Tu alerta de PrecioRadar se cumplió</h1>
+      <p style="margin: 0 0 12px;">Encontramos una oferta que cumple la condición que configuraste.</p>
       <table style="border-collapse: collapse; margin: 16px 0; width: 100%; max-width: 560px;">
         <tr>
           <td style="padding: 8px 0; color: #475569;">Producto</td>
@@ -78,7 +78,7 @@ function createEmailHtml({
           <td style="padding: 8px 0; font-weight: 700;">${currentPrice}</td>
         </tr>
         <tr>
-          <td style="padding: 8px 0; color: #475569;">Condici&oacute;n cumplida</td>
+          <td style="padding: 8px 0; color: #475569;">Condición cumplida</td>
           <td style="padding: 8px 0;">${condition}</td>
         </tr>
       </table>
@@ -86,7 +86,7 @@ function createEmailHtml({
         <a href="${offerUrl}" style="background: #0f172a; border-radius: 8px; color: #ffffff; display: inline-block; font-weight: 700; padding: 12px 16px; text-decoration: none;">Ver oferta</a>
       </p>
       <p style="margin: 0 0 16px;">
-        <a href="${safeComparisonUrl}" style="color: #047857; font-weight: 700;">Ver comparaci&oacute;n</a>
+        <a href="${safeComparisonUrl}" style="color: #047857; font-weight: 700;">Ver comparación</a>
       </p>
       <p style="color: #64748b; font-size: 13px; margin: 20px 0 0;">Los precios pueden cambiar sin previo aviso.</p>
     </div>

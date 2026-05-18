@@ -125,7 +125,7 @@ export default async function AdminReportsPage({
           </div>
           <div className="px-6 py-8 md:px-8">
             <Badge className="border-blue-400/40 bg-blue-400/10 text-blue-100">
-              Admin &middot; Calidad
+              Admin · Calidad
             </Badge>
             <h1 className="mt-4 text-3xl font-bold tracking-tight md:text-4xl">
               Reportes de usuarios

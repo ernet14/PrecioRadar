@@ -149,7 +149,7 @@ export function PriceHistoryChart({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-normal text-blue-700">
-            Evoluci&oacute;n del precio
+            Evolución del precio
           </p>
           <h2 className="mt-1 text-2xl font-semibold text-slate-950">
             Historial de precio
@@ -231,7 +231,7 @@ export function PriceHistoryChart({
         </div>
       ) : (
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-5 text-sm leading-6 text-slate-600">
-          Recolectando datos. Volv&eacute; en unos d&iacute;as para ver la evoluci&oacute;n del precio.
+          Recolectando datos. Volvé en unos días para ver la evolución del precio.
         </div>
       )}
 

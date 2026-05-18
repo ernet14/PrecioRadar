@@ -7,21 +7,21 @@ export function Footer() {
       <Container className="flex flex-col gap-4 py-8 text-sm text-slate-600 md:flex-row md:items-center md:justify-between">
         <div>
           <p>
-            Algunos enlaces pueden generar una comisi&oacute;n para mantener
+            Algunos enlaces pueden generar una comisión para mantener
             PrecioRadar, sin costo extra para vos.
           </p>
           <nav className="mt-3 flex flex-wrap gap-4 font-medium text-slate-700">
             <Link className="transition hover:text-slate-950" href="/como-funcionamos">
-              C&oacute;mo funcionamos
+              Cómo funcionamos
             </Link>
             <Link className="transition hover:text-slate-950" href="/guias">
-              Gu&iacute;as
+              Guías
             </Link>
             <Link className="transition hover:text-slate-950" href="/privacidad">
               Privacidad
             </Link>
             <Link className="transition hover:text-slate-950" href="/terminos">
-              T&eacute;rminos
+              Términos
             </Link>
             <Link className="transition hover:text-slate-950" href="/cookies">
               Cookies

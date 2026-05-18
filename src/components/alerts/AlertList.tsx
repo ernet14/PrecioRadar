@@ -95,13 +95,13 @@ export function AlertList({ alerts, returnTo }: AlertListProps) {
     return (
       <Card className="overflow-hidden p-8 shadow-[0_18px_45px_rgba(15,23,42,0.07)]">
         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-6">
-          <Badge variant="neutral">Estado vac&iacute;o</Badge>
+          <Badge variant="neutral">Estado vacío</Badge>
           <h2 className="mt-4 text-2xl font-bold tracking-tight text-slate-950">
-            Todav&iacute;a no ten&eacute;s alertas
+            Todavía no tenés alertas
           </h2>
           <p className="mt-2 text-sm leading-6 text-slate-600">
-            Cre&aacute; una alerta desde el detalle de un producto y te avisamos
-            cuando llegue al precio que quer&eacute;s.
+            Creá una alerta desde el detalle de un producto y te avisamos
+            cuando llegue al precio que querés.
           </p>
           <Link
             className="mt-5 inline-flex h-11 items-center justify-center rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
@@ -161,14 +161,14 @@ export function AlertList({ alerts, returnTo }: AlertListProps) {
                     <span className="font-semibold text-slate-900">
                       {alert.storeName}
                     </span>{" "}
-                    &middot; {alert.currentPriceLabel}
+                    · {alert.currentPriceLabel}
                   </p>
                 </div>
 
                 <div className="mt-4 grid gap-3 md:grid-cols-3">
                   <div className="rounded-2xl border border-blue-100 bg-blue-50/70 p-4 md:col-span-2">
                     <p className="text-xs font-bold uppercase tracking-[0.14em] text-blue-700">
-                      Condici&oacute;n
+                      Condición
                     </p>
                     <p className="mt-2 text-sm font-semibold leading-6 text-slate-950">
                       {getAlertConditionLabel(alert)}
@@ -176,7 +176,7 @@ export function AlertList({ alerts, returnTo }: AlertListProps) {
                   </div>
                   <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
                     <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
-                      &Uacute;ltima notificaci&oacute;n
+                      Última notificación
                     </p>
                     <p className="mt-2 text-sm font-semibold leading-6 text-slate-950">
                       {getLastNotificationLabel(alert)}
@@ -206,7 +206,7 @@ export function AlertList({ alerts, returnTo }: AlertListProps) {
                     className="inline-flex h-10 items-center justify-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
                     href={`/producto/${alert.productSlug}`}
                   >
-                    Ver comparaci&oacute;n
+                    Ver comparación
                   </Link>
                   {offerUrl ? (
                     <a

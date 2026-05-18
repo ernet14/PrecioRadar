@@ -37,7 +37,7 @@ export function NotificationList({
   if (notifications.length === 0) {
     return (
       <p className="text-sm leading-6 text-slate-600">
-        Todav&iacute;a no ten&eacute;s notificaciones internas.
+        Todavía no tenés notificaciones internas.
       </p>
     );
   }
@@ -52,7 +52,7 @@ export function NotificationList({
           <form action={markAllNotificationsAsReadAction}>
             <HiddenFields returnTo={returnTo} />
             <Button size="sm" type="submit" variant="secondary">
-              Marcar todas como le&iacute;das
+              Marcar todas como leídas
             </Button>
           </form>
         ) : null}
@@ -91,7 +91,7 @@ export function NotificationList({
                   returnTo={returnTo}
                 />
                 <Button size="sm" type="submit" variant="ghost">
-                  Marcar como le&iacute;da
+                  Marcar como leída
                 </Button>
               </form>
             ) : null}

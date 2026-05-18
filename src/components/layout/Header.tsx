@@ -29,10 +29,10 @@ export async function Header() {
             Buscar
           </Link>
           <Link className={navLinkClass} href="/#categorias">
-            Categor&iacute;as
+            Categorías
           </Link>
           <Link className={navLinkClass} href="/#como-funciona">
-            C&oacute;mo funciona
+            Cómo funciona
           </Link>
         </nav>
 

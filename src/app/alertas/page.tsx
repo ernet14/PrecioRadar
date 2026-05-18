@@ -91,25 +91,25 @@ export default async function AlertasPage({ searchParams }: AlertasPageProps) {
           <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <div className="max-w-3xl">
               <Badge className="border-blue-400/40 bg-blue-400/10 text-blue-100">
-                Privado &middot; plan gratis
+                Privado · plan gratis
               </Badge>
               <h1 className="mt-4 text-3xl font-bold tracking-tight md:text-4xl">
                 Mis alertas
               </h1>
               <p className="mt-3 max-w-2xl leading-7 text-slate-300">
-                Control&aacute; precios objetivo y bajas porcentuales sin perder de
-                vista el l&iacute;mite gratis.
+                Controlá precios objetivo y bajas porcentuales sin perder de
+                vista el límite gratis.
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/10 p-5 text-sm text-slate-200">
-              <p className="font-semibold text-white">L&iacute;mite gratis</p>
+              <p className="font-semibold text-white">Límite gratis</p>
               <p className="mt-2 text-3xl font-bold text-white">
                 {alertOverview.status === "ready"
                   ? `${activeAlerts}/${alertOverview.limit}`
                   : "-"}
               </p>
               <p className="mt-1">
-                {activeAlerts} activa{activeAlerts === 1 ? "" : "s"} &middot;{" "}
+                {activeAlerts} activa{activeAlerts === 1 ? "" : "s"} ·{" "}
                 {pausedAlerts} pausada{pausedAlerts === 1 ? "" : "s"}
               </p>
             </div>
@@ -119,7 +119,7 @@ export default async function AlertasPage({ searchParams }: AlertasPageProps) {
 
         <section className="grid gap-4 md:grid-cols-3">
           <SummaryCard
-            description="Alertas que pueden generar avisos internos cuando se cumple la condici&oacute;n."
+            description="Alertas que pueden generar avisos internos cuando se cumple la condición."
             label="Alertas activas"
             tone="green"
             value={alertOverview.status === "ready" ? `${activeAlerts}` : "-"}
@@ -134,9 +134,9 @@ export default async function AlertasPage({ searchParams }: AlertasPageProps) {
             description={
               alertOverview.status === "ready"
                 ? `${availableSlots} lugar${availableSlots === 1 ? "" : "es"} disponible${availableSlots === 1 ? "" : "s"} en el plan gratis.`
-                : "No pudimos leer el l&iacute;mite de alertas."
+                : "No pudimos leer el límite de alertas."
             }
-            label="L&iacute;mite gratis"
+            label="Límite gratis"
             tone={limitReached ? "orange" : "neutral"}
             value={
               alertOverview.status === "ready"
@@ -148,9 +148,9 @@ export default async function AlertasPage({ searchParams }: AlertasPageProps) {
 
         {limitReached ? (
           <Card className="border-amber-200 bg-amber-50 p-5 text-sm leading-6 text-amber-950 shadow-none">
-            <span className="font-semibold">L&iacute;mite alcanzado.</span>{" "}
-            Llegaste al l&iacute;mite de {alertOverview.limit} alertas activas del
-            plan gratis. Pod&eacute;s pausar o eliminar una alerta para crear otra.
+            <span className="font-semibold">Límite alcanzado.</span>{" "}
+            Llegaste al límite de {alertOverview.limit} alertas activas del
+            plan gratis. Podés pausar o eliminar una alerta para crear otra.
           </Card>
         ) : null}
 

@@ -218,7 +218,7 @@ function OfferPreviewCard({ offer }: { offer: AdminOfferPreview }) {
             {offer.title}
           </p>
           <p className="mt-1 text-sm text-slate-500">
-            {offer.storeName} &middot; {offer.productName}
+            {offer.storeName} · {offer.productName}
           </p>
         </div>
         <StatusPill
@@ -304,7 +304,7 @@ export default async function AdminPage() {
             <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
               <div className="max-w-3xl">
                 <Badge className="border-blue-400/40 bg-blue-400/10 text-blue-100">
-                  Admin &middot; MVP
+                  Admin · MVP
                 </Badge>
                 <h1 className="mt-4 text-3xl font-bold tracking-tight md:text-4xl">
                   Admin PrecioRadar
@@ -569,7 +569,7 @@ export default async function AdminPage() {
                   >
                     <div className="flex items-center justify-between gap-4">
                       <p className="text-sm font-semibold text-slate-950">
-                        {providerError.provider} &middot; {providerError.action}
+                        {providerError.provider} · {providerError.action}
                       </p>
                       <span className="rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">
                         {providerError.status}

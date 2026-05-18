@@ -13,10 +13,10 @@ function PromoRow({ promo }: { promo: BankPromo }) {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="font-semibold text-slate-950">
-            {promo.entity} &middot; {promo.discountPct}% OFF
+            {promo.entity} · {promo.discountPct}% OFF
           </p>
           <p className="mt-1 text-sm text-slate-500">
-            {formatDayOfWeek(promo.dayOfWeek)} &middot; Pago: {promo.paymentType}
+            {formatDayOfWeek(promo.dayOfWeek)} · Pago: {promo.paymentType}
             {promo.maxAmount ? ` · Tope $${promo.maxAmount.toLocaleString("es-AR")}` : ""}
             {promo.storeSlug ? ` · Tienda: ${promo.storeSlug}` : ""}
           </p>

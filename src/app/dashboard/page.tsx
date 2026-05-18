@@ -181,7 +181,7 @@ function TrackedProductCard({
             <span className="font-semibold text-slate-900">
               {product.storeName}
             </span>{" "}
-            &middot; {product.trackingLabel}
+            · {product.trackingLabel}
           </p>
 
           <div className="mt-4 rounded-xl border border-emerald-100 bg-emerald-50/70 p-3">
@@ -274,7 +274,7 @@ function DashboardAlertCard({ alert }: { alert: UserAlertListItem }) {
             {alert.productName}
           </Link>
           <p className="mt-1 text-sm leading-6 text-slate-600">
-            {alert.storeName} &middot; precio actual {alert.currentPriceLabel}
+            {alert.storeName} · precio actual {alert.currentPriceLabel}
           </p>
         </div>
         <span
@@ -350,7 +350,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       <Container className="space-y-8">
         {error === "admin" ? (
           <Card className="border-amber-200 bg-amber-50 p-5 text-sm leading-6 text-amber-950 shadow-none">
-            La secci&oacute;n admin ya queda protegida por rol, pero tu usuario no tiene
+            La sección admin ya queda protegida por rol, pero tu usuario no tiene
             permiso admin.
           </Card>
         ) : null}
@@ -369,9 +369,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                 Dashboard
               </h1>
               <p className="mt-3 max-w-2xl leading-7 text-slate-300">
-                Sesi&oacute;n iniciada como{" "}
+                Sesión iniciada como{" "}
                 <span className="font-semibold text-white">{user.email}</span>.
-                Segu&iacute; ofertas puntuales, revis&aacute; alertas y manten&eacute; tus
+                Seguí ofertas puntuales, revisá alertas y mantené tus
                 avisos internos en un solo lugar.
               </p>
             </div>

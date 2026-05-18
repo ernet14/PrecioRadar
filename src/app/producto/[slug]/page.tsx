@@ -181,7 +181,7 @@ function ActionPanel({
           Alertas y acciones
         </h2>
         <p className="mt-2 text-sm leading-6 text-slate-500">
-          Configur&aacute; avisos simples para este producto.
+          Configurá avisos simples para este producto.
         </p>
       </div>
       <div className="mt-4 space-y-3">
@@ -223,10 +223,10 @@ function BankPromosCard({ promos }: { promos: BankPromo[] }) {
             >
               <div>
                 <p className="text-sm font-semibold text-slate-950">
-                  {promo.entity} &middot; {promo.discountPct}% OFF
+                  {promo.entity} · {promo.discountPct}% OFF
                 </p>
                 <p className="mt-0.5 text-xs text-slate-500">
-                  {formatDayOfWeek(promo.dayOfWeek)} &middot; Pago: {promo.paymentType}
+                  {formatDayOfWeek(promo.dayOfWeek)} · Pago: {promo.paymentType}
                   {promo.maxAmount
                     ? ` · Tope $${promo.maxAmount.toLocaleString("es-AR")}`
                     : ""}
@@ -617,7 +617,7 @@ export default async function ProductoPage({
                 Sin similares relevantes
               </p>
               <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-500">
-                No encontramos productos similares relevantes para esta comparaci&oacute;n.
+                No encontramos productos similares relevantes para esta comparación.
               </p>
             </Card>
           )}

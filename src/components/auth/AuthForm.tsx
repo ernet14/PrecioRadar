@@ -108,7 +108,7 @@ export function AuthForm({ action, mode, nextPath = "/dashboard" }: AuthFormProp
 
         <div>
           <label className="text-sm font-medium text-slate-700" htmlFor="password">
-            Contrase&ntilde;a
+            Contraseña
           </label>
           <input
             autoComplete={mode === "login" ? "current-password" : "new-password"}

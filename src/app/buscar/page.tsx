@@ -168,7 +168,7 @@ function ResultCard({
                   <div>
                     <p className="text-lg font-semibold">Ofertas destacadas</p>
                     <p className="text-sm text-slate-300">
-                      Mini comparaci&oacute;n de tiendas para este producto.
+                      Mini comparación de tiendas para este producto.
                     </p>
                   </div>
                   <span className="text-xs font-semibold uppercase tracking-normal text-blue-200">
@@ -352,8 +352,8 @@ function ResultsSection({
             Sin resultados para mostrar
           </p>
           <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-500">
-            {emptyText} Prob&aacute; con un modelo, marca o categor&iacute;a m&aacute;s
-            espec&iacute;fica.
+            {emptyText} Probá con un modelo, marca o categoría más
+            específica.
           </p>
         </Card>
       )}
@@ -382,12 +382,12 @@ export default async function BuscarPage({ searchParams }: BuscarPageProps) {
         <section className="border-b border-slate-200 bg-white py-8">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
-              <Badge variant="brand">B&uacute;squeda MVP</Badge>
+              <Badge variant="brand">Búsqueda MVP</Badge>
               <h1 className="mt-4 text-4xl font-semibold leading-tight text-slate-950">
-                Resultados de b&uacute;squeda
+                Resultados de búsqueda
               </h1>
               <p className="mt-3 text-base leading-7 text-slate-600">
-                Compar&aacute; productos agrupados, precios por tienda y segu&iacute; la
+                Compará productos agrupados, precios por tienda y seguí la
                 oferta puntual que te interesa.
               </p>
             </div>
@@ -400,7 +400,7 @@ export default async function BuscarPage({ searchParams }: BuscarPageProps) {
             <SearchForm
               buttonClassName="!bg-blue-600 hover:!bg-blue-700 focus-visible:outline-blue-600"
               defaultValue={query}
-              helperText="Ejemplos: Samsung A55, RTX 5070, notebook Lenovo. Los datos demo est&aacute;n identificados."
+              helperText="Ejemplos: Samsung A55, RTX 5070, notebook Lenovo. Los datos demo están identificados."
               id="buscar-search"
               inputClassName="bg-white text-lg focus:border-blue-400 focus:ring-blue-100"
               variant="hero"

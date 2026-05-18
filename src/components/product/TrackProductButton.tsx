@@ -100,7 +100,7 @@ export function TrackProductButton({
             fullWidth ? "w-full px-2 text-xs" : "px-4 text-sm"
           }`}
         >
-          Ya segu&iacute;s esta oferta
+          Ya seguís esta oferta
         </span>
       </div>
     );
