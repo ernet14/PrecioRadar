@@ -24,7 +24,10 @@
       "Bash(Select-Object Name)",
       "Bash(node *)",
       "Bash(Get-ChildItem *)",
-      "Bash(dir D:ProyectosPrecioRadarprismamigrations *)"
+      "Bash(dir D:ProyectosPrecioRadarprismamigrations *)",
+      "Bash(git check-ignore *)",
+      "Skill(vercel:env-vars)",
+      "Bash(vercel env *)"
     ]
   }
 }
