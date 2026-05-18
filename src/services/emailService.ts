@@ -3,6 +3,17 @@ import type { ProductDetail } from "@/services/productService";
 
 const RESEND_EMAIL_ENDPOINT = "https://api.resend.com/emails";
 const ALERT_EMAIL_SUBJECT = "Tu alerta de PrecioRadar se cumplio";
+const NEWSLETTER_CONFIRM_SUBJECT = "Confirmá tu suscripción a PrecioRadar";
+
+export type SendNewsletterConfirmInput = {
+  recipientEmail: string;
+  confirmUrl: string;
+};
+
+export type SendEmailResult =
+  | { status: "sent"; emailId?: string }
+  | { status: "skipped"; reason: string }
+  | { status: "failed"; error: string };
 
 export type SendAlertEmailInput = {
   alertId: string;
@@ -195,6 +206,85 @@ export async function sendAlertFulfilledEmail({
       error: errorMessage,
       recipientEmail,
     });
+    return { status: "failed", error: errorMessage };
+  }
+}
+
+function createNewsletterConfirmHtml(confirmUrl: string) {
+  const safeUrl = escapeHtml(confirmUrl);
+  return `
+    <div style="font-family: Arial, sans-serif; color: #0f172a; line-height: 1.5;">
+      <h1 style="font-size: 22px; margin: 0 0 16px;">Confirmá tu suscripción</h1>
+      <p style="margin: 0 0 12px;">Gracias por sumarte al newsletter de PrecioRadar.</p>
+      <p style="margin: 0 0 12px;">Hacé click para confirmar tu email y empezar a recibir ofertas reales:</p>
+      <p style="margin: 20px 0;">
+        <a href="${safeUrl}" style="background: #0f172a; border-radius: 8px; color: #ffffff; display: inline-block; font-weight: 700; padding: 12px 16px; text-decoration: none;">Confirmar suscripción</a>
+      </p>
+      <p style="color: #64748b; font-size: 13px; margin: 20px 0 0;">Si no pediste esta suscripción, podés ignorar este email.</p>
+    </div>
+  `;
+}
+
+function createNewsletterConfirmText(confirmUrl: string) {
+  return [
+    "Confirmá tu suscripción a PrecioRadar",
+    "",
+    `Hacé click en el siguiente link para confirmar tu suscripción:`,
+    confirmUrl,
+    "",
+    "Si no pediste esta suscripción, ignorá este email.",
+  ].join("\n");
+}
+
+export async function sendNewsletterConfirmEmail({
+  confirmUrl,
+  recipientEmail,
+}: SendNewsletterConfirmInput): Promise<SendEmailResult> {
+  const apiKey = getEnvValue("RESEND_API_KEY");
+  const fromEmail = getEnvValue("RESEND_FROM_EMAIL");
+
+  if (!recipientEmail) {
+    return { status: "skipped", reason: "missing_recipient" };
+  }
+
+  if (!apiKey) {
+    return { status: "skipped", reason: "missing_api_key" };
+  }
+
+  if (!fromEmail) {
+    return { status: "skipped", reason: "missing_from_email" };
+  }
+
+  try {
+    const response = await fetch(RESEND_EMAIL_ENDPOINT, {
+      body: JSON.stringify({
+        from: fromEmail,
+        html: createNewsletterConfirmHtml(confirmUrl),
+        subject: NEWSLETTER_CONFIRM_SUBJECT,
+        text: createNewsletterConfirmText(confirmUrl),
+        to: [recipientEmail],
+      }),
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+    });
+
+    const payload: unknown = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      const errorMessage =
+        payload && typeof payload === "object" && "message" in payload
+          ? String(payload.message)
+          : `Resend API returned ${response.status}.`;
+      return { status: "failed", error: errorMessage };
+    }
+
+    return { status: "sent", emailId: getResendEmailId(payload) };
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown email sending error.";
     return { status: "failed", error: errorMessage };
   }
 }

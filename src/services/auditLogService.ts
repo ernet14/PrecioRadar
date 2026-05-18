@@ -8,8 +8,11 @@ export type AuditEvent =
   | "auth.password_change"
   | "account.delete"
   | "alert.create_burst"
+  | "cookies.consent"
   | "newsletter.subscribe"
+  | "newsletter.confirm"
   | "newsletter.unsubscribe"
+  | "data_export.request"
   | "admin.promo_update"
   | "admin.report_update";
 

@@ -1,16 +1,29 @@
 "use server";
 
-import { getPrismaClient } from "@/lib/prisma";
+import { randomBytes } from "node:crypto";
+import { headers } from "next/headers";
 import { z } from "zod";
+import { getPrismaClient } from "@/lib/prisma";
+import { getSiteUrl } from "@/lib/seo/site";
+import { recordAuditEvent } from "@/services/auditLogService";
+import { sendNewsletterConfirmEmail } from "@/services/emailService";
 
 const schema = z.object({
   email: z.string().email("Ingresá un email válido."),
 });
 
 type NewsletterState = {
-  status: "idle" | "success" | "error" | "duplicate";
+  status: "idle" | "success" | "error" | "duplicate" | "already_confirmed";
   message: string;
 };
+
+function generateConfirmToken() {
+  return randomBytes(32).toString("hex");
+}
+
+function buildConfirmUrl(token: string) {
+  return `${getSiteUrl().replace(/\/+$/, "")}/api/newsletter/confirm?token=${encodeURIComponent(token)}`;
+}
 
 export async function subscribeToNewsletter(
   _prev: NewsletterState,
@@ -22,32 +35,69 @@ export async function subscribeToNewsletter(
     return { status: "error", message: parsed.error.issues[0]?.message ?? "Email inválido." };
   }
 
-  const { email } = parsed.data;
+  const email = parsed.data.email.toLowerCase();
   const prisma = getPrismaClient();
 
   if (!prisma) {
-    return { status: "success", message: "¡Gracias! Te avisamos cuando tengamos novedades." };
+    return {
+      status: "success",
+      message: "¡Gracias! Te enviamos un email para confirmar tu suscripción.",
+    };
   }
 
   try {
     const existing = await prisma.newsletterSubscription.findUnique({ where: { email } });
 
-    if (existing) {
+    if (existing?.confirmed) {
       return {
-        status: "duplicate",
+        status: "already_confirmed",
         message: "Ya estás suscripto con ese email.",
       };
     }
 
-    await prisma.newsletterSubscription.create({
-      data: { email, source: "web" },
+    const token = generateConfirmToken();
+    const confirmUrl = buildConfirmUrl(token);
+
+    if (existing) {
+      await prisma.newsletterSubscription.update({
+        where: { email },
+        data: { confirmToken: token, source: "web" },
+      });
+    } else {
+      await prisma.newsletterSubscription.create({
+        data: { email, source: "web", confirmToken: token },
+      });
+    }
+
+    const hdrs = await headers();
+    const ip = hdrs.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
+
+    await recordAuditEvent({
+      actorEmail: email,
+      event: "newsletter.subscribe",
+      ip,
+      resource: "newsletter",
+      userAgent: hdrs.get("user-agent"),
     });
+
+    const result = await sendNewsletterConfirmEmail({
+      confirmUrl,
+      recipientEmail: email,
+    });
+
+    if (result.status === "failed") {
+      return {
+        status: "error",
+        message: "No pudimos enviar el email de confirmación. Probá de nuevo.",
+      };
+    }
 
     return {
       status: "success",
-      message: "¡Suscripción confirmada! Te avisamos con las mejores ofertas.",
+      message: "Revisá tu casilla y hacé click en el link para confirmar la suscripción.",
     };
   } catch {
     return { status: "error", message: "No pudimos registrar tu suscripción. Intentá de nuevo." };
   }
 }
+

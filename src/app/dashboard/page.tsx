@@ -30,15 +30,30 @@ import {
   type UserAlertListItem,
 } from "@/services/alertService";
 import { listUserNotifications } from "@/services/notificationService";
+import { AccountControls } from "@/components/account/AccountControls";
 
 type DashboardPageProps = {
   searchParams: Promise<{
     alert?: string | string[];
+    account?: string | string[];
     error?: string | string[];
     notification?: string | string[];
     tracking?: string | string[];
   }>;
 };
+
+type AccountStatus =
+  | null
+  | "invalid-confirmation"
+  | "unavailable"
+  | "error";
+
+function normalizeAccountStatus(value: string): AccountStatus {
+  if (value === "invalid-confirmation" || value === "unavailable" || value === "error") {
+    return value;
+  }
+  return null;
+}
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -332,6 +347,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const error = getSearchParam(params.error);
   const notificationStatus = getSearchParam(params.notification);
   const trackingStatus = getSearchParam(params.tracking);
+  const accountStatus = normalizeAccountStatus(getSearchParam(params.account));
   await syncAuthUserToPrisma(user);
   const trackingOverview = await getTrackingOverviewForUser(user.id);
   const alertOverview = await getAlertOverviewForUser(user.id);
@@ -547,6 +563,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             </Card>
           </aside>
         </div>
+
+        <AccountControls status={accountStatus} />
       </Container>
     </main>
   );
