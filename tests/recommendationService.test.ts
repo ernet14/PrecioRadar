@@ -41,7 +41,7 @@ function makeHistory(
   });
 }
 
-test("returns NORMAL_PRICE when history is insufficient", () => {
+test("returns INSUFFICIENT_DATA when history is insufficient", () => {
   const history = makeHistory([900000, 850000]);
   const result = getPurchaseRecommendation({
     currentPrice: 900000,
@@ -49,7 +49,8 @@ test("returns NORMAL_PRICE when history is insufficient", () => {
     product: { ...AVAILABLE_PRODUCT, price: 900000 },
   });
 
-  assert.equal(result.level, "NORMAL_PRICE");
+  assert.equal(result.level, "INSUFFICIENT_DATA");
+  assert.equal(result.label, "Sin historial verificado");
 });
 
 test("detects INFLATED_OFFER when current price exceeds 60-day average", () => {

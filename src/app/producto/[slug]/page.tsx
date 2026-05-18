@@ -266,6 +266,10 @@ function getRecommendationClass(level: RecommendationLevel) {
     return "border-amber-200 bg-amber-50 text-amber-800";
   }
 
+  if (level === "INSUFFICIENT_DATA") {
+    return "border-slate-200 bg-slate-100 text-slate-600";
+  }
+
   return "border-slate-200 bg-slate-50 text-slate-700";
 }
 
@@ -542,7 +546,7 @@ export default async function ProductoPage({
                       Ofertas disponibles
                     </h2>
                     <p className="mt-1 text-sm text-slate-300">
-                      Comparaci&oacute;n entre tiendas mock disponibles.
+                      Ofertas disponibles para este producto.
                     </p>
                   </div>
                   <span className="text-sm font-semibold text-blue-200">

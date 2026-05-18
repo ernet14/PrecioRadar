@@ -63,11 +63,11 @@ export function getPurchaseRecommendation({
 
   if (!stats.isSufficient) {
     return {
-      level: "NORMAL_PRICE",
-      label: "Precio normal",
+      level: "INSUFFICIENT_DATA",
+      label: "Sin historial verificado",
       reason:
-        "Todavia no hay historial suficiente para calcular una referencia real.",
-      score: 50,
+        "Estamos recolectando datos. Necesitamos más capturas para mostrar una recomendación confiable.",
+      score: 0,
       currentPrice,
       minPrice: stats.minPrice,
       maxPrice: stats.maxPrice,

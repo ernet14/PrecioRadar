@@ -47,9 +47,10 @@ test("labels real MercadoLibre best offers without demo copy", async () => {
   const recommendation = result.exactMatches[0]?.product.recommendation;
 
   assert.equal(result.usedDemoFallback, false);
-  assert.equal(recommendation?.label, "Mejor precio");
-  assert.equal(
-    recommendation?.reason,
-    "Resultado disponible desde el provider configurado.",
+  assert.equal(recommendation?.level, "INSUFFICIENT_DATA");
+  assert.equal(recommendation?.label, "Sin historial verificado");
+  assert.match(
+    recommendation?.reason ?? "",
+    /historial/i,
   );
 });

@@ -347,19 +347,27 @@ function createRecommendation(
     };
   }
 
+  if (product.isDemo) {
+    return {
+      level: "INSUFFICIENT_DATA",
+      label: "Sin historial verificado",
+      reason:
+        "Resultado de catálogo demo. Todavía no tenemos historial real para evaluar el precio.",
+      score: 0,
+      currentPrice: product.price,
+      minPrice: lowestPrice,
+    };
+  }
+
   const isLowestPrice = product.price <= lowestPrice;
 
   return {
-    level: isLowestPrice ? "GOOD_PRICE" : "NORMAL_PRICE",
-    label: isLowestPrice
-      ? product.isDemo
-        ? "Mejor precio demo"
-        : "Mejor precio"
-      : "Precio disponible",
-    reason: product.isDemo
-      ? "Resultado de demostracion provisto por mockProvider."
-      : "Resultado disponible desde el provider configurado.",
-    score: isLowestPrice ? 82 : 62,
+    level: "INSUFFICIENT_DATA",
+    label: "Sin historial verificado",
+    reason: isLowestPrice
+      ? "Mejor oferta del momento. Estamos recolectando historial para validar si conviene comprar."
+      : "Estamos recolectando historial para evaluar si este precio conviene.",
+    score: 0,
     currentPrice: product.price,
     minPrice: lowestPrice,
   };

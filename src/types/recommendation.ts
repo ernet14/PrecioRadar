@@ -4,7 +4,8 @@ export type RecommendationLevel =
   | "NORMAL_PRICE"
   | "EXPENSIVE"
   | "INFLATED_OFFER"
-  | "WAIT";
+  | "WAIT"
+  | "INSUFFICIENT_DATA";
 
 export type Recommendation = {
   level: RecommendationLevel;

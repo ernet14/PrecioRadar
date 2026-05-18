@@ -166,14 +166,15 @@ export default function Home() {
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_420px] lg:items-center">
             <div className="min-w-0">
               <Badge className="border-blue-400/40 bg-blue-400/10 text-blue-100">
-                Argentina &middot; ARS &middot; MVP con datos demo
+                Argentina &middot; ARS &middot; Beta abierta
               </Badge>
               <h1 className="mt-6 max-w-4xl text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
-                Compr&aacute; al mejor precio con historial y alertas
+                Compr&aacute; con m&aacute;s contexto: precio real, historial y alertas
               </h1>
               <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-300">
-                Compar&aacute; ofertas, mir&aacute; el historial de precios y recib&iacute;
-                alertas cuando convenga comprar.
+                Hoy compar&aacute;mos precios reales de MercadoLibre y sumamos m&aacute;s
+                tiendas todas las semanas. Mientras tanto, te mostramos un cat&aacute;logo
+                demo para que veas c&oacute;mo funcionar&aacute; el comparador.
               </p>
 
               <Card
@@ -210,7 +211,7 @@ export default function Home() {
                     Comparaci&oacute;n clara por tienda
                   </h2>
                 </div>
-                <Badge variant="success">Buen precio demo</Badge>
+                <Badge variant="neutral">Catálogo demo</Badge>
               </div>
               <div className="mt-5 rounded-lg bg-slate-50 p-4">
                 <p className="text-sm font-semibold text-slate-500">
@@ -333,10 +334,14 @@ export default function Home() {
         <Container>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <Badge variant="success">Ofertas demo</Badge>
+              <Badge variant="neutral">Catálogo demo</Badge>
               <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-950">
                 Productos destacados para comparar
               </h2>
+              <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600">
+                Cat&aacute;logo de demostraci&oacute;n mientras sumamos tiendas reales.
+                Las b&uacute;squedas en MercadoLibre ya devuelven precios actuales.
+              </p>
             </div>
             <Link
               className="inline-flex h-10 items-center justify-center rounded-lg border border-blue-200 bg-white px-4 text-sm font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50"
@@ -374,8 +379,8 @@ export default function Home() {
                   <p className="text-2xl font-bold text-slate-950">
                     {formatCurrencyARS(product.bestOffer.price)}
                   </p>
-                  <p className="mt-2 text-sm font-semibold text-emerald-700">
-                    {product.recommendation.label} demo
+                  <p className="mt-2 text-sm font-semibold text-slate-500">
+                    {product.recommendation.label}
                   </p>
                   <Link
                     className="mt-5 inline-flex h-10 w-full items-center justify-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"

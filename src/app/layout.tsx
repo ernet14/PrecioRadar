@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { BetaBanner } from "@/components/layout/BetaBanner";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { CookieBanner } from "@/components/legal/CookieBanner";
@@ -47,6 +48,7 @@ export default function RootLayout({
     <html lang="es-AR" className="h-full">
       <body className="min-h-full antialiased">
         <div className="flex min-h-screen flex-col">
+          <BetaBanner />
           <Header />
           <div className="flex-1">{children}</div>
           <Footer />
