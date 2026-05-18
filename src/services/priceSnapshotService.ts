@@ -8,7 +8,16 @@ export type SnapshotResult = {
   processed: number;
   updated: number;
   errors: number;
+  outliers: number;
 };
+
+const OUTLIER_LOWER_RATIO = 0.5;
+const OUTLIER_UPPER_RATIO = 1.5;
+
+function isOutlier(newPrice: number, lastPrice: number) {
+  if (lastPrice <= 0) return false;
+  return newPrice < lastPrice * OUTLIER_LOWER_RATIO || newPrice > lastPrice * OUTLIER_UPPER_RATIO;
+}
 
 async function ensureStore(
   prisma: NonNullable<ReturnType<typeof getPrismaClient>>,
@@ -134,9 +143,18 @@ export async function persistProductOfferView(offer: ProviderProduct): Promise<v
 
   try {
     const store = await ensureStore(prisma, offer.storeSlug, offer.storeName, "https://www.mercadolibre.com.ar");
+
+    if (store.deletedAt) return;
+
     const categorySlug = offer.categorySlug ?? "general";
     const category = await ensureCategory(prisma, categorySlug, categorySlug);
+
+    if (category.deletedAt) return;
+
     const product = await ensureProduct(prisma, offer, category.id);
+
+    if (product.deletedAt) return;
+
     const productOffer = await upsertOffer(prisma, offer, product.id, store.id);
 
     await recordTodayPriceHistory(prisma, productOffer.id, product.id, store.id, offer, "mercadolibre-view");
@@ -150,14 +168,33 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
   const prisma = getPrismaClient();
 
   if (!prisma) {
-    return { status: "database_unavailable", processed: 0, updated: 0, errors: 0 };
+    return { status: "database_unavailable", processed: 0, updated: 0, errors: 0, outliers: 0 };
+  }
+
+  const jobStart = Date.now();
+  let job: { id: string } | null = null;
+
+  try {
+    job = await prisma.scrapeJob.create({
+      data: {
+        provider: "mercadolibre",
+        action: "refreshPrices",
+        status: "running",
+      },
+      select: { id: true },
+    });
+  } catch (error) {
+    console.error("Unable to create scrape job.", error);
   }
 
   try {
-    const store = await prisma.store.findUnique({ where: { slug: "mercadolibre" } });
+    const store = await prisma.store.findFirst({
+      where: { slug: "mercadolibre", deletedAt: null },
+    });
 
     if (!store) {
-      return { status: "no_offers", processed: 0, updated: 0, errors: 0 };
+      await finalizeJob(prisma, job, jobStart, "no_offers", 0, 0, 0, 0);
+      return { status: "no_offers", processed: 0, updated: 0, errors: 0, outliers: 0 };
     }
 
     const offers = await prisma.productOffer.findMany({
@@ -168,15 +205,18 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
         isDemo: false,
         available: true,
         externalId: { not: null },
+        product: { deletedAt: null },
       },
     });
 
     if (offers.length === 0) {
-      return { status: "no_offers", processed: 0, updated: 0, errors: 0 };
+      await finalizeJob(prisma, job, jobStart, "no_offers", 0, 0, 0, 0);
+      return { status: "no_offers", processed: 0, updated: 0, errors: 0, outliers: 0 };
     }
 
     let updated = 0;
     let errors = 0;
+    let outliers = 0;
     const windowStart = new Date(Date.now() - 4 * 60 * 60 * 1000);
 
     for (const offer of offers) {
@@ -187,6 +227,23 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
 
         if (!currentPrice) {
           errors += 1;
+          continue;
+        }
+
+        const lastPriceNumber = Number(offer.price);
+        const outlier = isOutlier(currentPrice.price, lastPriceNumber);
+
+        if (outlier) {
+          outliers += 1;
+          await prisma.providerLog.create({
+            data: {
+              storeId: store.id,
+              provider: "mercadolibre",
+              action: "cron.outlierDetected",
+              status: "skipped",
+              errorMessage: `Precio sospechoso ${currentPrice.price} vs último ${lastPriceNumber} (offer ${offer.id}).`,
+            },
+          });
           continue;
         }
 
@@ -240,9 +297,42 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
       console.error("Unable to record refresh prices provider log.", error);
     }
 
-    return { status: "completed", processed: offers.length, updated, errors };
+    await finalizeJob(prisma, job, jobStart, "completed", offers.length, updated, errors, outliers);
+
+    return { status: "completed", processed: offers.length, updated, errors, outliers };
   } catch (error) {
     console.error("Unable to snapshot current prices.", error);
-    return { status: "error", processed: 0, updated: 0, errors: 1 };
+    await finalizeJob(prisma, job, jobStart, "error", 0, 0, 1, 0);
+    return { status: "error", processed: 0, updated: 0, errors: 1, outliers: 0 };
+  }
+}
+
+async function finalizeJob(
+  prisma: NonNullable<ReturnType<typeof getPrismaClient>>,
+  job: { id: string } | null,
+  jobStart: number,
+  status: SnapshotResult["status"],
+  processed: number,
+  updated: number,
+  errors: number,
+  outliers: number,
+) {
+  if (!job) return;
+
+  try {
+    await prisma.scrapeJob.update({
+      where: { id: job.id },
+      data: {
+        status,
+        processed,
+        updated,
+        errors,
+        outliers,
+        finishedAt: new Date(),
+        durationMs: Date.now() - jobStart,
+      },
+    });
+  } catch (error) {
+    console.error("Unable to finalize scrape job.", error);
   }
 }

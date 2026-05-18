@@ -172,12 +172,18 @@ async function getRealPriceHistoryForOffer(
   if (!prisma) return [];
 
   try {
-    const store = await prisma.store.findUnique({ where: { slug: storeSlug } });
+    const store = await prisma.store.findFirst({
+      where: { slug: storeSlug, deletedAt: null },
+    });
 
     if (!store) return [];
 
     const offer = await prisma.productOffer.findFirst({
-      where: { storeId: store.id, externalId },
+      where: {
+        storeId: store.id,
+        externalId,
+        product: { deletedAt: null },
+      },
     });
 
     if (!offer) return [];

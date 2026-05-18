@@ -740,10 +740,6 @@ export type EnumProductConditionFieldUpdateOperationsInput = {
   set?: $Enums.ProductCondition
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type ProductOfferCreateNestedOneWithoutPriceHistoryInput = {
   create?: Prisma.XOR<Prisma.ProductOfferCreateWithoutPriceHistoryInput, Prisma.ProductOfferUncheckedCreateWithoutPriceHistoryInput>
   connectOrCreate?: Prisma.ProductOfferCreateOrConnectWithoutPriceHistoryInput

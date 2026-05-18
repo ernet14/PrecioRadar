@@ -107,6 +107,11 @@ export type SearchLog = Prisma.SearchLogModel
  */
 export type ProviderLog = Prisma.ProviderLogModel
 /**
+ * Model ScrapeJob
+ * 
+ */
+export type ScrapeJob = Prisma.ScrapeJobModel
+/**
  * Model AuditLog
  * 
  */

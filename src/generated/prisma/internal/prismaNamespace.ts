@@ -397,6 +397,7 @@ export const ModelName = {
   AffiliateLink: 'AffiliateLink',
   SearchLog: 'SearchLog',
   ProviderLog: 'ProviderLog',
+  ScrapeJob: 'ScrapeJob',
   AuditLog: 'AuditLog',
   MercadoLibreCache: 'MercadoLibreCache',
   ProductReport: 'ProductReport',
@@ -417,7 +418,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "affiliateLink" | "searchLog" | "providerLog" | "auditLog" | "mercadoLibreCache" | "productReport" | "newsletterSubscription" | "bankPromo"
+    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "affiliateLink" | "searchLog" | "providerLog" | "scrapeJob" | "auditLog" | "mercadoLibreCache" | "productReport" | "newsletterSubscription" | "bankPromo"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1383,6 +1384,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ScrapeJob: {
+      payload: Prisma.$ScrapeJobPayload<ExtArgs>
+      fields: Prisma.ScrapeJobFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ScrapeJobFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScrapeJobPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ScrapeJobFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScrapeJobPayload>
+        }
+        findFirst: {
+          args: Prisma.ScrapeJobFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScrapeJobPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ScrapeJobFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScrapeJobPayload>
+        }
+        findMany: {
+          args: Prisma.ScrapeJobFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScrapeJobPayload>[]
+        }
+        create: {
+          args: Prisma.ScrapeJobCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScrapeJobPayload>
+        }
+        createMany: {
+          args: Prisma.ScrapeJobCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ScrapeJobCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScrapeJobPayload>[]
+        }
+        delete: {
+          args: Prisma.ScrapeJobDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScrapeJobPayload>
+        }
+        update: {
+          args: Prisma.ScrapeJobUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScrapeJobPayload>
+        }
+        deleteMany: {
+          args: Prisma.ScrapeJobDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ScrapeJobUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ScrapeJobUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScrapeJobPayload>[]
+        }
+        upsert: {
+          args: Prisma.ScrapeJobUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScrapeJobPayload>
+        }
+        aggregate: {
+          args: Prisma.ScrapeJobAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateScrapeJob>
+        }
+        groupBy: {
+          args: Prisma.ScrapeJobGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ScrapeJobGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ScrapeJobCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ScrapeJobCountAggregateOutputType> | number
+        }
+      }
+    }
     AuditLog: {
       payload: Prisma.$AuditLogPayload<ExtArgs>
       fields: Prisma.AuditLogFieldRefs
@@ -1811,6 +1886,7 @@ export const CategoryScalarFieldEnum = {
   description: 'description',
   active: 'active',
   featured: 'featured',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1828,6 +1904,7 @@ export const StoreScalarFieldEnum = {
   hasAffiliate: 'hasAffiliate',
   affiliateEnabled: 'affiliateEnabled',
   active: 'active',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1845,6 +1922,7 @@ export const ProductScalarFieldEnum = {
   imageUrl: 'imageUrl',
   isDemo: 'isDemo',
   normalizedName: 'normalizedName',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1984,6 +2062,24 @@ export const ProviderLogScalarFieldEnum = {
 } as const
 
 export type ProviderLogScalarFieldEnum = (typeof ProviderLogScalarFieldEnum)[keyof typeof ProviderLogScalarFieldEnum]
+
+
+export const ScrapeJobScalarFieldEnum = {
+  id: 'id',
+  provider: 'provider',
+  action: 'action',
+  status: 'status',
+  processed: 'processed',
+  updated: 'updated',
+  errors: 'errors',
+  outliers: 'outliers',
+  startedAt: 'startedAt',
+  finishedAt: 'finishedAt',
+  durationMs: 'durationMs',
+  metadata: 'metadata'
+} as const
+
+export type ScrapeJobScalarFieldEnum = (typeof ScrapeJobScalarFieldEnum)[keyof typeof ScrapeJobScalarFieldEnum]
 
 
 export const AuditLogScalarFieldEnum = {
@@ -2402,6 +2498,7 @@ export type GlobalOmitConfig = {
   affiliateLink?: Prisma.AffiliateLinkOmit
   searchLog?: Prisma.SearchLogOmit
   providerLog?: Prisma.ProviderLogOmit
+  scrapeJob?: Prisma.ScrapeJobOmit
   auditLog?: Prisma.AuditLogOmit
   mercadoLibreCache?: Prisma.MercadoLibreCacheOmit
   productReport?: Prisma.ProductReportOmit

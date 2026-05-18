@@ -4,6 +4,7 @@ import {
   noStoreHeaders,
 } from "@/lib/cronAuth";
 import { snapshotCurrentPrices } from "@/services/priceSnapshotService";
+import { compactPriceHistory } from "@/services/priceCompactionService";
 
 export const dynamic = "force-dynamic";
 
@@ -15,16 +16,19 @@ async function handleRefreshPrices(request: Request) {
   }
 
   const result = await snapshotCurrentPrices();
+  const compaction = await compactPriceHistory();
+
+  const body = { ...result, compaction };
 
   if (result.status === "database_unavailable") {
-    return Response.json(result, { headers: noStoreHeaders, status: 503 });
+    return Response.json(body, { headers: noStoreHeaders, status: 503 });
   }
 
   if (result.status === "error") {
-    return Response.json(result, { headers: noStoreHeaders, status: 500 });
+    return Response.json(body, { headers: noStoreHeaders, status: 500 });
   }
 
-  return Response.json(result, { headers: noStoreHeaders });
+  return Response.json(body, { headers: noStoreHeaders });
 }
 
 export async function GET(request: Request) {

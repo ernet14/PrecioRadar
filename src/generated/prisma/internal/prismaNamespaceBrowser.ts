@@ -64,6 +64,7 @@ export const ModelName = {
   AffiliateLink: 'AffiliateLink',
   SearchLog: 'SearchLog',
   ProviderLog: 'ProviderLog',
+  ScrapeJob: 'ScrapeJob',
   AuditLog: 'AuditLog',
   MercadoLibreCache: 'MercadoLibreCache',
   ProductReport: 'ProductReport',
@@ -106,6 +107,7 @@ export const CategoryScalarFieldEnum = {
   description: 'description',
   active: 'active',
   featured: 'featured',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -123,6 +125,7 @@ export const StoreScalarFieldEnum = {
   hasAffiliate: 'hasAffiliate',
   affiliateEnabled: 'affiliateEnabled',
   active: 'active',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -140,6 +143,7 @@ export const ProductScalarFieldEnum = {
   imageUrl: 'imageUrl',
   isDemo: 'isDemo',
   normalizedName: 'normalizedName',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -279,6 +283,24 @@ export const ProviderLogScalarFieldEnum = {
 } as const
 
 export type ProviderLogScalarFieldEnum = (typeof ProviderLogScalarFieldEnum)[keyof typeof ProviderLogScalarFieldEnum]
+
+
+export const ScrapeJobScalarFieldEnum = {
+  id: 'id',
+  provider: 'provider',
+  action: 'action',
+  status: 'status',
+  processed: 'processed',
+  updated: 'updated',
+  errors: 'errors',
+  outliers: 'outliers',
+  startedAt: 'startedAt',
+  finishedAt: 'finishedAt',
+  durationMs: 'durationMs',
+  metadata: 'metadata'
+} as const
+
+export type ScrapeJobScalarFieldEnum = (typeof ScrapeJobScalarFieldEnum)[keyof typeof ScrapeJobScalarFieldEnum]
 
 
 export const AuditLogScalarFieldEnum = {

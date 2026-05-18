@@ -59,6 +59,7 @@ model Category {
   description String?
   active      Boolean     @default(true)
   featured    Boolean     @default(false)
+  deletedAt   DateTime?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
@@ -76,6 +77,7 @@ model Store {
   hasAffiliate     Boolean         @default(false)
   affiliateEnabled Boolean         @default(false)
   active           Boolean         @default(true)
+  deletedAt        DateTime?
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
 
@@ -99,6 +101,7 @@ model Product {
   imageUrl        String?
   isDemo          Boolean          @default(false)
   normalizedName  String
+  deletedAt       DateTime?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 
@@ -146,6 +149,7 @@ model ProductOffer {
   @@index([storeId])
   @@index([available])
   @@index([isDemo])
+  @@index([productId, storeId, available])
 }
 
 model PriceHistory {
@@ -294,6 +298,25 @@ model ProviderLog {
   @@index([provider, action])
   @@index([status])
   @@index([createdAt])
+}
+
+model ScrapeJob {
+  id          String    @id @default(uuid()) @db.Uuid
+  provider    String
+  action      String
+  status      String    @default("running")
+  processed   Int       @default(0)
+  updated     Int       @default(0)
+  errors      Int       @default(0)
+  outliers    Int       @default(0)
+  startedAt   DateTime  @default(now())
+  finishedAt  DateTime?
+  durationMs  Int?
+  metadata    Json?
+
+  @@index([provider, action, startedAt])
+  @@index([status])
+  @@index([startedAt])
 }
 
 model AuditLog {
