@@ -20,8 +20,18 @@ export type ProviderLogModel = runtime.Types.Result.DefaultSelection<Prisma.$Pro
 
 export type AggregateProviderLog = {
   _count: ProviderLogCountAggregateOutputType | null
+  _avg: ProviderLogAvgAggregateOutputType | null
+  _sum: ProviderLogSumAggregateOutputType | null
   _min: ProviderLogMinAggregateOutputType | null
   _max: ProviderLogMaxAggregateOutputType | null
+}
+
+export type ProviderLogAvgAggregateOutputType = {
+  latencyMs: number | null
+}
+
+export type ProviderLogSumAggregateOutputType = {
+  latencyMs: number | null
 }
 
 export type ProviderLogMinAggregateOutputType = {
@@ -31,6 +41,7 @@ export type ProviderLogMinAggregateOutputType = {
   action: string | null
   status: string | null
   errorMessage: string | null
+  latencyMs: number | null
   createdAt: Date | null
 }
 
@@ -41,6 +52,7 @@ export type ProviderLogMaxAggregateOutputType = {
   action: string | null
   status: string | null
   errorMessage: string | null
+  latencyMs: number | null
   createdAt: Date | null
 }
 
@@ -51,10 +63,19 @@ export type ProviderLogCountAggregateOutputType = {
   action: number
   status: number
   errorMessage: number
+  latencyMs: number
   createdAt: number
   _all: number
 }
 
+
+export type ProviderLogAvgAggregateInputType = {
+  latencyMs?: true
+}
+
+export type ProviderLogSumAggregateInputType = {
+  latencyMs?: true
+}
 
 export type ProviderLogMinAggregateInputType = {
   id?: true
@@ -63,6 +84,7 @@ export type ProviderLogMinAggregateInputType = {
   action?: true
   status?: true
   errorMessage?: true
+  latencyMs?: true
   createdAt?: true
 }
 
@@ -73,6 +95,7 @@ export type ProviderLogMaxAggregateInputType = {
   action?: true
   status?: true
   errorMessage?: true
+  latencyMs?: true
   createdAt?: true
 }
 
@@ -83,6 +106,7 @@ export type ProviderLogCountAggregateInputType = {
   action?: true
   status?: true
   errorMessage?: true
+  latencyMs?: true
   createdAt?: true
   _all?: true
 }
@@ -125,6 +149,18 @@ export type ProviderLogAggregateArgs<ExtArgs extends runtime.Types.Extensions.In
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: ProviderLogAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: ProviderLogSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: ProviderLogMinAggregateInputType
@@ -155,6 +191,8 @@ export type ProviderLogGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   _count?: ProviderLogCountAggregateInputType | true
+  _avg?: ProviderLogAvgAggregateInputType
+  _sum?: ProviderLogSumAggregateInputType
   _min?: ProviderLogMinAggregateInputType
   _max?: ProviderLogMaxAggregateInputType
 }
@@ -166,8 +204,11 @@ export type ProviderLogGroupByOutputType = {
   action: string
   status: string
   errorMessage: string | null
+  latencyMs: number | null
   createdAt: Date
   _count: ProviderLogCountAggregateOutputType | null
+  _avg: ProviderLogAvgAggregateOutputType | null
+  _sum: ProviderLogSumAggregateOutputType | null
   _min: ProviderLogMinAggregateOutputType | null
   _max: ProviderLogMaxAggregateOutputType | null
 }
@@ -197,6 +238,7 @@ export type ProviderLogWhereInput = {
   action?: Prisma.StringFilter<"ProviderLog"> | string
   status?: Prisma.StringFilter<"ProviderLog"> | string
   errorMessage?: Prisma.StringNullableFilter<"ProviderLog"> | string | null
+  latencyMs?: Prisma.IntNullableFilter<"ProviderLog"> | number | null
   createdAt?: Prisma.DateTimeFilter<"ProviderLog"> | Date | string
   store?: Prisma.XOR<Prisma.StoreNullableScalarRelationFilter, Prisma.StoreWhereInput> | null
 }
@@ -208,6 +250,7 @@ export type ProviderLogOrderByWithRelationInput = {
   action?: Prisma.SortOrder
   status?: Prisma.SortOrder
   errorMessage?: Prisma.SortOrderInput | Prisma.SortOrder
+  latencyMs?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   store?: Prisma.StoreOrderByWithRelationInput
 }
@@ -222,6 +265,7 @@ export type ProviderLogWhereUniqueInput = Prisma.AtLeast<{
   action?: Prisma.StringFilter<"ProviderLog"> | string
   status?: Prisma.StringFilter<"ProviderLog"> | string
   errorMessage?: Prisma.StringNullableFilter<"ProviderLog"> | string | null
+  latencyMs?: Prisma.IntNullableFilter<"ProviderLog"> | number | null
   createdAt?: Prisma.DateTimeFilter<"ProviderLog"> | Date | string
   store?: Prisma.XOR<Prisma.StoreNullableScalarRelationFilter, Prisma.StoreWhereInput> | null
 }, "id">
@@ -233,10 +277,13 @@ export type ProviderLogOrderByWithAggregationInput = {
   action?: Prisma.SortOrder
   status?: Prisma.SortOrder
   errorMessage?: Prisma.SortOrderInput | Prisma.SortOrder
+  latencyMs?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.ProviderLogCountOrderByAggregateInput
+  _avg?: Prisma.ProviderLogAvgOrderByAggregateInput
   _max?: Prisma.ProviderLogMaxOrderByAggregateInput
   _min?: Prisma.ProviderLogMinOrderByAggregateInput
+  _sum?: Prisma.ProviderLogSumOrderByAggregateInput
 }
 
 export type ProviderLogScalarWhereWithAggregatesInput = {
@@ -249,6 +296,7 @@ export type ProviderLogScalarWhereWithAggregatesInput = {
   action?: Prisma.StringWithAggregatesFilter<"ProviderLog"> | string
   status?: Prisma.StringWithAggregatesFilter<"ProviderLog"> | string
   errorMessage?: Prisma.StringNullableWithAggregatesFilter<"ProviderLog"> | string | null
+  latencyMs?: Prisma.IntNullableWithAggregatesFilter<"ProviderLog"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ProviderLog"> | Date | string
 }
 
@@ -258,6 +306,7 @@ export type ProviderLogCreateInput = {
   action: string
   status: string
   errorMessage?: string | null
+  latencyMs?: number | null
   createdAt?: Date | string
   store?: Prisma.StoreCreateNestedOneWithoutProviderLogsInput
 }
@@ -269,6 +318,7 @@ export type ProviderLogUncheckedCreateInput = {
   action: string
   status: string
   errorMessage?: string | null
+  latencyMs?: number | null
   createdAt?: Date | string
 }
 
@@ -278,6 +328,7 @@ export type ProviderLogUpdateInput = {
   action?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latencyMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   store?: Prisma.StoreUpdateOneWithoutProviderLogsNestedInput
 }
@@ -289,6 +340,7 @@ export type ProviderLogUncheckedUpdateInput = {
   action?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latencyMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -299,6 +351,7 @@ export type ProviderLogCreateManyInput = {
   action: string
   status: string
   errorMessage?: string | null
+  latencyMs?: number | null
   createdAt?: Date | string
 }
 
@@ -308,6 +361,7 @@ export type ProviderLogUpdateManyMutationInput = {
   action?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latencyMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -318,6 +372,7 @@ export type ProviderLogUncheckedUpdateManyInput = {
   action?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latencyMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -338,7 +393,12 @@ export type ProviderLogCountOrderByAggregateInput = {
   action?: Prisma.SortOrder
   status?: Prisma.SortOrder
   errorMessage?: Prisma.SortOrder
+  latencyMs?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+}
+
+export type ProviderLogAvgOrderByAggregateInput = {
+  latencyMs?: Prisma.SortOrder
 }
 
 export type ProviderLogMaxOrderByAggregateInput = {
@@ -348,6 +408,7 @@ export type ProviderLogMaxOrderByAggregateInput = {
   action?: Prisma.SortOrder
   status?: Prisma.SortOrder
   errorMessage?: Prisma.SortOrder
+  latencyMs?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -358,7 +419,12 @@ export type ProviderLogMinOrderByAggregateInput = {
   action?: Prisma.SortOrder
   status?: Prisma.SortOrder
   errorMessage?: Prisma.SortOrder
+  latencyMs?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+}
+
+export type ProviderLogSumOrderByAggregateInput = {
+  latencyMs?: Prisma.SortOrder
 }
 
 export type ProviderLogCreateNestedManyWithoutStoreInput = {
@@ -403,12 +469,21 @@ export type ProviderLogUncheckedUpdateManyWithoutStoreNestedInput = {
   deleteMany?: Prisma.ProviderLogScalarWhereInput | Prisma.ProviderLogScalarWhereInput[]
 }
 
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type ProviderLogCreateWithoutStoreInput = {
   id?: string
   provider: string
   action: string
   status: string
   errorMessage?: string | null
+  latencyMs?: number | null
   createdAt?: Date | string
 }
 
@@ -418,6 +493,7 @@ export type ProviderLogUncheckedCreateWithoutStoreInput = {
   action: string
   status: string
   errorMessage?: string | null
+  latencyMs?: number | null
   createdAt?: Date | string
 }
 
@@ -457,6 +533,7 @@ export type ProviderLogScalarWhereInput = {
   action?: Prisma.StringFilter<"ProviderLog"> | string
   status?: Prisma.StringFilter<"ProviderLog"> | string
   errorMessage?: Prisma.StringNullableFilter<"ProviderLog"> | string | null
+  latencyMs?: Prisma.IntNullableFilter<"ProviderLog"> | number | null
   createdAt?: Prisma.DateTimeFilter<"ProviderLog"> | Date | string
 }
 
@@ -466,6 +543,7 @@ export type ProviderLogCreateManyStoreInput = {
   action: string
   status: string
   errorMessage?: string | null
+  latencyMs?: number | null
   createdAt?: Date | string
 }
 
@@ -475,6 +553,7 @@ export type ProviderLogUpdateWithoutStoreInput = {
   action?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latencyMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -484,6 +563,7 @@ export type ProviderLogUncheckedUpdateWithoutStoreInput = {
   action?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latencyMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -493,6 +573,7 @@ export type ProviderLogUncheckedUpdateManyWithoutStoreInput = {
   action?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latencyMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -505,6 +586,7 @@ export type ProviderLogSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   action?: boolean
   status?: boolean
   errorMessage?: boolean
+  latencyMs?: boolean
   createdAt?: boolean
   store?: boolean | Prisma.ProviderLog$storeArgs<ExtArgs>
 }, ExtArgs["result"]["providerLog"]>
@@ -516,6 +598,7 @@ export type ProviderLogSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   action?: boolean
   status?: boolean
   errorMessage?: boolean
+  latencyMs?: boolean
   createdAt?: boolean
   store?: boolean | Prisma.ProviderLog$storeArgs<ExtArgs>
 }, ExtArgs["result"]["providerLog"]>
@@ -527,6 +610,7 @@ export type ProviderLogSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   action?: boolean
   status?: boolean
   errorMessage?: boolean
+  latencyMs?: boolean
   createdAt?: boolean
   store?: boolean | Prisma.ProviderLog$storeArgs<ExtArgs>
 }, ExtArgs["result"]["providerLog"]>
@@ -538,10 +622,11 @@ export type ProviderLogSelectScalar = {
   action?: boolean
   status?: boolean
   errorMessage?: boolean
+  latencyMs?: boolean
   createdAt?: boolean
 }
 
-export type ProviderLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "storeId" | "provider" | "action" | "status" | "errorMessage" | "createdAt", ExtArgs["result"]["providerLog"]>
+export type ProviderLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "storeId" | "provider" | "action" | "status" | "errorMessage" | "latencyMs" | "createdAt", ExtArgs["result"]["providerLog"]>
 export type ProviderLogInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   store?: boolean | Prisma.ProviderLog$storeArgs<ExtArgs>
 }
@@ -564,6 +649,7 @@ export type $ProviderLogPayload<ExtArgs extends runtime.Types.Extensions.Interna
     action: string
     status: string
     errorMessage: string | null
+    latencyMs: number | null
     createdAt: Date
   }, ExtArgs["result"]["providerLog"]>
   composites: {}
@@ -995,6 +1081,7 @@ export interface ProviderLogFieldRefs {
   readonly action: Prisma.FieldRef<"ProviderLog", 'String'>
   readonly status: Prisma.FieldRef<"ProviderLog", 'String'>
   readonly errorMessage: Prisma.FieldRef<"ProviderLog", 'String'>
+  readonly latencyMs: Prisma.FieldRef<"ProviderLog", 'Int'>
   readonly createdAt: Prisma.FieldRef<"ProviderLog", 'DateTime'>
 }
     

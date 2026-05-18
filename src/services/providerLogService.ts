@@ -36,12 +36,14 @@ function truncateErrorMessage(errorMessage: string | null | undefined) {
 export async function recordProviderLog({
   action,
   errorMessage,
+  latencyMs,
   provider,
   status,
   storeSlug,
 }: {
   action: string;
   errorMessage?: string | null;
+  latencyMs?: number | null;
   provider: string;
   status: string;
   storeSlug?: string | null;
@@ -64,6 +66,10 @@ export async function recordProviderLog({
       data: {
         action,
         errorMessage: truncateErrorMessage(errorMessage),
+        latencyMs:
+          typeof latencyMs === "number" && Number.isFinite(latencyMs)
+            ? Math.max(0, Math.round(latencyMs))
+            : null,
         provider,
         status,
         storeId: store?.id ?? null,

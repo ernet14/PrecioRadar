@@ -397,6 +397,7 @@ export const ModelName = {
   AffiliateLink: 'AffiliateLink',
   SearchLog: 'SearchLog',
   ProviderLog: 'ProviderLog',
+  MercadoLibreCache: 'MercadoLibreCache',
   ProductReport: 'ProductReport',
   NewsletterSubscription: 'NewsletterSubscription',
   BankPromo: 'BankPromo'
@@ -415,7 +416,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "affiliateLink" | "searchLog" | "providerLog" | "productReport" | "newsletterSubscription" | "bankPromo"
+    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "affiliateLink" | "searchLog" | "providerLog" | "mercadoLibreCache" | "productReport" | "newsletterSubscription" | "bankPromo"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1381,6 +1382,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    MercadoLibreCache: {
+      payload: Prisma.$MercadoLibreCachePayload<ExtArgs>
+      fields: Prisma.MercadoLibreCacheFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MercadoLibreCacheFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MercadoLibreCachePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MercadoLibreCacheFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MercadoLibreCachePayload>
+        }
+        findFirst: {
+          args: Prisma.MercadoLibreCacheFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MercadoLibreCachePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MercadoLibreCacheFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MercadoLibreCachePayload>
+        }
+        findMany: {
+          args: Prisma.MercadoLibreCacheFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MercadoLibreCachePayload>[]
+        }
+        create: {
+          args: Prisma.MercadoLibreCacheCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MercadoLibreCachePayload>
+        }
+        createMany: {
+          args: Prisma.MercadoLibreCacheCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MercadoLibreCacheCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MercadoLibreCachePayload>[]
+        }
+        delete: {
+          args: Prisma.MercadoLibreCacheDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MercadoLibreCachePayload>
+        }
+        update: {
+          args: Prisma.MercadoLibreCacheUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MercadoLibreCachePayload>
+        }
+        deleteMany: {
+          args: Prisma.MercadoLibreCacheDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MercadoLibreCacheUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MercadoLibreCacheUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MercadoLibreCachePayload>[]
+        }
+        upsert: {
+          args: Prisma.MercadoLibreCacheUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MercadoLibreCachePayload>
+        }
+        aggregate: {
+          args: Prisma.MercadoLibreCacheAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMercadoLibreCache>
+        }
+        groupBy: {
+          args: Prisma.MercadoLibreCacheGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MercadoLibreCacheGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MercadoLibreCacheCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MercadoLibreCacheCountAggregateOutputType> | number
+        }
+      }
+    }
     ProductReport: {
       payload: Prisma.$ProductReportPayload<ExtArgs>
       fields: Prisma.ProductReportFieldRefs
@@ -1829,10 +1904,24 @@ export const ProviderLogScalarFieldEnum = {
   action: 'action',
   status: 'status',
   errorMessage: 'errorMessage',
+  latencyMs: 'latencyMs',
   createdAt: 'createdAt'
 } as const
 
 export type ProviderLogScalarFieldEnum = (typeof ProviderLogScalarFieldEnum)[keyof typeof ProviderLogScalarFieldEnum]
+
+
+export const MercadoLibreCacheScalarFieldEnum = {
+  id: 'id',
+  cacheKey: 'cacheKey',
+  endpoint: 'endpoint',
+  body: 'body',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MercadoLibreCacheScalarFieldEnum = (typeof MercadoLibreCacheScalarFieldEnum)[keyof typeof MercadoLibreCacheScalarFieldEnum]
 
 
 export const ProductReportScalarFieldEnum = {
@@ -1893,6 +1982,13 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -1907,6 +2003,15 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 
@@ -2021,16 +2126,9 @@ export type ListEnumNotificationChannelFieldRefInput<$PrismaModel> = FieldRefInp
 
 
 /**
- * Reference to a field of type 'ReportStatus'
+ * Reference to a field of type 'Int'
  */
-export type EnumReportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportStatus'>
-    
-
-
-/**
- * Reference to a field of type 'ReportStatus[]'
- */
-export type ListEnumReportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportStatus[]'>
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
     
 
 
@@ -2042,9 +2140,30 @@ export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
- * Reference to a field of type 'Int'
+ * Reference to a field of type 'Json'
  */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
+ * Reference to a field of type 'ReportStatus'
+ */
+export type EnumReportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ReportStatus[]'
+ */
+export type ListEnumReportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportStatus[]'>
     
 
 
@@ -2184,6 +2303,7 @@ export type GlobalOmitConfig = {
   affiliateLink?: Prisma.AffiliateLinkOmit
   searchLog?: Prisma.SearchLogOmit
   providerLog?: Prisma.ProviderLogOmit
+  mercadoLibreCache?: Prisma.MercadoLibreCacheOmit
   productReport?: Prisma.ProductReportOmit
   newsletterSubscription?: Prisma.NewsletterSubscriptionOmit
   bankPromo?: Prisma.BankPromoOmit

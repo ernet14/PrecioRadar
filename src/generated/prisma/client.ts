@@ -107,6 +107,11 @@ export type SearchLog = Prisma.SearchLogModel
  */
 export type ProviderLog = Prisma.ProviderLogModel
 /**
+ * Model MercadoLibreCache
+ * 
+ */
+export type MercadoLibreCache = Prisma.MercadoLibreCacheModel
+/**
  * Model ProductReport
  * 
  */

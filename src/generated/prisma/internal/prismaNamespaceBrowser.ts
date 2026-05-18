@@ -64,6 +64,7 @@ export const ModelName = {
   AffiliateLink: 'AffiliateLink',
   SearchLog: 'SearchLog',
   ProviderLog: 'ProviderLog',
+  MercadoLibreCache: 'MercadoLibreCache',
   ProductReport: 'ProductReport',
   NewsletterSubscription: 'NewsletterSubscription',
   BankPromo: 'BankPromo'
@@ -272,10 +273,24 @@ export const ProviderLogScalarFieldEnum = {
   action: 'action',
   status: 'status',
   errorMessage: 'errorMessage',
+  latencyMs: 'latencyMs',
   createdAt: 'createdAt'
 } as const
 
 export type ProviderLogScalarFieldEnum = (typeof ProviderLogScalarFieldEnum)[keyof typeof ProviderLogScalarFieldEnum]
+
+
+export const MercadoLibreCacheScalarFieldEnum = {
+  id: 'id',
+  cacheKey: 'cacheKey',
+  endpoint: 'endpoint',
+  body: 'body',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MercadoLibreCacheScalarFieldEnum = (typeof MercadoLibreCacheScalarFieldEnum)[keyof typeof MercadoLibreCacheScalarFieldEnum]
 
 
 export const ProductReportScalarFieldEnum = {
@@ -336,6 +351,13 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -350,4 +372,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

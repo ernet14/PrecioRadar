@@ -1,5 +1,11 @@
 import { isMercadoLibreUrl, normalizeProductName } from "@/lib/utils";
 import { getMercadoLibreToken } from "@/lib/mercadolibre/oauth";
+import {
+  buildCacheKey,
+  getCachedResponse,
+  setCachedResponse,
+  type MercadoLibreEndpoint,
+} from "@/services/mercadoLibreCacheService";
 import type {
   ProviderPrice,
   ProviderPriceInput,
@@ -96,23 +102,23 @@ function getAttributeValue(attributes: unknown, id: string) {
   return null;
 }
 
-async function fetchMercadoLibreJson(
+type RawFetchOutcome = {
+  data: unknown | null;
+  errorMessage?: string;
+  status?: number;
+};
+
+async function rawFetch(
   path: string,
-): Promise<MercadoLibreFetchResult> {
-  const token = await getMercadoLibreToken();
-
-  if (!token) {
-    await recordMercadoLibreFailure(
-      "fetch.missingToken",
-      "Token de MercadoLibre no disponible. Configurar credenciales OAuth o ACCESS_TOKEN.",
-    );
-    return { data: null, errorMessage: "Token de MercadoLibre no disponible." };
-  }
-
+  token: string | null,
+): Promise<RawFetchOutcome> {
   const headers: Record<string, string> = {
     Accept: "application/json",
-    Authorization: `Bearer ${token}`,
   };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), requestTimeoutMs);
@@ -123,20 +129,15 @@ async function fetchMercadoLibreJson(
       signal: controller.signal,
     });
 
-    if (response.status === 401 || response.status === 403) {
-      const message = `HTTP ${response.status}: token rechazado por MercadoLibre.`;
-      await recordMercadoLibreFailure("fetch.authRejected", message);
-      return { data: null, errorMessage: message };
-    }
-
     if (!response.ok) {
       return {
         data: null,
         errorMessage: `HTTP ${response.status} desde MercadoLibre.`,
+        status: response.status,
       };
     }
 
-    return { data: await response.json() };
+    return { data: await response.json(), status: response.status };
   } catch (error) {
     return {
       data: null,
@@ -147,10 +148,92 @@ async function fetchMercadoLibreJson(
   }
 }
 
-async function recordMercadoLibreFailure(action: string, errorMessage: string) {
+async function fetchMercadoLibreJson(
+  path: string,
+  cache: { endpoint: MercadoLibreEndpoint; identifier: string } | null,
+): Promise<MercadoLibreFetchResult> {
+  const cacheKey = cache ? buildCacheKey(cache.endpoint, cache.identifier) : null;
+
+  if (cacheKey) {
+    const cached = await getCachedResponse(cacheKey);
+    if (cached !== null) {
+      await recordProviderLog({
+        action: "fetch.cacheHit",
+        latencyMs: 0,
+        provider: providerName,
+        status: "success",
+        storeSlug: "mercadolibre",
+      });
+      return { data: cached };
+    }
+  }
+
+  const startedAt = performance.now();
+  const token = await getMercadoLibreToken();
+  let outcome = await rawFetch(path, token);
+  let usedFallback = false;
+
+  const tokenRejected =
+    token && (outcome.status === 401 || outcome.status === 403);
+
+  if (!token || tokenRejected) {
+    if (!token) {
+      await recordMercadoLibreFailure(
+        "fetch.missingToken",
+        "Token de MercadoLibre no disponible. Intentando endpoint público.",
+      );
+    } else if (tokenRejected) {
+      await recordMercadoLibreFailure(
+        "fetch.authRejected",
+        `HTTP ${outcome.status}: token rechazado, intentando fallback público.`,
+      );
+    }
+
+    const fallback = await rawFetch(path, null);
+    if (fallback.data !== null) {
+      outcome = fallback;
+      usedFallback = true;
+    } else if (token) {
+      // El fallback público también falló; conservamos el error original.
+      outcome.errorMessage =
+        fallback.errorMessage ?? outcome.errorMessage;
+    } else {
+      outcome = fallback;
+    }
+  }
+
+  const latencyMs = performance.now() - startedAt;
+
+  if (outcome.data !== null && cacheKey && cache) {
+    await setCachedResponse({
+      body: outcome.data,
+      cacheKey,
+      endpoint: cache.endpoint,
+    });
+  }
+
+  if (outcome.data !== null) {
+    await recordProviderLog({
+      action: usedFallback ? "fetch.publicFallback" : "fetch.success",
+      latencyMs,
+      provider: providerName,
+      status: "success",
+      storeSlug: "mercadolibre",
+    });
+  }
+
+  return { data: outcome.data, errorMessage: outcome.errorMessage };
+}
+
+async function recordMercadoLibreFailure(
+  action: string,
+  errorMessage: string,
+  latencyMs?: number,
+) {
   await recordProviderLog({
     action,
     errorMessage,
+    latencyMs,
     provider: providerName,
     status: "failed",
     storeSlug: "mercadolibre",
@@ -237,12 +320,18 @@ export const mercadoLibreProvider: StoreProvider = {
         return [];
       }
 
+      const siteId = getSiteId();
+      const normalizedQuery = query.trim();
       const searchParams = new URLSearchParams({
         limit: String(searchLimit),
-        q: query.trim(),
+        q: normalizedQuery,
       });
       const result = await fetchMercadoLibreJson(
-        `/sites/${encodeURIComponent(getSiteId())}/search?${searchParams.toString()}`,
+        `/sites/${encodeURIComponent(siteId)}/search?${searchParams.toString()}`,
+        {
+          endpoint: "search",
+          identifier: `${siteId}:${normalizeProductName(normalizedQuery)}:${searchLimit}`,
+        },
       );
 
       if (result.errorMessage) {
@@ -306,6 +395,7 @@ export const mercadoLibreProvider: StoreProvider = {
 
       const result = await fetchMercadoLibreJson(
         `/items/${encodeURIComponent(itemId)}`,
+        { endpoint: "items", identifier: itemId },
       );
 
       if (result.errorMessage) {
@@ -343,6 +433,7 @@ export const mercadoLibreProvider: StoreProvider = {
 
       const result = await fetchMercadoLibreJson(
         `/items/${encodeURIComponent(itemId)}`,
+        { endpoint: "items", identifier: itemId },
       );
 
       if (result.errorMessage) {

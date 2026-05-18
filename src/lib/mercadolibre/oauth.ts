@@ -9,7 +9,7 @@ type TokenCache = {
 };
 
 const tokenOauthUrl = "https://api.mercadolibre.com/oauth/token";
-const refreshBufferMs = 5 * 60 * 1000;
+const refreshBufferMs = 10 * 60 * 1000;
 const requestTimeoutMs = 5000;
 
 let cachedToken: TokenCache | null = null;
