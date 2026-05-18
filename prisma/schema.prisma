@@ -296,6 +296,23 @@ model ProviderLog {
   @@index([createdAt])
 }
 
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  actorId    String?  @db.Uuid
+  actorEmail String?
+  event      String
+  resource   String?
+  resourceId String?
+  metadata   Json?
+  ipHash     String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([actorId, createdAt])
+  @@index([event, createdAt])
+  @@index([createdAt])
+}
+
 model MercadoLibreCache {
   id        String   @id @default(uuid()) @db.Uuid
   cacheKey  String   @unique

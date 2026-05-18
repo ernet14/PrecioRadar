@@ -64,6 +64,7 @@ export const ModelName = {
   AffiliateLink: 'AffiliateLink',
   SearchLog: 'SearchLog',
   ProviderLog: 'ProviderLog',
+  AuditLog: 'AuditLog',
   MercadoLibreCache: 'MercadoLibreCache',
   ProductReport: 'ProductReport',
   NewsletterSubscription: 'NewsletterSubscription',
@@ -280,6 +281,22 @@ export const ProviderLogScalarFieldEnum = {
 export type ProviderLogScalarFieldEnum = (typeof ProviderLogScalarFieldEnum)[keyof typeof ProviderLogScalarFieldEnum]
 
 
+export const AuditLogScalarFieldEnum = {
+  id: 'id',
+  actorId: 'actorId',
+  actorEmail: 'actorEmail',
+  event: 'event',
+  resource: 'resource',
+  resourceId: 'resourceId',
+  metadata: 'metadata',
+  ipHash: 'ipHash',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt'
+} as const
+
+export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
 export const MercadoLibreCacheScalarFieldEnum = {
   id: 'id',
   cacheKey: 'cacheKey',
@@ -349,6 +366,14 @@ export const SortOrder = {
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const JsonNullValueInput = {

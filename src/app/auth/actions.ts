@@ -8,6 +8,8 @@ import {
 } from "@/lib/supabase/config";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { syncAuthUserToPrisma } from "@/services/userSyncService";
+import { recordAuditEvent } from "@/services/auditLogService";
+import { getCurrentUser } from "@/lib/supabase/auth";
 import { rateLimit } from "@/lib/ratelimit";
 import { loginSchema } from "@/lib/validation/schemas";
 import type { AuthFormState } from "@/types/auth";
@@ -15,6 +17,11 @@ import type { AuthFormState } from "@/types/auth";
 async function getIp() {
   const hdrs = await headers();
   return hdrs.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "anonymous";
+}
+
+async function getUserAgent() {
+  const hdrs = await headers();
+  return hdrs.get("user-agent");
 }
 
 function getSafeRedirectPath(value: string) {
@@ -96,6 +103,13 @@ export async function loginAction(
   }
 
   await syncAuthUserToPrisma(data.user);
+  await recordAuditEvent({
+    actorEmail: data.user?.email ?? email,
+    actorId: data.user?.id ?? null,
+    event: "auth.login",
+    ip,
+    userAgent: await getUserAgent(),
+  });
   redirect(nextPath);
 }
 
@@ -155,6 +169,15 @@ export async function registerAction(
     };
   }
 
+  await recordAuditEvent({
+    actorEmail: data.user?.email ?? email,
+    actorId: data.user?.id ?? null,
+    event: "auth.register",
+    ip,
+    metadata: { confirmed: Boolean(data.session) },
+    userAgent: await getUserAgent(),
+  });
+
   if (!data.session) {
     return {
       status: "success",
@@ -169,9 +192,21 @@ export async function registerAction(
 }
 
 export async function logoutAction() {
+  const currentUser = await getCurrentUser();
+
   if (isSupabaseConfigured()) {
     const supabase = await createServerSupabaseClient();
     await supabase.auth.signOut();
+  }
+
+  if (currentUser) {
+    await recordAuditEvent({
+      actorEmail: currentUser.email ?? null,
+      actorId: currentUser.id,
+      event: "auth.logout",
+      ip: await getIp(),
+      userAgent: await getUserAgent(),
+    });
   }
 
   redirect("/");
