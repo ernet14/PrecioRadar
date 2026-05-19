@@ -216,7 +216,7 @@ Supabase migrations (SQL), nuevo `src/lib/validation/` con schemas Zod, todos lo
 ### Quick wins
 
 - Footer con 3 URLs separadas: `/privacidad`, `/terminos`, `/cookies`
-- `privacidad@precioradar.com.ar` operativo
+- `privacidad@precio-radar.com` operativo
 - Logs de consentimiento con timestamp + IP hash
 
 ### Archivos probables

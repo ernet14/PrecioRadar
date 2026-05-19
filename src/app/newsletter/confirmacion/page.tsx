@@ -30,7 +30,7 @@ const statusCopy: Record<
   already_confirmed: {
     badge: "Ya estabas suscripto",
     title: "Tu email ya estaba confirmado",
-    body: "No hace falta hacer nada. Si querés dejar de recibir emails, escribinos a privacidad@precioradar.com.ar.",
+    body: "No hace falta hacer nada. Si querés dejar de recibir emails, escribinos a privacidad@precio-radar.com.",
   },
   invalid: {
     badge: "Link inválido",
@@ -50,7 +50,7 @@ const statusCopy: Record<
   error: {
     badge: "Error",
     title: "Ocurrió un problema al confirmar",
-    body: "Probá de nuevo y, si persiste, escribinos a privacidad@precioradar.com.ar.",
+    body: "Probá de nuevo y, si persiste, escribinos a privacidad@precio-radar.com.",
   },
 };
 

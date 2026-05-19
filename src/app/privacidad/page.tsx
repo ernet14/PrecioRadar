@@ -13,7 +13,7 @@ const sections = [
     title: "Responsable del tratamiento",
     body: [
       "El responsable del tratamiento de datos personales es PrecioRadar, operado por Fernando Salinas, con domicilio en la República Argentina.",
-      "Para consultas sobre privacidad, podés escribirnos a: privacidad@precioradar.com.ar",
+      "Para consultas sobre privacidad, podés escribirnos a: privacidad@precio-radar.com",
       "Fecha de vigencia de esta política: 15 de mayo de 2026.",
     ],
   },
@@ -70,7 +70,7 @@ const sections = [
     title: "Derechos ARCO",
     body: [
       "Tenés derecho a Acceder a tus datos, Rectificarlos si son incorrectos, Cancelarlos (solicitar su eliminación) u Oponerte a ciertos tratamientos, de acuerdo con el art. 14 y ss. de la Ley 25.326.",
-      "Para ejercer estos derechos, escribinos a privacidad@precioradar.com.ar indicando tu nombre, email de cuenta y la acción que querés realizar.",
+      "Para ejercer estos derechos, escribinos a privacidad@precio-radar.com indicando tu nombre, email de cuenta y la acción que querés realizar.",
       "Respondemos en un plazo máximo de 5 días hábiles para confirmar recepción y 15 días hábiles para resolver la solicitud, según el art. 14 de la Ley 25.326.",
       "Si considerás que no atendimos tu solicitud correctamente, podés presentar una denuncia ante la Agencia de Acceso a la Información Pública (AAIP) en www.argentina.gob.ar/aaip.",
     ],
@@ -88,7 +88,7 @@ const sections = [
     title: "Seguridad",
     body: [
       "Aplicamos medidas técnicas y organizativas para proteger tus datos: conexiones cifradas (HTTPS/TLS), almacenamiento cifrado de contraseñas, Row Level Security (RLS) en la base de datos y headers de seguridad HTTP.",
-      "Ningún sistema es 100% seguro. Si detectás una vulnerabilidad, reportala a privacidad@precioradar.com.ar.",
+      "Ningún sistema es 100% seguro. Si detectás una vulnerabilidad, reportala a privacidad@precio-radar.com.",
     ],
   },
   {

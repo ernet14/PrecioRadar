@@ -53,7 +53,7 @@ const sections = [
     title: "Reportá un problema",
     body: [
       "Si ves un precio mal, una recomendación que no encaja o una tienda que aparece sin estar realmente activa, escribinos. Cada feedback nos ayuda a evitar que el comparador mienta.",
-      "Contacto: usá el botón \"Reportar\" dentro de cada producto, o escribí a privacidad@precioradar.com.ar para temas legales y de datos.",
+      "Contacto: usá el botón \"Reportar\" dentro de cada producto, o escribí a privacidad@precio-radar.com para temas legales y de datos.",
     ],
   },
 ];

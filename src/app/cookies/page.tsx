@@ -43,7 +43,7 @@ const sections = [
   {
     title: "Contacto",
     body: [
-      "Para consultas sobre cookies o privacidad escribinos a privacidad@precioradar.com.ar",
+      "Para consultas sobre cookies o privacidad escribinos a privacidad@precio-radar.com",
       "Fecha de vigencia: 15 de mayo de 2026.",
     ],
   },

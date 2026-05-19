@@ -14,7 +14,7 @@ type AccountStatus =
 const statusMessages: Record<NonNullable<AccountStatus>, string> = {
   "invalid-confirmation": `Tenés que escribir ${REQUIRED_CONFIRMATION} para confirmar la baja.`,
   unavailable: "Servicio caído. Probá de nuevo en unos minutos.",
-  error: "No pudimos eliminar la cuenta. Escribinos a privacidad@precioradar.com.ar.",
+  error: "No pudimos eliminar la cuenta. Escribinos a privacidad@precio-radar.com.",
 };
 
 export function AccountControls({ status }: { status: AccountStatus }) {

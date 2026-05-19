@@ -75,7 +75,7 @@ const sections = [
     body: [
       "Podemos actualizar estos términos ante cambios en el servicio, legales o de negocio. Los cambios materiales se notificarán por email o mediante un aviso destacado en el sitio.",
       "La fecha de vigencia al inicio del documento refleja la versión actual. Continuar usando el servicio después de un cambio implica aceptación de los nuevos términos.",
-      "Fecha de vigencia: 15 de mayo de 2026. Para consultas: privacidad@precioradar.com.ar",
+      "Fecha de vigencia: 15 de mayo de 2026. Para consultas: privacidad@precio-radar.com",
     ],
   },
 ];

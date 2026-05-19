@@ -51,7 +51,7 @@ export default function GlobalError({
               maxWidth: "440px",
             }}
           >
-            Si vuelve a pasar, escribinos a privacidad@precioradar.com.ar con
+            Si vuelve a pasar, escribinos a privacidad@precio-radar.com con
             el código de error.
           </p>
           {error.digest ? (

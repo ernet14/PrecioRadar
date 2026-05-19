@@ -11,7 +11,7 @@ export default function DashboardError({
 }) {
   return (
     <ErrorState
-      description="No pudimos cargar tu dashboard. Reintentá; si persiste, escribinos a privacidad@precioradar.com.ar."
+      description="No pudimos cargar tu dashboard. Reintentá; si persiste, escribinos a privacidad@precio-radar.com."
       error={error}
       reset={reset}
       title="Dashboard no disponible"
