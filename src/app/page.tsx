@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/layout/Container";
 import { SearchForm } from "@/components/search/SearchForm";
@@ -105,12 +106,15 @@ function ProductImage({
 }) {
   if (imageUrl) {
     return (
-      <div
-        aria-label={name}
-        className="h-36 rounded-lg border border-slate-100 bg-white bg-contain bg-center bg-no-repeat"
-        role="img"
-        style={{ backgroundImage: `url(${imageUrl})` }}
-      />
+      <div className="relative h-36 overflow-hidden rounded-lg border border-slate-100 bg-white">
+        <Image
+          alt={name}
+          className="object-contain"
+          fill
+          sizes="(max-width: 768px) 100vw, 280px"
+          src={imageUrl}
+        />
+      </div>
     );
   }
 

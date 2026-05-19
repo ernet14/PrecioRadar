@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   deleteAlertAction,
@@ -80,12 +81,15 @@ function ProductImage({
   }
 
   return (
-    <div
-      aria-label={name}
-      className="h-28 w-28 shrink-0 rounded-xl border border-slate-100 bg-white bg-contain bg-center bg-no-repeat shadow-sm"
-      role="img"
-      style={{ backgroundImage: `url(${imageUrl})` }}
-    />
+    <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-xl border border-slate-100 bg-white shadow-sm">
+      <Image
+        alt={name}
+        className="object-contain"
+        fill
+        sizes="112px"
+        src={imageUrl}
+      />
+    </div>
   );
 }
 

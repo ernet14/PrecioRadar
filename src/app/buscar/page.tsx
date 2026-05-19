@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/layout/Container";
 import { TrackProductButton } from "@/components/product/TrackProductButton";
@@ -101,12 +102,15 @@ function ResultCard({
         <div className="border-b border-slate-100 bg-slate-50 p-5 lg:border-b-0 lg:border-r">
           <div className="flex min-h-72 items-center justify-center rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
             {imageUrl ? (
-              <div
-                aria-label={item.product.name}
-                className="h-64 w-full bg-contain bg-center bg-no-repeat"
-                role="img"
-                style={{ backgroundImage: `url(${imageUrl})` }}
-              />
+              <div className="relative h-64 w-full">
+                <Image
+                  alt={item.product.name}
+                  className="object-contain"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 300px"
+                  src={imageUrl}
+                />
+              </div>
             ) : (
               <div className="px-4 text-center text-sm font-medium text-slate-400">
                 Sin imagen

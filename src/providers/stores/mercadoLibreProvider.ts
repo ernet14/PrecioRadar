@@ -1,6 +1,11 @@
 import { isMercadoLibreUrl, normalizeProductName } from "@/lib/utils";
 import { getMercadoLibreToken } from "@/lib/mercadolibre/oauth";
 import {
+  isCircuitOpen,
+  recordCircuitFailure,
+  recordCircuitSuccess,
+} from "@/lib/circuitBreaker";
+import {
   buildCacheKey,
   getCachedResponse,
   setCachedResponse,
@@ -148,6 +153,8 @@ async function rawFetch(
   }
 }
 
+const circuitName = "mercadolibre";
+
 async function fetchMercadoLibreJson(
   path: string,
   cache: { endpoint: MercadoLibreEndpoint; identifier: string } | null,
@@ -166,6 +173,17 @@ async function fetchMercadoLibreJson(
       });
       return { data: cached };
     }
+  }
+
+  if (isCircuitOpen(circuitName)) {
+    await recordProviderLog({
+      action: "fetch.circuitOpen",
+      errorMessage: "Circuito abierto por fallos consecutivos. Sirviendo desde cache si existe.",
+      provider: providerName,
+      status: "skipped",
+      storeSlug: "mercadolibre",
+    });
+    return { data: null, errorMessage: "Provider MercadoLibre temporalmente no disponible." };
   }
 
   const startedAt = performance.now();
@@ -213,6 +231,7 @@ async function fetchMercadoLibreJson(
   }
 
   if (outcome.data !== null) {
+    recordCircuitSuccess(circuitName);
     await recordProviderLog({
       action: usedFallback ? "fetch.publicFallback" : "fetch.success",
       latencyMs,
@@ -220,6 +239,8 @@ async function fetchMercadoLibreJson(
       status: "success",
       storeSlug: "mercadolibre",
     });
+  } else {
+    recordCircuitFailure(circuitName);
   }
 
   return { data: outcome.data, errorMessage: outcome.errorMessage };
