@@ -402,6 +402,7 @@ export const ModelName = {
   MercadoLibreCache: 'MercadoLibreCache',
   ProductReport: 'ProductReport',
   NewsletterSubscription: 'NewsletterSubscription',
+  MercadoLibreAuth: 'MercadoLibreAuth',
   BankPromo: 'BankPromo'
 } as const
 
@@ -418,7 +419,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "affiliateLink" | "searchLog" | "providerLog" | "scrapeJob" | "auditLog" | "mercadoLibreCache" | "productReport" | "newsletterSubscription" | "bankPromo"
+    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "affiliateLink" | "searchLog" | "providerLog" | "scrapeJob" | "auditLog" | "mercadoLibreCache" | "productReport" | "newsletterSubscription" | "mercadoLibreAuth" | "bankPromo"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1754,6 +1755,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    MercadoLibreAuth: {
+      payload: Prisma.$MercadoLibreAuthPayload<ExtArgs>
+      fields: Prisma.MercadoLibreAuthFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MercadoLibreAuthFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MercadoLibreAuthPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MercadoLibreAuthFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MercadoLibreAuthPayload>
+        }
+        findFirst: {
+          args: Prisma.MercadoLibreAuthFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MercadoLibreAuthPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MercadoLibreAuthFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MercadoLibreAuthPayload>
+        }
+        findMany: {
+          args: Prisma.MercadoLibreAuthFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MercadoLibreAuthPayload>[]
+        }
+        create: {
+          args: Prisma.MercadoLibreAuthCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MercadoLibreAuthPayload>
+        }
+        createMany: {
+          args: Prisma.MercadoLibreAuthCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MercadoLibreAuthCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MercadoLibreAuthPayload>[]
+        }
+        delete: {
+          args: Prisma.MercadoLibreAuthDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MercadoLibreAuthPayload>
+        }
+        update: {
+          args: Prisma.MercadoLibreAuthUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MercadoLibreAuthPayload>
+        }
+        deleteMany: {
+          args: Prisma.MercadoLibreAuthDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MercadoLibreAuthUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MercadoLibreAuthUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MercadoLibreAuthPayload>[]
+        }
+        upsert: {
+          args: Prisma.MercadoLibreAuthUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MercadoLibreAuthPayload>
+        }
+        aggregate: {
+          args: Prisma.MercadoLibreAuthAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMercadoLibreAuth>
+        }
+        groupBy: {
+          args: Prisma.MercadoLibreAuthGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MercadoLibreAuthGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MercadoLibreAuthCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MercadoLibreAuthCountAggregateOutputType> | number
+        }
+      }
+    }
     BankPromo: {
       payload: Prisma.$BankPromoPayload<ExtArgs>
       fields: Prisma.BankPromoFieldRefs
@@ -2140,6 +2215,21 @@ export const NewsletterSubscriptionScalarFieldEnum = {
 export type NewsletterSubscriptionScalarFieldEnum = (typeof NewsletterSubscriptionScalarFieldEnum)[keyof typeof NewsletterSubscriptionScalarFieldEnum]
 
 
+export const MercadoLibreAuthScalarFieldEnum = {
+  id: 'id',
+  singletonKey: 'singletonKey',
+  mlUserId: 'mlUserId',
+  accessToken: 'accessToken',
+  refreshToken: 'refreshToken',
+  scope: 'scope',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MercadoLibreAuthScalarFieldEnum = (typeof MercadoLibreAuthScalarFieldEnum)[keyof typeof MercadoLibreAuthScalarFieldEnum]
+
+
 export const BankPromoScalarFieldEnum = {
   id: 'id',
   entity: 'entity',
@@ -2504,6 +2594,7 @@ export type GlobalOmitConfig = {
   mercadoLibreCache?: Prisma.MercadoLibreCacheOmit
   productReport?: Prisma.ProductReportOmit
   newsletterSubscription?: Prisma.NewsletterSubscriptionOmit
+  mercadoLibreAuth?: Prisma.MercadoLibreAuthOmit
   bankPromo?: Prisma.BankPromoOmit
 }
 

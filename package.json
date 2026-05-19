@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "node --import tsx --test tests/TrackProductButton.test.tsx tests/auditLogService.test.ts tests/categoriesData.test.ts tests/circuitBreaker.test.ts tests/clickTrackingService.test.ts tests/logger.test.ts tests/mercadoLibreProvider.test.ts tests/providerLogService.test.ts tests/refreshPricesRoute.test.ts tests/recommendationService.test.ts tests/searchLogService.test.ts tests/searchService.test.ts tests/ssrfAllowlist.test.ts",
+    "test": "node --import tsx --test tests/TrackProductButton.test.tsx tests/auditLogService.test.ts tests/categoriesData.test.ts tests/circuitBreaker.test.ts tests/clickTrackingService.test.ts tests/logger.test.ts tests/mercadoLibreOauth.test.ts tests/mercadoLibreProvider.test.ts tests/providerLogService.test.ts tests/refreshPricesRoute.test.ts tests/recommendationService.test.ts tests/searchLogService.test.ts tests/searchService.test.ts tests/ssrfAllowlist.test.ts",
     "test:e2e": "playwright test",
     "lint": "eslint",
     "db:generate": "prisma generate",

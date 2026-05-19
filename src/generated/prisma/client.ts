@@ -132,6 +132,11 @@ export type ProductReport = Prisma.ProductReportModel
  */
 export type NewsletterSubscription = Prisma.NewsletterSubscriptionModel
 /**
+ * Model MercadoLibreAuth
+ * 
+ */
+export type MercadoLibreAuth = Prisma.MercadoLibreAuthModel
+/**
  * Model BankPromo
  * 
  */

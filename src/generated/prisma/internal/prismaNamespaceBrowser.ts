@@ -69,6 +69,7 @@ export const ModelName = {
   MercadoLibreCache: 'MercadoLibreCache',
   ProductReport: 'ProductReport',
   NewsletterSubscription: 'NewsletterSubscription',
+  MercadoLibreAuth: 'MercadoLibreAuth',
   BankPromo: 'BankPromo'
 } as const
 
@@ -359,6 +360,21 @@ export const NewsletterSubscriptionScalarFieldEnum = {
 } as const
 
 export type NewsletterSubscriptionScalarFieldEnum = (typeof NewsletterSubscriptionScalarFieldEnum)[keyof typeof NewsletterSubscriptionScalarFieldEnum]
+
+
+export const MercadoLibreAuthScalarFieldEnum = {
+  id: 'id',
+  singletonKey: 'singletonKey',
+  mlUserId: 'mlUserId',
+  accessToken: 'accessToken',
+  refreshToken: 'refreshToken',
+  scope: 'scope',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MercadoLibreAuthScalarFieldEnum = (typeof MercadoLibreAuthScalarFieldEnum)[keyof typeof MercadoLibreAuthScalarFieldEnum]
 
 
 export const BankPromoScalarFieldEnum = {

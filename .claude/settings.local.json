@@ -27,7 +27,11 @@
       "Bash(dir D:ProyectosPrecioRadarprismamigrations *)",
       "Bash(git check-ignore *)",
       "Skill(vercel:env-vars)",
-      "Bash(vercel env *)"
+      "Bash(vercel env *)",
+      "Bash(npm outdated *)",
+      "Bash(findstr /I \"roadmap etapa informe\")",
+      "Bash(curl.exe *)",
+      "Bash(npx.cmd prisma *)"
     ]
   }
 }
