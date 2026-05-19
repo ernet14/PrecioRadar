@@ -74,7 +74,8 @@ test("searches MercadoLibre MLA and normalizes results", async () => {
     requestedUrl,
     "https://api.mercadolibre.com/sites/MLA/search?limit=10&q=Galaxy+A55",
   );
-  assert.equal(authorizationHeader, "Bearer test-token");
+  // search es public-first: el primer intento NO debe llevar Bearer.
+  assert.equal(authorizationHeader, "null");
   assert.equal(products.length, 1);
   assert.equal(products[0].externalId, "MLA123456789");
   assert.equal(products[0].brand, "Samsung");

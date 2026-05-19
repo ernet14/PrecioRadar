@@ -111,7 +111,32 @@ type RawFetchOutcome = {
   data: unknown | null;
   errorMessage?: string;
   status?: number;
+  responseSnippet?: string;
 };
+
+type FetchStrategy = "public-first" | "bearer-first";
+
+const strategyByEndpoint: Record<MercadoLibreEndpoint, FetchStrategy> = {
+  // /sites/{site}/search es endpoint público; MeLi rechaza Bearer de
+  // client_credentials desde IPs cloud (Vercel) con 403. Probamos sin
+  // Authorization primero y solo caemos a Bearer si el anónimo falla.
+  search: "public-first",
+  // /items/{id} acepta token (devuelve más campos). Probamos con Bearer
+  // y caemos a público si MeLi rechaza.
+  items: "bearer-first",
+  // /categories/{id} es público.
+  categories: "public-first",
+};
+
+const errorSnippetMax = 400;
+
+function truncateSnippet(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+  return trimmed.length > errorSnippetMax
+    ? `${trimmed.slice(0, errorSnippetMax - 3)}...`
+    : trimmed;
+}
 
 async function rawFetch(
   path: string,
@@ -119,6 +144,7 @@ async function rawFetch(
 ): Promise<RawFetchOutcome> {
   const headers: Record<string, string> = {
     Accept: "application/json",
+    "User-Agent": "PrecioRadar/1.0 (+https://precioradar.com.ar)",
   };
 
   if (token) {
@@ -135,9 +161,11 @@ async function rawFetch(
     });
 
     if (!response.ok) {
+      const bodyText = await response.text().catch(() => "");
       return {
         data: null,
         errorMessage: `HTTP ${response.status} desde MercadoLibre.`,
+        responseSnippet: truncateSnippet(bodyText),
         status: response.status,
       };
     }
@@ -188,52 +216,90 @@ async function fetchMercadoLibreJson(
 
   const startedAt = performance.now();
   const token = await getMercadoLibreToken();
-  let outcome = await rawFetch(path, token);
+  const strategy: FetchStrategy = cache
+    ? strategyByEndpoint[cache.endpoint]
+    : "bearer-first";
+
+  const order: (string | null)[] =
+    strategy === "public-first"
+      ? token
+        ? [null, token]
+        : [null]
+      : token
+        ? [token, null]
+        : [null];
+
+  let outcome: RawFetchOutcome | null = null;
+  let attemptIndex = 0;
+  let usedToken = false;
   let usedFallback = false;
 
-  const tokenRejected =
-    token && (outcome.status === 401 || outcome.status === 403);
+  for (const attemptToken of order) {
+    outcome = await rawFetch(path, attemptToken);
+    const succeeded = outcome.data !== null;
 
-  if (!token || tokenRejected) {
-    if (!token) {
-      await recordMercadoLibreFailure(
-        "fetch.missingToken",
-        "Token de MercadoLibre no disponible. Intentando endpoint público.",
-      );
-    } else if (tokenRejected) {
-      await recordMercadoLibreFailure(
-        "fetch.authRejected",
-        `HTTP ${outcome.status}: token rechazado, intentando fallback público.`,
-      );
+    if (succeeded) {
+      usedToken = attemptToken !== null;
+      usedFallback = attemptIndex > 0;
+      break;
     }
 
-    const fallback = await rawFetch(path, null);
-    if (fallback.data !== null) {
-      outcome = fallback;
-      usedFallback = true;
-    } else if (token) {
-      // El fallback público también falló; conservamos el error original.
-      outcome.errorMessage =
-        fallback.errorMessage ?? outcome.errorMessage;
-    } else {
-      outcome = fallback;
+    const shouldRetry =
+      attemptIndex < order.length - 1 &&
+      (outcome.status === 401 || outcome.status === 403);
+
+    if (!shouldRetry) {
+      // Loguear el error con path + snippet del body cuando algo falla
+      // de manera no recuperable o cuando aún hay reintento pendiente con
+      // body informativo.
+      await recordMercadoLibreFailure(
+        attemptIndex === 0 && strategy === "public-first"
+          ? "fetch.publicFailed"
+          : attemptToken
+            ? "fetch.authRejected"
+            : "fetch.publicRejected",
+        `HTTP ${outcome.status ?? "?"} en ${path}${
+          outcome.responseSnippet ? ` — body: ${outcome.responseSnippet}` : ""
+        }`,
+      );
+      break;
     }
+
+    // Hay reintento: loggear este intento como warning antes de seguir.
+    await recordMercadoLibreFailure(
+      attemptToken ? "fetch.bearerRejected" : "fetch.publicRejected",
+      `HTTP ${outcome.status ?? "?"} en ${path}${
+        outcome.responseSnippet ? ` — body: ${outcome.responseSnippet}` : ""
+      }. Reintentando con ${attemptToken ? "público" : "Bearer"}.`,
+    );
+
+    attemptIndex += 1;
   }
 
   const latencyMs = performance.now() - startedAt;
+  const finalOutcome = outcome ?? {
+    data: null,
+    errorMessage: "MercadoLibre fetch sin intento válido.",
+  };
 
-  if (outcome.data !== null && cacheKey && cache) {
+  if (finalOutcome.data !== null && cacheKey && cache) {
     await setCachedResponse({
-      body: outcome.data,
+      body: finalOutcome.data,
       cacheKey,
       endpoint: cache.endpoint,
     });
   }
 
-  if (outcome.data !== null) {
+  if (finalOutcome.data !== null) {
     recordCircuitSuccess(circuitName);
     await recordProviderLog({
-      action: usedFallback ? "fetch.publicFallback" : "fetch.success",
+      action: usedFallback
+        ? usedToken
+          ? "fetch.bearerFallback"
+          : "fetch.publicFallback"
+        : usedToken
+          ? "fetch.successBearer"
+          : "fetch.successPublic",
       latencyMs,
       provider: providerName,
       status: "success",
@@ -243,7 +309,10 @@ async function fetchMercadoLibreJson(
     recordCircuitFailure(circuitName);
   }
 
-  return { data: outcome.data, errorMessage: outcome.errorMessage };
+  return {
+    data: finalOutcome.data,
+    errorMessage: finalOutcome.errorMessage,
+  };
 }
 
 async function recordMercadoLibreFailure(
