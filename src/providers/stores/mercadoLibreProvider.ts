@@ -144,7 +144,7 @@ async function rawFetch(
 ): Promise<RawFetchOutcome> {
   const headers: Record<string, string> = {
     Accept: "application/json",
-    "User-Agent": "PrecioRadar/1.0 (+https://precioradar.com.ar)",
+    "User-Agent": "PrecioRadar/1.0 (+https://www.precio-radar.com)",
   };
 
   if (token) {

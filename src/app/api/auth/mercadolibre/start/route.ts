@@ -1,6 +1,4 @@
 import { randomBytes } from "node:crypto";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/supabase/auth";
 import { buildAuthorizationUrl } from "@/lib/mercadolibre/oauth";
 
@@ -12,30 +10,32 @@ const stateCookieMaxAgeSec = 10 * 60;
 export async function GET() {
   await requireAdmin();
 
-  const authorizationUrl = buildAuthorizationUrl("__placeholder__");
+  const state = randomBytes(32).toString("hex");
+  const authorizationUrl = buildAuthorizationUrl(state);
   if (!authorizationUrl) {
     return new Response(
       "MercadoLibre OAuth no esta configurado. Faltan CLIENT_ID, CLIENT_SECRET o REDIRECT_URI.",
-      { status: 500 },
+      { status: 500, headers: { "Cache-Control": "no-store" } },
     );
   }
 
-  const state = randomBytes(32).toString("hex");
-  const cookieStore = await cookies();
-  cookieStore.set({
-    name: stateCookieName,
-    value: state,
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/api/auth/mercadolibre",
-    maxAge: stateCookieMaxAgeSec,
+  const secureCookie = process.env.NODE_ENV === "production";
+  const cookieParts = [
+    `${stateCookieName}=${state}`,
+    "Path=/api/auth/mercadolibre",
+    `Max-Age=${stateCookieMaxAgeSec}`,
+    "HttpOnly",
+    "SameSite=Lax",
+  ];
+  if (secureCookie) cookieParts.push("Secure");
+
+  return new Response(null, {
+    status: 302,
+    headers: {
+      Location: authorizationUrl,
+      "Set-Cookie": cookieParts.join("; "),
+      "Cache-Control": "no-store",
+      "Referrer-Policy": "no-referrer",
+    },
   });
-
-  const finalUrl = authorizationUrl.replace(
-    "state=__placeholder__",
-    `state=${encodeURIComponent(state)}`,
-  );
-
-  redirect(finalUrl);
 }

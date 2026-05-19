@@ -21,9 +21,9 @@ Lo que entrega el código y lo que necesitás hacer manualmente para activar la 
 ### 1. Verificar el sitio en Google Search Console
 
 1. Entrá a https://search.google.com/search-console/
-2. Agregá una propiedad para `https://precioradar.com.ar` (Dominio o Prefijo de URL — preferí Dominio si manejás DNS).
+2. Agregá una propiedad para `https://www.precio-radar.com` (Dominio o Prefijo de URL — preferí Dominio si manejás DNS).
 3. Verificá la propiedad. Si elegiste Dominio, agregás un TXT en DNS. Si elegiste Prefijo de URL, subís un HTML o usás un meta tag (lo más rápido).
-4. En `Sitemaps` cargá `https://precioradar.com.ar/sitemap.xml`. Esperá unas horas y revisá que Search Console lo procese sin errores.
+4. En `Sitemaps` cargá `https://www.precio-radar.com/sitemap.xml`. Esperá unas horas y revisá que Search Console lo procese sin errores.
 
 ### 2. Verificar el sitio en Bing Webmaster Tools
 
@@ -41,12 +41,12 @@ IndexNow es un protocolo abierto que notifica a Bing/Yandex cada vez que cambia 
    [Convert]::ToHexString([System.Security.Cryptography.RandomNumberGenerator]::GetBytes(16))
    ```
 
-2. Subí un archivo público `https://precioradar.com.ar/<TU_CLAVE>.txt` cuyo contenido sea exactamente la misma clave. La forma más fácil en este repo es agregarlo en `public/<TU_CLAVE>.txt`.
+2. Subí un archivo público `https://www.precio-radar.com/<TU_CLAVE>.txt` cuyo contenido sea exactamente la misma clave. La forma más fácil en este repo es agregarlo en `public/<TU_CLAVE>.txt`.
 
 3. Cuando tengamos una operación de cron de "rebuild sitemap", podemos ping a IndexNow. Para esta etapa basta con dejarlo configurado. El ping manual es:
 
    ```bash
-   curl "https://api.indexnow.org/indexnow?url=https://precioradar.com.ar/&key=TU_CLAVE"
+   curl "https://api.indexnow.org/indexnow?url=https://www.precio-radar.com/&key=TU_CLAVE"
    ```
 
    Es opcional. Bing y Yandex también respetan el sitemap.
@@ -55,7 +55,7 @@ IndexNow es un protocolo abierto que notifica a Bing/Yandex cada vez que cambia 
 
 Una vez deployado a producción, validá:
 
-- https://search.google.com/test/rich-results → pegá `https://precioradar.com.ar/producto/<slug>` → tiene que detectar `Product` + `AggregateOffer` (cuando haya más de una oferta) + `BreadcrumbList`.
+- https://search.google.com/test/rich-results → pegá `https://www.precio-radar.com/producto/<slug>` → tiene que detectar `Product` + `AggregateOffer` (cuando haya más de una oferta) + `BreadcrumbList`.
 - Repetir con una URL `/categoria/<slug>` → `CollectionPage` + `BreadcrumbList`.
 
 Si Search Console marca el JSON-LD con warnings (`priceValidUntil` viejo, `seller` faltante, etc.), avisame y lo ajustamos.

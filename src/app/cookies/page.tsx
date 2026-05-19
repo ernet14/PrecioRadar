@@ -36,7 +36,7 @@ const sections = [
     body: [
       "Al ingresar por primera vez al sitio, verás un banner para aceptar o rechazar el uso de cookies no esenciales.",
       "Si rechazás, solo se usarán las cookies estrictamente necesarias para el funcionamiento del servicio (sesión de autenticación).",
-      "Podés cambiar tu preferencia en cualquier momento borrando la cookie pr_cookie_consent desde la configuración de tu navegador (Configuración → Privacidad → Cookies del sitio → precioradar.com.ar).",
+      "Podés cambiar tu preferencia en cualquier momento borrando la cookie pr_cookie_consent desde la configuración de tu navegador (Configuración → Privacidad → Cookies del sitio → www.precio-radar.com).",
       "También podés deshabilitar todas las cookies desde tu navegador, pero esto puede impedir que funciones como el login y las alertas operen correctamente.",
     ],
   },

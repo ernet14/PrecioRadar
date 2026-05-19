@@ -1,4 +1,4 @@
-const defaultSiteUrl = "https://precioradar.com.ar";
+const defaultSiteUrl = "https://www.precio-radar.com";
 
 export function getSiteUrl() {
   const rawUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() || defaultSiteUrl;
