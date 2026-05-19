@@ -4,32 +4,46 @@ import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/Button";
 import { getCurrentUser } from "@/lib/supabase/auth";
 
-const navLinkClass = "transition hover:text-slate-950";
-const linkButtonClass =
+const navLinkClass =
+  "relative text-slate-600 transition hover:text-slate-950 after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-0 after:rounded-full after:bg-gradient-to-r after:from-indigo-500 after:to-emerald-400 after:transition-all hover:after:w-full";
+
+const linkButtonBase =
   "inline-flex h-10 items-center justify-center rounded-lg px-4 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2";
-const secondaryLinkButtonClass = `${linkButtonClass} border border-slate-200 bg-white text-slate-800 shadow-sm hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-slate-400`;
-const primaryLinkButtonClass = `${linkButtonClass} bg-slate-950 text-white shadow-sm hover:bg-slate-800 focus-visible:outline-slate-950`;
+const secondaryLinkClass = `${linkButtonBase} border border-slate-200 bg-white text-slate-800 shadow-sm hover:border-indigo-300 hover:text-indigo-700 hover:bg-indigo-50/60 focus-visible:outline-indigo-400`;
+const primaryLinkClass = `${linkButtonBase} bg-gradient-to-b from-indigo-500 to-indigo-600 text-white shadow-[0_8px_20px_-8px_rgba(79,70,229,0.55)] hover:from-indigo-500 hover:to-indigo-700 focus-visible:outline-indigo-500`;
 
 export async function Header() {
   const user = await getCurrentUser();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60">
       <Container className="flex min-h-16 items-center justify-between gap-4 py-3">
         <Link
           href="/"
-          className="text-xl font-semibold tracking-normal text-slate-950"
+          className="group flex items-center gap-2 text-lg font-bold tracking-tight text-slate-950"
           aria-label="PrecioRadar inicio"
         >
-          Precio<span className="text-emerald-600">Radar</span>
+          <span
+            aria-hidden
+            className="relative grid h-9 w-9 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-white shadow-[0_8px_20px_-6px_rgba(79,70,229,0.6)]"
+          >
+            <span className="absolute inset-1 rounded-md border border-white/25" />
+            <span className="absolute h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_10px_rgba(52,211,153,0.85)]" />
+          </span>
+          <span className="leading-none">
+            Precio<span className="text-indigo-600">Radar</span>
+          </span>
         </Link>
 
-        <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
+        <nav className="hidden items-center gap-7 text-sm font-medium md:flex">
           <Link className={navLinkClass} href="/#buscar">
             Buscar
           </Link>
           <Link className={navLinkClass} href="/#categorias">
             Categorías
+          </Link>
+          <Link className={navLinkClass} href="/guias">
+            Guías
           </Link>
           <Link className={navLinkClass} href="/#como-funciona">
             Cómo funciona
@@ -38,7 +52,7 @@ export async function Header() {
 
         {user ? (
           <div className="flex items-center gap-2">
-            <Link className={secondaryLinkButtonClass} href="/dashboard">
+            <Link className={secondaryLinkClass} href="/dashboard">
               Dashboard
             </Link>
             <form action={logoutAction}>
@@ -49,10 +63,10 @@ export async function Header() {
           </div>
         ) : (
           <div className="flex items-center gap-2">
-            <Link className={secondaryLinkButtonClass} href="/login">
+            <Link className={secondaryLinkClass} href="/login">
               Ingresar
             </Link>
-            <Link className={primaryLinkButtonClass} href="/registro">
+            <Link className={primaryLinkClass} href="/registro">
               Registrarse
             </Link>
           </div>

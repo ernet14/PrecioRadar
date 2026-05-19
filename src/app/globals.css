@@ -1,15 +1,27 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f6f8fb;
-  --foreground: #0f172a;
+  --background: #f4f6fb;
+  --foreground: #0b1020;
+  --brand-50: #eef2ff;
+  --brand-100: #e0e7ff;
+  --brand-500: #6366f1;
+  --brand-600: #4f46e5;
+  --brand-700: #4338ca;
+  --accent-400: #34d399;
+  --accent-500: #10b981;
+  --accent-600: #059669;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: Arial, Helvetica, sans-serif;
-  --font-mono: "Courier New", Courier, monospace;
+  --font-sans:
+    "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
 }
 
 *,
@@ -27,10 +39,187 @@ body {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: #bbf7d0;
-  color: #0f172a;
+  background: #c7d2fe;
+  color: #0b1020;
+}
+
+/* Hero halo backgrounds — usar como overlay decorativo en secciones dark */
+.bg-hero-glow {
+  background:
+    radial-gradient(
+      55rem 28rem at 80% -10%,
+      rgba(99, 102, 241, 0.28),
+      transparent 70%
+    ),
+    radial-gradient(
+      40rem 24rem at 0% 110%,
+      rgba(16, 185, 129, 0.18),
+      transparent 70%
+    ),
+    linear-gradient(180deg, #0b1020 0%, #0b1020 60%, #111a2e 100%);
+}
+
+.bg-hero-premium {
+  background:
+    radial-gradient(
+      55rem 30rem at 82% -10%,
+      rgba(99, 102, 241, 0.36),
+      transparent 70%
+    ),
+    radial-gradient(
+      36rem 24rem at 8% 110%,
+      rgba(16, 185, 129, 0.16),
+      transparent 70%
+    ),
+    radial-gradient(
+      30rem 22rem at 50% 50%,
+      rgba(139, 92, 246, 0.16),
+      transparent 70%
+    ),
+    linear-gradient(180deg, #07081a 0%, #0b1126 55%, #111a2e 100%);
+}
+
+.bg-hero-grid {
+  background-image:
+    linear-gradient(rgba(148, 163, 217, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 217, 0.07) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(
+    ellipse 80% 60% at center,
+    black 0%,
+    transparent 75%
+  );
+  mask-image: radial-gradient(
+    ellipse 80% 60% at center,
+    black 0%,
+    transparent 75%
+  );
+}
+
+.bg-section-soft {
+  background:
+    radial-gradient(60rem 22rem at 50% -10%, rgba(99, 102, 241, 0.06), transparent 70%),
+    #f4f6fb;
+}
+
+/* Focus ring brand */
+.focus-ring-brand:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+/* Hero microanimaciones — todas usan transform/opacity (compositor) */
+@keyframes hero-radar-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes hero-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+@keyframes hero-glow-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.04);
+  }
+}
+@keyframes hero-particle-drift {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(60px, -80px, 0);
+    opacity: 0;
+  }
+}
+@keyframes hero-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.hero-radar-spin {
+  animation: hero-radar-spin 60s linear infinite;
+  transform-origin: 50% 50%;
+}
+.hero-float {
+  animation: hero-float 6s ease-in-out infinite;
+  will-change: transform;
+}
+.hero-float-delay-1 {
+  animation-delay: -2s;
+}
+.hero-float-delay-2 {
+  animation-delay: -4s;
+}
+.hero-float-delay-3 {
+  animation-delay: -1s;
+}
+.hero-glow-breathe {
+  animation: hero-glow-breathe 7s ease-in-out infinite;
+}
+.hero-particle {
+  animation: hero-particle-drift 9s linear infinite;
+}
+.hero-particle-delay-1 {
+  animation-delay: -3s;
+}
+.hero-particle-delay-2 {
+  animation-delay: -6s;
+}
+.hero-fade-in {
+  animation: hero-fade-in-up 0.6s ease-out both;
+}
+.hero-fade-in-delay-1 {
+  animation-delay: 0.15s;
+}
+.hero-fade-in-delay-2 {
+  animation-delay: 0.3s;
+}
+.hero-fade-in-delay-3 {
+  animation-delay: 0.45s;
+}
+.hero-fade-in-delay-4 {
+  animation-delay: 0.6s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-radar-spin,
+  .hero-float,
+  .hero-glow-breathe,
+  .hero-particle,
+  .hero-fade-in {
+    animation: none !important;
+  }
 }

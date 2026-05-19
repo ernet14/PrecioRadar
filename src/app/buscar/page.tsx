@@ -97,7 +97,7 @@ function ResultCard({
   const imageUrl = item.product.imageUrl ?? offer?.imageUrl ?? null;
 
   return (
-    <Card className="overflow-hidden border-slate-200 bg-white shadow-[0_22px_70px_rgba(15,23,42,0.08)] transition hover:border-blue-200 hover:shadow-[0_26px_80px_rgba(15,23,42,0.12)]">
+    <Card className="overflow-hidden border-slate-200 bg-white transition hover:border-indigo-200 hover:shadow-[0_22px_60px_-20px_rgba(79,70,229,0.25)]">
       <div className="grid lg:grid-cols-[300px_1fr]">
         <div className="border-b border-slate-100 bg-slate-50 p-5 lg:border-b-0 lg:border-r">
           <div className="flex min-h-72 items-center justify-center rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
@@ -150,11 +150,11 @@ function ResultCard({
               </p>
             </div>
 
-            <div className="rounded-lg border border-blue-100 bg-blue-50 p-4 xl:text-right">
-              <p className="text-xs font-semibold uppercase tracking-normal text-blue-700">
+            <div className="rounded-xl border border-indigo-100 bg-gradient-to-br from-indigo-50 via-white to-emerald-50 p-4 xl:text-right">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-indigo-700">
                 {offersCount > 1 ? "Desde" : "Precio actual"}
               </p>
-              <p className="mt-1 text-4xl font-semibold leading-tight text-slate-950">
+              <p className="mt-1 text-4xl font-bold leading-tight tracking-tight text-slate-950">
                 {formatCurrencyARS(offer?.price ?? recommendation?.currentPrice ?? 0)}
               </p>
               <p className="mt-2 text-xs font-medium text-slate-500">
@@ -167,7 +167,7 @@ function ResultCard({
 
           {topOffers.length > 0 ? (
             <div className="mt-7 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-              <div className="bg-slate-950 px-5 py-4 text-white">
+              <div className="bg-hero-glow px-5 py-4 text-white">
                 <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                   <div>
                     <p className="text-lg font-semibold">Ofertas destacadas</p>
@@ -175,7 +175,7 @@ function ResultCard({
                       Mini comparación de tiendas para este producto.
                     </p>
                   </div>
-                  <span className="text-xs font-semibold uppercase tracking-normal text-blue-200">
+                  <span className="text-xs font-semibold uppercase tracking-[0.12em] text-indigo-200">
                     Precio + tienda + seguimiento
                   </span>
                 </div>
@@ -211,7 +211,7 @@ function ResultCard({
                       style={offerGridStyle}
                     >
                       <div className="flex min-w-0 items-center gap-3">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-base font-semibold text-blue-700 ring-1 ring-blue-100">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-base font-semibold text-indigo-700 ring-1 ring-indigo-100">
                           {storeName.charAt(0)}
                         </div>
                         <div className="min-w-0">
@@ -253,12 +253,12 @@ function ResultCard({
 
                       <div>
                         <a
-                          className="inline-flex h-11 w-full items-center justify-center rounded-lg border border-blue-200 bg-white px-3 text-sm font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50"
+                          className="inline-flex h-11 w-full items-center justify-center rounded-lg border border-indigo-200 bg-white px-3 text-sm font-semibold text-indigo-700 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50"
                           href={offerHref}
                           rel="noreferrer"
                           target="_blank"
                         >
-                          Ver oferta
+                          Ver oferta →
                         </a>
                       </div>
 
@@ -270,7 +270,7 @@ function ResultCard({
                             productSlug={item.product.slug}
                             returnTo={returnTo}
                             trackingOverview={trackingOverview}
-                            className="h-11 !bg-blue-600 px-3 text-sm hover:!bg-blue-700 focus-visible:outline-blue-600"
+                            className="h-11 !bg-gradient-to-b !from-indigo-500 !to-indigo-600 px-3 text-sm hover:!from-indigo-500 hover:!to-indigo-700 focus-visible:outline-indigo-500"
                           />
                         ) : null}
                       </div>
@@ -299,10 +299,10 @@ function ResultCard({
             <div className="flex flex-col gap-2 lg:items-end">
               {item.product.slug ? (
                 <Link
-                  className="inline-flex h-12 items-center justify-center rounded-lg bg-blue-600 px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                  className="inline-flex h-12 items-center justify-center rounded-lg bg-gradient-to-b from-indigo-500 to-indigo-600 px-6 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgba(79,70,229,0.55)] transition hover:from-indigo-500 hover:to-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                   href={`/producto/${item.product.slug}`}
                 >
-                  Ver comparacion
+                  Ver comparación
                 </Link>
               ) : (
                 <span className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-200 px-4 text-sm font-semibold text-slate-400">
@@ -381,13 +381,13 @@ export default async function BuscarPage({ searchParams }: BuscarPageProps) {
   const returnTo = query ? `/buscar?q=${encodeURIComponent(query)}` : "/buscar";
 
   return (
-    <main className="bg-[#f4f7fb] py-10 text-slate-950">
+    <main className="bg-section-soft py-10 text-slate-950">
       <Container className="space-y-10">
-        <section className="border-b border-slate-200 bg-white py-8">
+        <section className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_18px_50px_-20px_rgba(15,23,42,0.18)] md:p-8">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
               <Badge variant="brand">Búsqueda MVP</Badge>
-              <h1 className="mt-4 text-4xl font-semibold leading-tight text-slate-950">
+              <h1 className="mt-4 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
                 Resultados de búsqueda
               </h1>
               <p className="mt-3 text-base leading-7 text-slate-600">
@@ -395,18 +395,20 @@ export default async function BuscarPage({ searchParams }: BuscarPageProps) {
                 oferta puntual que te interesa.
               </p>
             </div>
-            <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-600">
+            <div className="inline-flex items-center gap-2 rounded-lg border border-indigo-100 bg-indigo-50 px-3 py-2 text-sm font-medium text-indigo-700">
+              <span
+                aria-hidden
+                className="inline-block size-1.5 rounded-full bg-indigo-500"
+              />
               Tipo detectado: {detectedTypeLabels[result.detectedType]}
             </div>
           </div>
 
-          <div className="mt-6 rounded-lg border border-slate-200 bg-white p-3 shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
+          <div className="mt-6">
             <SearchForm
-              buttonClassName="!bg-blue-600 hover:!bg-blue-700 focus-visible:outline-blue-600"
               defaultValue={query}
               helperText="Ejemplos: Samsung A55, RTX 5070, notebook Lenovo. Los datos demo están identificados."
               id="buscar-search"
-              inputClassName="bg-white text-lg focus:border-blue-400 focus:ring-blue-100"
               variant="hero"
             />
           </div>
