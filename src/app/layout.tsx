@@ -16,6 +16,10 @@ export const metadata: Metadata = {
     "Compara precios en Argentina con historial, alertas y recomendaciones para detectar ofertas reales.",
   alternates: {
     canonical: "/",
+    languages: {
+      "es-AR": "/",
+      "x-default": "/",
+    },
   },
   applicationName: "PrecioRadar",
   openGraph: {

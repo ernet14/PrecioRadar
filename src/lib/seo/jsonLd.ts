@@ -2,8 +2,35 @@ import type { ProductDetail } from "@/services/productService";
 import { getAbsoluteUrl, getSiteUrl } from "@/lib/seo/site";
 
 const siteUrl = getSiteUrl();
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
+function getPriceValidUntil() {
+  return new Date(Date.now() + ONE_DAY_MS).toISOString().split("T")[0];
+}
+
+function buildDescription(product: ProductDetail) {
+  const parts: string[] = [
+    `Compará el precio de ${product.name} en Argentina.`,
+  ];
+
+  if (product.offers.length > 1) {
+    parts.push(`${product.offers.length} ofertas comparadas con historial real.`);
+  }
+
+  if (product.brand) {
+    parts.push(`Marca: ${product.brand}.`);
+  }
+
+  if (product.model) {
+    parts.push(`Modelo: ${product.model}.`);
+  }
+
+  return parts.join(" ");
+}
 
 export function buildProductJsonLd(product: ProductDetail) {
+  const validUntil = getPriceValidUntil();
+
   const offers = product.offers
     .filter((o) => o.available)
     .map((o) => ({
@@ -12,6 +39,7 @@ export function buildProductJsonLd(product: ProductDetail) {
       priceCurrency: "ARS",
       availability: "https://schema.org/InStock",
       url: getAbsoluteUrl(`/producto/${product.slug}`),
+      priceValidUntil: validUntil,
       seller: { "@type": "Organization", name: o.storeName },
     }));
 
@@ -23,6 +51,9 @@ export function buildProductJsonLd(product: ProductDetail) {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
+    description: buildDescription(product),
+    sku: product.bestOffer.externalId,
+    productID: product.slug,
     ...(product.brand ? { brand: { "@type": "Brand", name: product.brand } } : {}),
     ...(product.imageUrl ? { image: product.imageUrl } : {}),
     offers:
@@ -34,6 +65,7 @@ export function buildProductJsonLd(product: ProductDetail) {
             highPrice: String(highPrice),
             offerCount: offers.length,
             priceCurrency: "ARS",
+            priceValidUntil: validUntil,
             offers,
           },
   };

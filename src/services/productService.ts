@@ -101,6 +101,18 @@ export function getAllMockProductSlugs() {
   );
 }
 
+export function listMockProductsByCategory(categorySlug: string): ProductSummary[] {
+  const filtered = mockStoreProducts.filter(
+    (product) => product.categorySlug === categorySlug,
+  );
+
+  const groups = groupByNormalizedName(filtered);
+
+  return Array.from(groups.values())
+    .map(toSummary)
+    .sort((left, right) => left.price - right.price);
+}
+
 export function getMockProductDetailBySlug(
   slug: string,
 ): ProductDetail | null {

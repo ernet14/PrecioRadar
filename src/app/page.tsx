@@ -4,7 +4,7 @@ import { Container } from "@/components/layout/Container";
 import { SearchForm } from "@/components/search/SearchForm";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
-import { mvpCategories } from "@/data/categories";
+import { mvpCategoryDescriptors } from "@/data/categories";
 import { formatCurrencyARS } from "@/lib/utils";
 import { getMockProductDetailBySlug } from "@/services/productService";
 
@@ -57,40 +57,6 @@ const benefits = [
   },
 ];
 
-const categoryDetails = [
-  {
-    query: "celular",
-    description: "Modelos, variantes y ofertas por tienda.",
-  },
-  {
-    query: "notebook",
-    description: "Equipos para trabajo, estudio y uso diario.",
-  },
-  {
-    query: "rtx 5070",
-    description: "Hardware y componentes para comparar mejor.",
-  },
-  {
-    query: "tv 55",
-    description: "Pantallas, pulgadas y precios disponibles.",
-  },
-  {
-    query: "auriculares",
-    description: "Audio personal y accesorios populares.",
-  },
-  {
-    query: "playstation",
-    description: "Consolas, videojuegos y productos gamer.",
-  },
-  {
-    query: "lavarropas",
-    description: "Electrodomésticos con historial demo.",
-  },
-  {
-    query: "taladro",
-    description: "Herramientas para comparar por precio.",
-  },
-];
 
 const steps = [
   {
@@ -303,29 +269,25 @@ export default function Home() {
           </div>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {mvpCategories.map((category, index) => {
-              const detail = categoryDetails[index];
-
-              return (
-                <Link
-                  className="group block"
-                  href={`/buscar?q=${encodeURIComponent(detail.query)}`}
-                  key={category}
-                >
-                  <Card className="h-full p-5 shadow-[0_18px_40px_rgba(15,23,42,0.05)] transition group-hover:-translate-y-0.5 group-hover:border-blue-200 group-hover:shadow-[0_22px_50px_rgba(37,99,235,0.10)]">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-950 text-sm font-bold text-white">
-                      {String(index + 1).padStart(2, "0")}
-                    </div>
-                    <h3 className="mt-5 text-lg font-bold text-slate-950">
-                      {category}
-                    </h3>
-                    <p className="mt-2 text-sm leading-6 text-slate-600">
-                      {detail.description}
-                    </p>
-                  </Card>
-                </Link>
-              );
-            })}
+            {mvpCategoryDescriptors.map((descriptor, index) => (
+              <Link
+                className="group block"
+                href={`/categoria/${descriptor.slug}`}
+                key={descriptor.slug}
+              >
+                <Card className="h-full p-5 shadow-[0_18px_40px_rgba(15,23,42,0.05)] transition group-hover:-translate-y-0.5 group-hover:border-blue-200 group-hover:shadow-[0_22px_50px_rgba(37,99,235,0.10)]">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-950 text-sm font-bold text-white">
+                    {String(index + 1).padStart(2, "0")}
+                  </div>
+                  <h3 className="mt-5 text-lg font-bold text-slate-950">
+                    {descriptor.name}
+                  </h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    {descriptor.description}
+                  </p>
+                </Card>
+              </Link>
+            ))}
           </div>
         </Container>
       </section>

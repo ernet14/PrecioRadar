@@ -24,6 +24,7 @@ import {
 } from "@/services/productService";
 import { buildProductJsonLd } from "@/lib/seo/jsonLd";
 import { getAbsoluteUrl } from "@/lib/seo/site";
+import { getCategoryDescriptorBySlug } from "@/data/categories";
 import {
   getTrackingOverviewForUser,
   type TrackingOverview,
@@ -475,7 +476,21 @@ export default async function ProductoPage({
               <div className="flex flex-wrap gap-2">
                 <Badge variant="brand">Demo</Badge>
                 {product.categorySlug ? (
-                  <Badge variant="neutral">{product.categorySlug}</Badge>
+                  (() => {
+                    const descriptor = getCategoryDescriptorBySlug(
+                      product.categorySlug,
+                    );
+                    return descriptor ? (
+                      <Link
+                        className="inline-flex items-center rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-700"
+                        href={`/categoria/${descriptor.slug}`}
+                      >
+                        {descriptor.name}
+                      </Link>
+                    ) : (
+                      <Badge variant="neutral">{product.categorySlug}</Badge>
+                    );
+                  })()
                 ) : null}
                 <RecommendationBadge
                   label={product.recommendation.label}
