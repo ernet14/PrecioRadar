@@ -7,7 +7,9 @@ import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { mvpCategoryDescriptors } from "@/data/categories";
 import { formatCurrencyARS } from "@/lib/utils";
-import { getMockProductDetailBySlug } from "@/services/productService";
+import { getFeaturedProductsForHome } from "@/services/featuredProductsService";
+
+export const revalidate = 3600;
 
 const searchExamples = [
   "Samsung A55",
@@ -77,17 +79,6 @@ const steps = [
   },
 ];
 
-const featuredProductSlugs = [
-  "samsung-galaxy-a55-5g-256gb",
-  "notebook-lenovo-ideapad-slim-5-ryzen-7",
-  "smart-tv-samsung-crystal-uhd-55",
-  "taladro-inalambrico-bosch-gsr-120-li",
-];
-
-const featuredProducts = featuredProductSlugs
-  .map((slug) => getMockProductDetailBySlug(slug))
-  .filter((product) => product !== null);
-
 function getProductInitials(name: string) {
   return name
     .split(" ")
@@ -125,9 +116,18 @@ function ProductImage({
   );
 }
 
-export default function Home() {
+export default async function Home() {
+  const featured = await getFeaturedProductsForHome();
+  const featuredProducts = featured.products;
   const heroProduct = featuredProducts[0];
-  const heroOffers = heroProduct?.offers.slice(0, 3) ?? [];
+  const heroPeerProducts = featuredProducts.slice(1, 4);
+  const sourceIsReal = featured.source === "mercadolibre";
+  const featuredBadgeLabel = sourceIsReal
+    ? "MercadoLibre · datos reales"
+    : "Catálogo demo";
+  const featuredCopy = sourceIsReal
+    ? "Productos populares con precios reales obtenidos hoy desde MercadoLibre. Tocá una card para ver el detalle de comparación."
+    : "Catálogo de demostración mientras sumamos tiendas reales. Las búsquedas en MercadoLibre ya devuelven precios actuales.";
 
   return (
     <main className="bg-[#f4f7fb] text-slate-950">
@@ -178,52 +178,51 @@ export default function Home() {
                     Vista marketplace
                   </p>
                   <h2 className="mt-2 text-xl font-bold text-slate-950">
-                    Comparación clara por tienda
+                    {sourceIsReal
+                      ? "Precios reales de MercadoLibre"
+                      : "Comparación clara por tienda"}
                   </h2>
                 </div>
-                <Badge variant="neutral">Catálogo demo</Badge>
+                <Badge variant={sourceIsReal ? "success" : "neutral"}>
+                  {sourceIsReal ? "MercadoLibre" : "Catálogo demo"}
+                </Badge>
               </div>
               <div className="mt-5 rounded-lg bg-slate-50 p-4">
-                <p className="text-sm font-semibold text-slate-500">
+                <p className="text-sm font-semibold text-slate-500 line-clamp-2">
                   {heroProduct?.name ?? "Producto demo"}
                 </p>
                 <p className="mt-2 text-3xl font-bold text-slate-950">
                   Desde{" "}
-                  {heroProduct
-                    ? formatCurrencyARS(heroProduct.bestOffer.price)
-                    : "$0"}
+                  {heroProduct ? formatCurrencyARS(heroProduct.price) : "$0"}
                 </p>
                 <p className="mt-1 text-sm text-slate-500">
-                  {heroProduct
-                    ? `${heroProduct.offers.length} ofertas disponibles`
-                    : "Ofertas demo disponibles"}
+                  {heroProduct ? heroProduct.storeName : "Ofertas demo"}
                 </p>
               </div>
               <div className="mt-4 space-y-3">
-                {heroOffers.map((offer) => (
-                  <div
-                    className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-lg border border-slate-200 bg-white p-3"
-                    key={offer.externalId}
+                {heroPeerProducts.map((product) => (
+                  <Link
+                    className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-lg border border-slate-200 bg-white p-3 transition hover:border-blue-300 hover:bg-blue-50"
+                    href={`/producto/${product.slug}`}
+                    key={product.slug}
                   >
                     <div className="min-w-0">
                       <p className="truncate text-sm font-bold text-slate-950">
-                        {offer.storeName}
+                        {product.name}
                       </p>
                       <p className="text-xs font-medium text-slate-500">
-                        Actualizado demo
+                        {product.storeName}
                       </p>
                     </div>
                     <p className="text-sm font-bold text-slate-950">
-                      {formatCurrencyARS(offer.price)}
+                      {formatCurrencyARS(product.price)}
                     </p>
-                  </div>
+                  </Link>
                 ))}
               </div>
               <Link
                 className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
-                href={
-                  heroProduct ? `/producto/${heroProduct.slug}` : "/buscar?q=a55"
-                }
+                href={heroProduct ? `/producto/${heroProduct.slug}` : "/buscar?q=a55"}
               >
                 Ver comparación
               </Link>
@@ -300,20 +299,21 @@ export default function Home() {
         <Container>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <Badge variant="neutral">Catálogo demo</Badge>
+              <Badge variant={sourceIsReal ? "success" : "neutral"}>
+                {featuredBadgeLabel}
+              </Badge>
               <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-950">
                 Productos destacados para comparar
               </h2>
               <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600">
-                Catálogo de demostración mientras sumamos tiendas reales.
-                Las búsquedas en MercadoLibre ya devuelven precios actuales.
+                {featuredCopy}
               </p>
             </div>
             <Link
               className="inline-flex h-10 items-center justify-center rounded-lg border border-blue-200 bg-white px-4 text-sm font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50"
-              href="/buscar?q=a55"
+              href="/buscar?q=galaxy+a55"
             >
-              Ver resultados demo
+              Ver más en MercadoLibre
             </Link>
           </div>
 
@@ -331,22 +331,24 @@ export default function Home() {
                         {product.name}
                       </h3>
                       <p className="mt-2 text-sm text-slate-500">
-                        {product.offers.length} ofertas · mejor tienda{" "}
-                        {product.bestOffer.storeName}
+                        {product.storeName}
                       </p>
                     </div>
-                    <Badge variant="success" className="shrink-0">
-                      Demo
+                    <Badge
+                      variant={sourceIsReal ? "success" : "neutral"}
+                      className="shrink-0"
+                    >
+                      {sourceIsReal ? "Real" : "Demo"}
                     </Badge>
                   </div>
                   <p className="mt-5 text-sm font-semibold text-slate-500">
                     Desde
                   </p>
                   <p className="text-2xl font-bold text-slate-950">
-                    {formatCurrencyARS(product.bestOffer.price)}
+                    {formatCurrencyARS(product.price)}
                   </p>
                   <p className="mt-2 text-sm font-semibold text-slate-500">
-                    {product.recommendation.label}
+                    {product.recommendationLabel}
                   </p>
                   <Link
                     className="mt-5 inline-flex h-10 w-full items-center justify-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
