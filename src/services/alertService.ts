@@ -1,5 +1,6 @@
 import { getPrismaClient } from "@/lib/prisma";
 import { formatCurrencyARS } from "@/lib/utils";
+import { logger } from "@/lib/logger";
 import {
   sendAlertFulfilledEmail,
   type SendAlertEmailResult,
@@ -377,7 +378,7 @@ export async function getAlertOverviewForUser(
       activeCount: await countActiveAlerts(userId),
     };
   } catch (error) {
-    console.error("Unable to load alert overview.", error);
+    logger.error("Unable to load alert overview.", { error });
     return {
       status: "unavailable",
       limit: FREE_ACTIVE_ALERT_LIMIT,
@@ -434,7 +435,7 @@ export async function createAlert(
 
     return { status: "created" };
   } catch (error) {
-    console.error("Unable to create alert.", error);
+    logger.error("Unable to create alert.", { error });
     return { status: "error" };
   }
 }
@@ -457,7 +458,7 @@ export async function pauseAlert(
 
     return result.count > 0 ? { status: "paused" } : { status: "not_found" };
   } catch (error) {
-    console.error("Unable to pause alert.", error);
+    logger.error("Unable to pause alert.", { error });
     return { status: "error" };
   }
 }
@@ -497,7 +498,7 @@ export async function reactivateAlert(
 
     return { status: "reactivated" };
   } catch (error) {
-    console.error("Unable to reactivate alert.", error);
+    logger.error("Unable to reactivate alert.", { error });
     return { status: "error" };
   }
 }
@@ -519,7 +520,7 @@ export async function deleteAlert(
 
     return result.count > 0 ? { status: "deleted" } : { status: "not_found" };
   } catch (error) {
-    console.error("Unable to delete alert.", error);
+    logger.error("Unable to delete alert.", { error });
     return { status: "error" };
   }
 }
@@ -662,7 +663,7 @@ export async function evaluateUserAlerts(
       evaluatedCount: alerts.length,
     };
   } catch (error) {
-    console.error("Unable to evaluate alerts.", error);
+    logger.error("Unable to evaluate alerts.", { error });
     return { status: "error" };
   }
 }
@@ -720,7 +721,7 @@ export async function evaluateAllUserAlerts(): Promise<EvaluateAllAlertsResult> 
       userCount: userIds.length,
     };
   } catch (error) {
-    console.error("Unable to evaluate all alerts.", error);
+    logger.error("Unable to evaluate all alerts.", { error });
     return { status: "error" };
   }
 }

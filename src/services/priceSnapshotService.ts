@@ -1,4 +1,5 @@
 import { getPrismaClient } from "@/lib/prisma";
+import { logger } from "@/lib/logger";
 import { mercadoLibreProvider } from "@/providers/stores";
 import type { ProviderProduct } from "@/providers/stores/types";
 import { slugify } from "@/lib/utils";
@@ -184,7 +185,10 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
       select: { id: true },
     });
   } catch (error) {
-    console.error("Unable to create scrape job.", error);
+    logger.error("Unable to create scrape job.", {
+      error,
+      route: "priceSnapshotService.snapshotCurrentPrices",
+    });
   }
 
   try {
@@ -294,14 +298,20 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
         },
       });
     } catch (error) {
-      console.error("Unable to record refresh prices provider log.", error);
+      logger.error("Unable to record refresh prices provider log.", {
+        error,
+        route: "priceSnapshotService.snapshotCurrentPrices",
+      });
     }
 
     await finalizeJob(prisma, job, jobStart, "completed", offers.length, updated, errors, outliers);
 
     return { status: "completed", processed: offers.length, updated, errors, outliers };
   } catch (error) {
-    console.error("Unable to snapshot current prices.", error);
+    logger.error("Unable to snapshot current prices.", {
+      error,
+      route: "priceSnapshotService.snapshotCurrentPrices",
+    });
     await finalizeJob(prisma, job, jobStart, "error", 0, 0, 1, 0);
     return { status: "error", processed: 0, updated: 0, errors: 1, outliers: 0 };
   }
@@ -333,6 +343,9 @@ async function finalizeJob(
       },
     });
   } catch (error) {
-    console.error("Unable to finalize scrape job.", error);
+    logger.error("Unable to finalize scrape job.", {
+      error,
+      route: "priceSnapshotService.finalizeJob",
+    });
   }
 }

@@ -1,4 +1,5 @@
 import { getPrismaClient } from "@/lib/prisma";
+import { logger } from "@/lib/logger";
 
 export type RecordProviderLogResult =
   | { status: "logged" }
@@ -78,7 +79,10 @@ export async function recordProviderLog({
 
     return { status: "logged" };
   } catch (error) {
-    console.error("Unable to record provider log.", error);
+    logger.error("Unable to record provider log.", {
+      error,
+      route: "providerLogService.recordProviderLog",
+    });
     return {
       status: "error",
       reason: "No pudimos registrar el log del provider.",

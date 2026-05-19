@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { getPrismaClient } from "@/lib/prisma";
+import { logger } from "@/lib/logger";
 
 export type AuditEvent =
   | "auth.login"
@@ -78,7 +79,10 @@ export async function recordAuditEvent({
 
     return { status: "logged" };
   } catch (error) {
-    console.error("Unable to record audit log entry.", error);
+    logger.error("Unable to record audit log entry.", {
+      error,
+      route: "auditLogService.recordAuditEvent",
+    });
     return {
       status: "error",
       reason: "No pudimos registrar el evento de auditoría.",

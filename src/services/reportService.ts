@@ -1,4 +1,5 @@
 import { getPrismaClient } from "@/lib/prisma";
+import { logger } from "@/lib/logger";
 import type { ProviderProduct } from "@/providers/stores";
 import {
   getMockProductDetailBySlug,
@@ -279,7 +280,7 @@ export async function createProductReport(
 
     return { status: "created" };
   } catch (error) {
-    console.error("Unable to create product report.", error);
+    logger.error("Unable to create product report.", { error });
     return { status: "error" };
   }
 }

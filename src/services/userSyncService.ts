@@ -1,5 +1,6 @@
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { getPrismaClient } from "@/lib/prisma";
+import { logger } from "@/lib/logger";
 
 export type UserSyncResult =
   | { status: "synced" }
@@ -51,7 +52,10 @@ export async function syncAuthUserToPrisma(
 
     return { status: "synced" };
   } catch (error) {
-    console.error("Unable to sync Supabase user with Prisma User model.", error);
+    logger.error("Unable to sync Supabase user with Prisma User model.", {
+      error,
+      route: "userSyncService.syncAuthUserToPrisma",
+    });
     return {
       status: "error",
       reason: "Prisma user sync failed; auth session remains valid.",

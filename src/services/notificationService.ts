@@ -1,4 +1,5 @@
 import { getPrismaClient } from "@/lib/prisma";
+import { logger } from "@/lib/logger";
 
 export type CreateNotificationInput = {
   userId: string;
@@ -55,7 +56,7 @@ export async function createNotification({
 
     return { status: "created" };
   } catch (error) {
-    console.error("Unable to create notification.", error);
+    logger.error("Unable to create notification.", { error });
     return { status: "error" };
   }
 }
@@ -95,7 +96,7 @@ export async function markNotificationAsRead(
 
     return result.count > 0 ? { status: "read" } : { status: "not_found" };
   } catch (error) {
-    console.error("Unable to mark notification as read.", error);
+    logger.error("Unable to mark notification as read.", { error });
     return { status: "error" };
   }
 }
@@ -117,7 +118,7 @@ export async function markAllNotificationsAsRead(
 
     return { status: "read" };
   } catch (error) {
-    console.error("Unable to mark all notifications as read.", error);
+    logger.error("Unable to mark all notifications as read.", { error });
     return { status: "error" };
   }
 }

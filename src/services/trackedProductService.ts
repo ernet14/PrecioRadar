@@ -1,5 +1,6 @@
 import { getPrismaClient } from "@/lib/prisma";
 import { formatCurrencyARS } from "@/lib/utils";
+import { logger } from "@/lib/logger";
 import type { ProviderProduct } from "@/providers/stores";
 import {
   getMockProductDetailBySlug,
@@ -351,7 +352,7 @@ export async function getTrackingOverviewForUser(
       ),
     };
   } catch (error) {
-    console.error("Unable to load tracked product overview.", error);
+    logger.error("Unable to load tracked product overview.", { error });
     return {
       status: "unavailable",
       limit: FREE_TRACKED_PRODUCT_LIMIT,
@@ -445,7 +446,7 @@ export async function followProduct(
 
     return { status: "tracked" };
   } catch (error) {
-    console.error("Unable to follow product.", error);
+    logger.error("Unable to follow product.", { error });
     return { status: "error" };
   }
 }
@@ -470,7 +471,7 @@ export async function unfollowProduct(
 
     return result.count > 0 ? { status: "untracked" } : { status: "not_tracked" };
   } catch (error) {
-    console.error("Unable to unfollow product.", error);
+    logger.error("Unable to unfollow product.", { error });
     return { status: "error" };
   }
 }

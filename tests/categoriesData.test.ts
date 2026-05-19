@@ -1,0 +1,43 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import {
+  getCategoryDescriptorBySlug,
+  mvpCategoryDescriptors,
+} from "../src/data/categories";
+
+test("category descriptors have unique slugs", () => {
+  const slugs = mvpCategoryDescriptors.map((d) => d.slug);
+  const unique = new Set(slugs);
+  assert.equal(unique.size, slugs.length);
+});
+
+test("category descriptors have non-empty name and description", () => {
+  for (const descriptor of mvpCategoryDescriptors) {
+    assert.ok(descriptor.name.length > 0, `name empty for ${descriptor.slug}`);
+    assert.ok(
+      descriptor.description.length > 20,
+      `description too short for ${descriptor.slug}`,
+    );
+  }
+});
+
+test("category slugs are URL-safe", () => {
+  for (const descriptor of mvpCategoryDescriptors) {
+    assert.match(
+      descriptor.slug,
+      /^[a-z0-9-]+$/,
+      `slug ${descriptor.slug} contains invalid characters`,
+    );
+  }
+});
+
+test("getCategoryDescriptorBySlug finds known slug", () => {
+  const descriptor = getCategoryDescriptorBySlug("celulares");
+  assert.ok(descriptor);
+  assert.equal(descriptor?.slug, "celulares");
+  assert.equal(descriptor?.name, "Celulares");
+});
+
+test("getCategoryDescriptorBySlug returns null for unknown slug", () => {
+  assert.equal(getCategoryDescriptorBySlug("inexistente-xyz"), null);
+});

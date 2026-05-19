@@ -1,5 +1,6 @@
 import { getPrismaClient } from "@/lib/prisma";
 import type { BankPromo } from "@/generated/prisma/client";
+import { logger } from "@/lib/logger";
 
 export type { BankPromo };
 
@@ -39,7 +40,7 @@ export async function getActivePromosForToday(storeSlug?: string): Promise<BankP
       orderBy: [{ discountPct: "desc" }, { entity: "asc" }],
     });
   } catch (error) {
-    console.error("Unable to load active bank promos.", error);
+    logger.error("Unable to load active bank promos.", { error });
     return [];
   }
 }

@@ -1,5 +1,6 @@
 import { getPrismaClient } from "@/lib/prisma";
 import type { InputType, SearchResult } from "@/types";
+import { logger } from "@/lib/logger";
 
 export type RecordSearchLogResult =
   | { status: "logged" }
@@ -96,7 +97,7 @@ export async function recordSearchLog({
 
     return { status: "logged" };
   } catch (error) {
-    console.error("Unable to record search log.", error);
+    logger.error("Unable to record search log.", { error });
     return {
       status: "error",
       reason: "No pudimos registrar la busqueda.",

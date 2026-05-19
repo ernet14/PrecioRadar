@@ -1,4 +1,5 @@
 import { getPrismaClient } from "@/lib/prisma";
+import { logger } from "@/lib/logger";
 
 export type CompactionResult =
   | { status: "skipped"; reason: string }
@@ -128,7 +129,7 @@ export async function compactPriceHistory(): Promise<CompactionResult> {
 
     return { status: "completed", deleted: totalDeleted, durationMs };
   } catch (error) {
-    console.error("Unable to compact price history.", error);
+    logger.error("Unable to compact price history.", { error });
 
     await prisma.scrapeJob.update({
       where: { id: job.id },

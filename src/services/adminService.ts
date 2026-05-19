@@ -1,4 +1,5 @@
 import { getPrismaClient } from "@/lib/prisma";
+import { logger } from "@/lib/logger";
 
 type AdminCounts = {
   affiliateLinks: number;
@@ -428,7 +429,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       status: "ready",
     };
   } catch (error) {
-    console.error("Unable to load admin overview.", error);
+    logger.error("Unable to load admin overview.", { error });
     return {
       counts: emptyCounts,
       products: [],
@@ -518,7 +519,7 @@ export async function listAdminReports(
       totalCount,
     };
   } catch (error) {
-    console.error("Unable to list admin reports.", error);
+    logger.error("Unable to list admin reports.", { error });
     return {
       reason: "No pudimos cargar los reportes por un error inesperado.",
       reportStatusCounts: createEmptyReportStatusCounts(),
@@ -610,7 +611,7 @@ export async function getAdminReportDetail(
       status: "ready",
     };
   } catch (error) {
-    console.error("Unable to load admin report detail.", error);
+    logger.error("Unable to load admin report detail.", { error });
     return {
       reason: "No pudimos cargar el reporte por un error inesperado.",
       status: "error",
@@ -642,7 +643,7 @@ export async function updateAdminReportStatus(
       ? { reportStatus: status, status: "updated" }
       : { status: "not_found" };
   } catch (error) {
-    console.error("Unable to update admin report status.", error);
+    logger.error("Unable to update admin report status.", { error });
     return { status: "error" };
   }
 }

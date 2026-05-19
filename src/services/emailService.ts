@@ -1,4 +1,5 @@
 import { formatCurrencyARS } from "@/lib/utils";
+import { logger } from "@/lib/logger";
 import type { ProductDetail } from "@/services/productService";
 
 const RESEND_EMAIL_ENDPOINT = "https://api.resend.com/emails";
@@ -137,24 +138,25 @@ export async function sendAlertFulfilledEmail({
   const fromEmail = getEnvValue("RESEND_FROM_EMAIL");
 
   if (!recipientEmail) {
-    console.info("PrecioRadar alert email skipped: missing recipient email.", {
-      alertId,
+    logger.info("Alert email skipped: missing recipient email.", {
+      metadata: { alertId, reason: "missing_recipient" },
+      route: "emailService.sendAlertFulfilledEmail",
     });
     return { status: "skipped", reason: "missing_recipient" };
   }
 
   if (!apiKey) {
-    console.info("PrecioRadar alert email skipped: missing RESEND_API_KEY.", {
-      alertId,
-      recipientEmail,
+    logger.info("Alert email skipped: missing RESEND_API_KEY.", {
+      metadata: { alertId, reason: "missing_api_key" },
+      route: "emailService.sendAlertFulfilledEmail",
     });
     return { status: "skipped", reason: "missing_api_key" };
   }
 
   if (!fromEmail) {
-    console.info("PrecioRadar alert email skipped: missing RESEND_FROM_EMAIL.", {
-      alertId,
-      recipientEmail,
+    logger.info("Alert email skipped: missing RESEND_FROM_EMAIL.", {
+      metadata: { alertId, reason: "missing_from_email" },
+      route: "emailService.sendAlertFulfilledEmail",
     });
     return { status: "skipped", reason: "missing_from_email" };
   }
@@ -183,28 +185,27 @@ export async function sendAlertFulfilledEmail({
         payload && typeof payload === "object" && "message" in payload
           ? String(payload.message)
           : `Resend API returned ${response.status}.`;
-      console.error("PrecioRadar alert email failed.", {
-        alertId,
+      logger.error("Alert email failed.", {
+        metadata: { alertId },
         error: errorMessage,
-        recipientEmail,
+        route: "emailService.sendAlertFulfilledEmail",
       });
       return { status: "failed", error: errorMessage };
     }
 
     const emailId = getResendEmailId(payload);
-    console.info("PrecioRadar alert email sent.", {
-      alertId,
-      emailId,
-      recipientEmail,
+    logger.info("Alert email sent.", {
+      metadata: { alertId, emailId },
+      route: "emailService.sendAlertFulfilledEmail",
     });
     return { status: "sent", emailId };
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown email sending error.";
-    console.error("PrecioRadar alert email failed.", {
-      alertId,
+    logger.error("Alert email failed.", {
+      metadata: { alertId },
       error: errorMessage,
-      recipientEmail,
+      route: "emailService.sendAlertFulfilledEmail",
     });
     return { status: "failed", error: errorMessage };
   }

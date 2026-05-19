@@ -1,4 +1,5 @@
 import { getPrismaClient } from "@/lib/prisma";
+import { logger } from "@/lib/logger";
 import { getMockProductDetailBySlug } from "@/services/productService";
 import {
   ensureProductForSlug,
@@ -230,7 +231,7 @@ export async function recordOfferClick({
       url: destination.url,
     };
   } catch (error) {
-    console.error("Unable to record offer click.", error);
+    logger.error("Unable to record offer click.", { error });
     return {
       isAffiliate: false,
       status: "error",
