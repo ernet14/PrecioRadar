@@ -390,6 +390,7 @@ export const ModelName = {
   Product: 'Product',
   ProductOffer: 'ProductOffer',
   PriceHistory: 'PriceHistory',
+  ProductImportDraft: 'ProductImportDraft',
   TrackedProduct: 'TrackedProduct',
   Alert: 'Alert',
   Notification: 'Notification',
@@ -419,7 +420,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "affiliateLink" | "searchLog" | "providerLog" | "scrapeJob" | "auditLog" | "mercadoLibreCache" | "productReport" | "newsletterSubscription" | "mercadoLibreAuth" | "bankPromo"
+    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "productImportDraft" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "affiliateLink" | "searchLog" | "providerLog" | "scrapeJob" | "auditLog" | "mercadoLibreCache" | "productReport" | "newsletterSubscription" | "mercadoLibreAuth" | "bankPromo"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -864,6 +865,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.PriceHistoryCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.PriceHistoryCountAggregateOutputType> | number
+        }
+      }
+    }
+    ProductImportDraft: {
+      payload: Prisma.$ProductImportDraftPayload<ExtArgs>
+      fields: Prisma.ProductImportDraftFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProductImportDraftFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductImportDraftPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProductImportDraftFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductImportDraftPayload>
+        }
+        findFirst: {
+          args: Prisma.ProductImportDraftFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductImportDraftPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProductImportDraftFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductImportDraftPayload>
+        }
+        findMany: {
+          args: Prisma.ProductImportDraftFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductImportDraftPayload>[]
+        }
+        create: {
+          args: Prisma.ProductImportDraftCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductImportDraftPayload>
+        }
+        createMany: {
+          args: Prisma.ProductImportDraftCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProductImportDraftCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductImportDraftPayload>[]
+        }
+        delete: {
+          args: Prisma.ProductImportDraftDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductImportDraftPayload>
+        }
+        update: {
+          args: Prisma.ProductImportDraftUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductImportDraftPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProductImportDraftDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProductImportDraftUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProductImportDraftUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductImportDraftPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProductImportDraftUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductImportDraftPayload>
+        }
+        aggregate: {
+          args: Prisma.ProductImportDraftAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProductImportDraft>
+        }
+        groupBy: {
+          args: Prisma.ProductImportDraftGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductImportDraftGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProductImportDraftCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductImportDraftCountAggregateOutputType> | number
         }
       }
     }
@@ -2043,6 +2118,40 @@ export const PriceHistoryScalarFieldEnum = {
 export type PriceHistoryScalarFieldEnum = (typeof PriceHistoryScalarFieldEnum)[keyof typeof PriceHistoryScalarFieldEnum]
 
 
+export const ProductImportDraftScalarFieldEnum = {
+  id: 'id',
+  status: 'status',
+  originalUrl: 'originalUrl',
+  normalizedUrl: 'normalizedUrl',
+  sourceDomain: 'sourceDomain',
+  detectedStoreSlug: 'detectedStoreSlug',
+  detectedStoreName: 'detectedStoreName',
+  shortUrl: 'shortUrl',
+  unexpandedShortUrl: 'unexpandedShortUrl',
+  suggestedSlug: 'suggestedSlug',
+  suggestedTitle: 'suggestedTitle',
+  suggestedCategorySlug: 'suggestedCategorySlug',
+  productName: 'productName',
+  storeSlug: 'storeSlug',
+  storeName: 'storeName',
+  categorySlug: 'categorySlug',
+  currentPrice: 'currentPrice',
+  previousPrice: 'previousPrice',
+  imageUrl: 'imageUrl',
+  externalUrl: 'externalUrl',
+  affiliateUrl: 'affiliateUrl',
+  shortDescription: 'shortDescription',
+  fieldSources: 'fieldSources',
+  publishedProductId: 'publishedProductId',
+  publishedOfferId: 'publishedOfferId',
+  publishedAt: 'publishedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductImportDraftScalarFieldEnum = (typeof ProductImportDraftScalarFieldEnum)[keyof typeof ProductImportDraftScalarFieldEnum]
+
+
 export const TrackedProductScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -2387,6 +2496,20 @@ export type ListEnumProductConditionFieldRefInput<$PrismaModel> = FieldRefInputT
 
 
 /**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
  * Reference to a field of type 'AlertType'
  */
 export type EnumAlertTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AlertType'>
@@ -2425,20 +2548,6 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
-
-
-/**
- * Reference to a field of type 'Json'
- */
-export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-/**
- * Reference to a field of type 'QueryMode'
- */
-export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -2585,6 +2694,7 @@ export type GlobalOmitConfig = {
   product?: Prisma.ProductOmit
   productOffer?: Prisma.ProductOfferOmit
   priceHistory?: Prisma.PriceHistoryOmit
+  productImportDraft?: Prisma.ProductImportDraftOmit
   trackedProduct?: Prisma.TrackedProductOmit
   alert?: Prisma.AlertOmit
   notification?: Prisma.NotificationOmit

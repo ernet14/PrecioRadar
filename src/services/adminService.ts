@@ -9,6 +9,7 @@ type AdminCounts = {
   clicks: number;
   offers: number;
   products: number;
+  productImportsToday: number;
   providerErrors: number;
   reports: number;
   searches: number;
@@ -167,6 +168,7 @@ const emptyCounts: AdminCounts = {
   clicks: 0,
   offers: 0,
   products: 0,
+  productImportsToday: 0,
   providerErrors: 0,
   reports: 0,
   searches: 0,
@@ -255,6 +257,11 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     const clicks = await prisma.clickTracking.count();
     const alerts = await prisma.alert.count();
     const bankPromos = await prisma.bankPromo.count();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const productImportsToday = await prisma.productImportDraft.count({
+      where: { createdAt: { gte: today } },
+    });
     const reports = await prisma.productReport.count();
     const affiliateLinks = await prisma.affiliateLink.count();
     const providerErrors = await prisma.providerLog.count({
@@ -384,6 +391,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
         clicks,
         offers,
         products,
+        productImportsToday,
         providerErrors,
         reports,
         searches,

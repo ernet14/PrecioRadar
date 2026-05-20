@@ -57,6 +57,7 @@ export const ModelName = {
   Product: 'Product',
   ProductOffer: 'ProductOffer',
   PriceHistory: 'PriceHistory',
+  ProductImportDraft: 'ProductImportDraft',
   TrackedProduct: 'TrackedProduct',
   Alert: 'Alert',
   Notification: 'Notification',
@@ -188,6 +189,40 @@ export const PriceHistoryScalarFieldEnum = {
 } as const
 
 export type PriceHistoryScalarFieldEnum = (typeof PriceHistoryScalarFieldEnum)[keyof typeof PriceHistoryScalarFieldEnum]
+
+
+export const ProductImportDraftScalarFieldEnum = {
+  id: 'id',
+  status: 'status',
+  originalUrl: 'originalUrl',
+  normalizedUrl: 'normalizedUrl',
+  sourceDomain: 'sourceDomain',
+  detectedStoreSlug: 'detectedStoreSlug',
+  detectedStoreName: 'detectedStoreName',
+  shortUrl: 'shortUrl',
+  unexpandedShortUrl: 'unexpandedShortUrl',
+  suggestedSlug: 'suggestedSlug',
+  suggestedTitle: 'suggestedTitle',
+  suggestedCategorySlug: 'suggestedCategorySlug',
+  productName: 'productName',
+  storeSlug: 'storeSlug',
+  storeName: 'storeName',
+  categorySlug: 'categorySlug',
+  currentPrice: 'currentPrice',
+  previousPrice: 'previousPrice',
+  imageUrl: 'imageUrl',
+  externalUrl: 'externalUrl',
+  affiliateUrl: 'affiliateUrl',
+  shortDescription: 'shortDescription',
+  fieldSources: 'fieldSources',
+  publishedProductId: 'publishedProductId',
+  publishedOfferId: 'publishedOfferId',
+  publishedAt: 'publishedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductImportDraftScalarFieldEnum = (typeof ProductImportDraftScalarFieldEnum)[keyof typeof ProductImportDraftScalarFieldEnum]
 
 
 export const TrackedProductScalarFieldEnum = {

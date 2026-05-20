@@ -48,6 +48,11 @@ export type ProductOffer = Prisma.ProductOfferModel
  */
 export type PriceHistory = Prisma.PriceHistoryModel
 /**
+ * Model ProductImportDraft
+ * 
+ */
+export type ProductImportDraft = Prisma.ProductImportDraftModel
+/**
  * Model TrackedProduct
  * 
  */

@@ -133,6 +133,13 @@ function getSections(overview: AdminOverview): AdminSection[] {
       status: "Lectura de productos preparada",
     },
     {
+      count: counts.productImportsToday,
+      description: "Borradores curados creados desde enlaces de tiendas.",
+      href: "/admin/importar",
+      label: "Importar productos",
+      status: "Importados hoy",
+    },
+    {
       count: counts.offers,
       description: "Ofertas puntuales por tienda vinculadas a productos.",
       label: "Ofertas",
