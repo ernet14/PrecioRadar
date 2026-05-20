@@ -41,6 +41,20 @@ type ProductSeed = {
   offers: OfferSeed[];
 };
 
+type BankPromoSeed = {
+  categorySlug?: string | null;
+  commerceChannel: string;
+  dayOfWeek: number[];
+  discountPct: number;
+  entity: string;
+  entitySlug: string;
+  installments?: number | null;
+  maxAmount?: number | null;
+  paymentType: string;
+  promoType: string;
+  storeSlug?: string | null;
+};
+
 function getDatabaseUrl() {
   return process.env.DATABASE_URL ?? process.env.DIRECT_URL ?? "";
 }
@@ -164,6 +178,31 @@ const stores: StoreSeed[] = [
     hasAffiliate: false,
     affiliateEnabled: false,
   },
+];
+
+const bankPromoValidFrom = new Date("2026-05-01T00:00:00");
+const bankPromoValidUntil = new Date("2026-12-31T23:59:59.999");
+const bankPromoSeedNote =
+  "Seed inicial Etapa 13; validar fuente oficial antes de publicar.";
+
+const bankPromos: BankPromoSeed[] = [
+  { entity: "Banco Nacion", entitySlug: "banco-nacion", dayOfWeek: [1, 3], discountPct: 25, promoType: "refund", maxAmount: 12000, storeSlug: null, categorySlug: null, commerceChannel: "online", paymentType: "credito" },
+  { entity: "Galicia", entitySlug: "galicia", dayOfWeek: [2], discountPct: 20, promoType: "refund", maxAmount: 10000, storeSlug: "mercadolibre", categorySlug: null, commerceChannel: "online", paymentType: "credito" },
+  { entity: "Macro", entitySlug: "macro", dayOfWeek: [4], discountPct: 15, promoType: "refund", maxAmount: 8000, storeSlug: null, categorySlug: "electrodomesticos", commerceChannel: "both", paymentType: "credito" },
+  { entity: "Santander", entitySlug: "santander", dayOfWeek: [3], discountPct: 10, promoType: "percentage", maxAmount: 7000, storeSlug: null, categorySlug: "celulares", commerceChannel: "online", paymentType: "credito" },
+  { entity: "BBVA", entitySlug: "bbva", dayOfWeek: [5], discountPct: 18, promoType: "refund", maxAmount: 9000, storeSlug: null, categorySlug: null, commerceChannel: "online", paymentType: "credito" },
+  { entity: "ICBC", entitySlug: "icbc", dayOfWeek: [2, 4], discountPct: 15, promoType: "refund", maxAmount: 8500, storeSlug: null, categorySlug: "notebooks", commerceChannel: "online", paymentType: "credito" },
+  { entity: "Comafi", entitySlug: "comafi", dayOfWeek: [1], discountPct: 10, promoType: "refund", maxAmount: 6000, storeSlug: null, categorySlug: null, commerceChannel: "both", paymentType: "debito" },
+  { entity: "Credicoop", entitySlug: "credicoop", dayOfWeek: [6], discountPct: 20, promoType: "refund", maxAmount: 7500, storeSlug: null, categorySlug: "herramientas", commerceChannel: "online", paymentType: "credito" },
+  { entity: "Supervielle", entitySlug: "supervielle", dayOfWeek: [0], discountPct: 12, promoType: "refund", maxAmount: 6500, storeSlug: null, categorySlug: null, commerceChannel: "online", paymentType: "credito" },
+  { entity: "Banco Ciudad", entitySlug: "banco-ciudad", dayOfWeek: [3], discountPct: 25, promoType: "refund", maxAmount: 11000, storeSlug: null, categorySlug: "audio", commerceChannel: "both", paymentType: "credito" },
+  { entity: "Columbia", entitySlug: "columbia", dayOfWeek: [4], discountPct: 10, promoType: "refund", maxAmount: 5000, storeSlug: null, categorySlug: null, commerceChannel: "online", paymentType: "credito" },
+  { entity: "Bancor", entitySlug: "bancor", dayOfWeek: [2], discountPct: 20, promoType: "refund", maxAmount: 9000, storeSlug: null, categorySlug: "televisores", commerceChannel: "online", paymentType: "credito" },
+  { entity: "Mercado Pago", entitySlug: "mercado-pago", dayOfWeek: [], discountPct: 5, promoType: "percentage", maxAmount: 4000, storeSlug: "mercadolibre", categorySlug: null, commerceChannel: "online", paymentType: "prepago" },
+  { entity: "Uala", entitySlug: "uala", dayOfWeek: [1, 5], discountPct: 15, promoType: "refund", maxAmount: 6000, storeSlug: null, categorySlug: null, commerceChannel: "online", paymentType: "prepago" },
+  { entity: "Personal Pay", entitySlug: "personal-pay", dayOfWeek: [3], discountPct: 20, promoType: "refund", maxAmount: 7000, storeSlug: null, categorySlug: null, commerceChannel: "online", paymentType: "prepago" },
+  { entity: "Naranja X", entitySlug: "naranja-x", dayOfWeek: [2, 3], discountPct: 0, promoType: "installments", installments: 6, maxAmount: null, storeSlug: null, categorySlug: null, commerceChannel: "online", paymentType: "credito" },
+  { entity: "MODO", entitySlug: "modo", dayOfWeek: [3, 4], discountPct: 30, promoType: "refund", maxAmount: 15000, storeSlug: null, categorySlug: null, commerceChannel: "online", paymentType: "modo" },
 ];
 
 const products: ProductSeed[] = [
@@ -574,8 +613,27 @@ async function main() {
     }
   }
 
+  await prisma.bankPromo.deleteMany({
+    where: {
+      notes: bankPromoSeedNote,
+    },
+  });
+
+  for (const promo of bankPromos) {
+    await prisma.bankPromo.create({
+      data: {
+        ...promo,
+        active: true,
+        notes: bankPromoSeedNote,
+        sourceUrl: null,
+        validFrom: bankPromoValidFrom,
+        validUntil: bankPromoValidUntil,
+      },
+    });
+  }
+
   console.log(
-    `Seed prepared ${categories.length} categories, ${stores.length} stores, ${products.length} demo products, and ${products.length * 90} demo price history rows.`,
+    `Seed prepared ${categories.length} categories, ${stores.length} stores, ${products.length} demo products, ${bankPromos.length} bank promos, and ${products.length * 90} demo price history rows.`,
   );
 }
 

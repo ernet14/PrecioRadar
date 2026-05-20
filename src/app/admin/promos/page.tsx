@@ -1,11 +1,15 @@
+import Link from "next/link";
 import { Container } from "@/components/layout/Container";
 import { Card } from "@/components/ui/Card";
 import { requireAdmin } from "@/lib/supabase/auth";
-import { listAllBankPromos, formatDayOfWeek } from "@/services/bankPromoService";
-import { togglePromoAction, deletePromoAction } from "./actions";
+import {
+  formatDayOfWeek,
+  formatPromoBenefit,
+  listAllBankPromos,
+} from "@/services/bankPromoService";
 import type { BankPromo } from "@/services/bankPromoService";
-import Link from "next/link";
 import { CreatePromoForm } from "./CreatePromoForm";
+import { deletePromoAction, togglePromoAction } from "./actions";
 
 function PromoRow({ promo }: { promo: BankPromo }) {
   return (
@@ -13,12 +17,13 @@ function PromoRow({ promo }: { promo: BankPromo }) {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="font-semibold text-slate-950">
-            {promo.entity} · {promo.discountPct}% OFF
+            {promo.entity} - {formatPromoBenefit(promo)}
           </p>
           <p className="mt-1 text-sm text-slate-500">
-            {formatDayOfWeek(promo.dayOfWeek)} · Pago: {promo.paymentType}
-            {promo.maxAmount ? ` · Tope $${promo.maxAmount.toLocaleString("es-AR")}` : ""}
-            {promo.storeSlug ? ` · Tienda: ${promo.storeSlug}` : ""}
+            {formatDayOfWeek(promo.dayOfWeek)} - Pago: {promo.paymentType}
+            {promo.storeSlug ? ` - Tienda: ${promo.storeSlug}` : ""}
+            {promo.categorySlug ? ` - Categoria: ${promo.categorySlug}` : ""}
+            {promo.commerceChannel ? ` - Canal: ${promo.commerceChannel}` : ""}
           </p>
           {promo.notes ? (
             <p className="mt-1 text-xs text-slate-400">{promo.notes}</p>
@@ -79,11 +84,11 @@ export default async function PromosPage() {
               className="mb-2 inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-slate-900"
               href="/admin"
             >
-              ← Admin
+              &lt;- Admin
             </Link>
             <h1 className="text-2xl font-bold tracking-tight">Promos bancarias</h1>
             <p className="mt-1 text-sm text-slate-500">
-              Descuentos con tarjeta vigentes en el marketplace.
+              Descuentos, reintegros y cuotas sin interes vigentes.
             </p>
           </div>
           <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-semibold text-slate-700">
@@ -92,12 +97,12 @@ export default async function PromosPage() {
         </section>
 
         <section className="grid gap-4 lg:grid-cols-3">
-          <div className="lg:col-span-2 space-y-3">
+          <div className="space-y-3 lg:col-span-2">
             {promos.length > 0 ? (
               promos.map((promo) => <PromoRow key={promo.id} promo={promo} />)
             ) : (
               <p className="rounded-xl border border-dashed border-slate-200 bg-white p-6 text-sm text-slate-500">
-                No hay promos cargadas todavía.
+                No hay promos cargadas todavia.
               </p>
             )}
           </div>

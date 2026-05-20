@@ -7,26 +7,35 @@ const DAY_OPTIONS = [
   { label: "Dom", value: 0 },
   { label: "Lun", value: 1 },
   { label: "Mar", value: 2 },
-  { label: "Mié", value: 3 },
+  { label: "Mie", value: 3 },
   { label: "Jue", value: 4 },
   { label: "Vie", value: 5 },
-  { label: "Sáb", value: 6 },
+  { label: "Sab", value: 6 },
 ];
 
 const initialState: CreatePromoState = {};
+const inputClass =
+  "w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-950 placeholder:text-slate-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100";
 
-function Field({ label, children, required }: { label: string; children: React.ReactNode; required?: boolean }) {
+function Field({
+  children,
+  label,
+  required,
+}: {
+  children: React.ReactNode;
+  label: string;
+  required?: boolean;
+}) {
   return (
     <div>
       <label className="mb-1 block text-xs font-semibold text-slate-600">
-        {label}{required ? " *" : ""}
+        {label}
+        {required ? " *" : ""}
       </label>
       {children}
     </div>
   );
 }
-
-const inputClass = "w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-950 placeholder:text-slate-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100";
 
 export function CreatePromoForm() {
   const [state, action, pending] = useActionState(createPromoAction, initialState);
@@ -44,26 +53,45 @@ export function CreatePromoForm() {
         </p>
       ) : null}
 
-      <Field label="Banco / entidad" required>
-        <input className={inputClass} name="entity" placeholder="Banco Nación" required type="text" />
+      <Field label="Banco / billetera" required>
+        <input className={inputClass} name="entity" placeholder="Banco Nacion" required type="text" />
       </Field>
 
       <Field label="Slug" required>
         <input className={inputClass} name="entitySlug" placeholder="banco-nacion" required type="text" />
       </Field>
 
-      <Field label="Descuento (%)" required>
-        <input className={inputClass} max={100} min={1} name="discountPct" placeholder="25" required type="number" />
-      </Field>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Field label="Tipo de beneficio">
+          <select className={inputClass} name="promoType">
+            <option value="percentage">Descuento</option>
+            <option value="refund">Reintegro</option>
+            <option value="installments">Cuotas sin interes</option>
+          </select>
+        </Field>
 
-      <Field label="Tope reintegro (ARS, opcional)">
-        <input className={inputClass} min={1} name="maxAmount" placeholder="Sin tope" type="number" />
-      </Field>
+        <Field label="Descuento / reintegro (%)">
+          <input className={inputClass} max={100} min={0} name="discountPct" placeholder="25" type="number" />
+        </Field>
+      </div>
 
-      <Field label="Días de semana (vacío = todos)">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Field label="Tope reintegro (ARS)">
+          <input className={inputClass} min={1} name="maxAmount" placeholder="Sin tope" type="number" />
+        </Field>
+
+        <Field label="Cuotas sin interes">
+          <input className={inputClass} min={1} name="installments" placeholder="Ej: 6" type="number" />
+        </Field>
+      </div>
+
+      <Field label="Dias de semana (vacio = todos)">
         <div className="flex flex-wrap gap-2">
           {DAY_OPTIONS.map((day) => (
-            <label className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 has-[:checked]:border-blue-400 has-[:checked]:bg-blue-50 has-[:checked]:text-blue-700" key={day.value}>
+            <label
+              className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 has-[:checked]:border-blue-400 has-[:checked]:bg-blue-50 has-[:checked]:text-blue-700"
+              key={day.value}
+            >
               <input className="sr-only" name={`day_${day.value}`} type="checkbox" value="on" />
               {day.label}
             </label>
@@ -71,33 +99,52 @@ export function CreatePromoForm() {
         </div>
       </Field>
 
-      <Field label="Tipo de pago">
-        <select className={inputClass} name="paymentType">
-          <option value="cualquiera">Cualquiera</option>
-          <option value="debito">Débito</option>
-          <option value="credito">Crédito</option>
-          <option value="prepago">Prepago</option>
-        </select>
-      </Field>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Field label="Medio de pago">
+          <select className={inputClass} name="paymentType">
+            <option value="cualquiera">Cualquiera</option>
+            <option value="debito">Debito</option>
+            <option value="credito">Credito</option>
+            <option value="prepago">Prepago</option>
+            <option value="modo">MODO</option>
+          </select>
+        </Field>
 
-      <Field label="Tienda (slug, vacío = todas)">
-        <input className={inputClass} name="storeSlug" placeholder="mercadolibre" type="text" />
-      </Field>
+        <Field label="Canal">
+          <select className={inputClass} name="commerceChannel">
+            <option value="online">Online</option>
+            <option value="physical">Fisica</option>
+            <option value="both">Online y fisica</option>
+          </select>
+        </Field>
+      </div>
 
-      <Field label="Vigente desde">
-        <input className={inputClass} name="validFrom" type="date" />
-      </Field>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Field label="Tienda (slug, vacio = todas)">
+          <input className={inputClass} name="storeSlug" placeholder="mercadolibre" type="text" />
+        </Field>
 
-      <Field label="Vence">
-        <input className={inputClass} name="validUntil" type="date" />
-      </Field>
+        <Field label="Categoria (slug, vacio = todas)">
+          <input className={inputClass} name="categorySlug" placeholder="celulares" type="text" />
+        </Field>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Field label="Vigente desde">
+          <input className={inputClass} name="validFrom" type="date" />
+        </Field>
+
+        <Field label="Vence">
+          <input className={inputClass} name="validUntil" type="date" />
+        </Field>
+      </div>
 
       <Field label="Fuente (URL)">
         <input className={inputClass} name="sourceUrl" placeholder="https://..." type="url" />
       </Field>
 
       <Field label="Notas internas">
-        <textarea className={inputClass} name="notes" placeholder="Ej: solo cuotas sin interés" rows={2} />
+        <textarea className={inputClass} name="notes" placeholder="Ej: validar fuente oficial antes de publicar" rows={2} />
       </Field>
 
       <button

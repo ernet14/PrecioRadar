@@ -23,6 +23,7 @@ type SummaryCardProps = {
 type AdminSection = {
   count: number;
   description: string;
+  href?: string;
   label: string;
   status: string;
 };
@@ -96,8 +97,8 @@ function StatusPill({
   );
 }
 
-function AdminSectionCard({ count, description, label, status }: AdminSection) {
-  return (
+function AdminSectionCard({ count, description, href, label, status }: AdminSection) {
+  const content = (
     <Card className="flex h-full flex-col justify-between border-slate-200 p-5 shadow-[0_14px_34px_rgba(15,23,42,0.05)]">
       <div>
         <div className="flex items-start justify-between gap-3">
@@ -110,6 +111,14 @@ function AdminSectionCard({ count, description, label, status }: AdminSection) {
         {status}
       </p>
     </Card>
+  );
+
+  return href ? (
+    <Link className="block h-full" href={href}>
+      {content}
+    </Link>
+  ) : (
+    content
   );
 }
 
@@ -170,6 +179,13 @@ function getSections(overview: AdminOverview): AdminSection[] {
       description: "Reportes enviados por usuarios sobre productos u ofertas.",
       label: "Reportes",
       status: "Preparado para reportar problema",
+    },
+    {
+      count: counts.bankPromos,
+      description: "Calendario de descuentos, reintegros y cuotas por banco.",
+      href: "/admin/promos",
+      label: "Promos bancarias",
+      status: "Carga manual y vista publica activas",
     },
     {
       count: counts.affiliateLinks,

@@ -30,12 +30,14 @@ export type BankPromoAvgAggregateOutputType = {
   dayOfWeek: number | null
   discountPct: number | null
   maxAmount: number | null
+  installments: number | null
 }
 
 export type BankPromoSumAggregateOutputType = {
   dayOfWeek: number[]
   discountPct: number | null
   maxAmount: number | null
+  installments: number | null
 }
 
 export type BankPromoMinAggregateOutputType = {
@@ -46,7 +48,10 @@ export type BankPromoMinAggregateOutputType = {
   promoType: string | null
   maxAmount: number | null
   storeSlug: string | null
+  categorySlug: string | null
+  commerceChannel: string | null
   paymentType: string | null
+  installments: number | null
   validFrom: Date | null
   validUntil: Date | null
   sourceUrl: string | null
@@ -64,7 +69,10 @@ export type BankPromoMaxAggregateOutputType = {
   promoType: string | null
   maxAmount: number | null
   storeSlug: string | null
+  categorySlug: string | null
+  commerceChannel: string | null
   paymentType: string | null
+  installments: number | null
   validFrom: Date | null
   validUntil: Date | null
   sourceUrl: string | null
@@ -83,7 +91,10 @@ export type BankPromoCountAggregateOutputType = {
   promoType: number
   maxAmount: number
   storeSlug: number
+  categorySlug: number
+  commerceChannel: number
   paymentType: number
+  installments: number
   validFrom: number
   validUntil: number
   sourceUrl: number
@@ -99,12 +110,14 @@ export type BankPromoAvgAggregateInputType = {
   dayOfWeek?: true
   discountPct?: true
   maxAmount?: true
+  installments?: true
 }
 
 export type BankPromoSumAggregateInputType = {
   dayOfWeek?: true
   discountPct?: true
   maxAmount?: true
+  installments?: true
 }
 
 export type BankPromoMinAggregateInputType = {
@@ -115,7 +128,10 @@ export type BankPromoMinAggregateInputType = {
   promoType?: true
   maxAmount?: true
   storeSlug?: true
+  categorySlug?: true
+  commerceChannel?: true
   paymentType?: true
+  installments?: true
   validFrom?: true
   validUntil?: true
   sourceUrl?: true
@@ -133,7 +149,10 @@ export type BankPromoMaxAggregateInputType = {
   promoType?: true
   maxAmount?: true
   storeSlug?: true
+  categorySlug?: true
+  commerceChannel?: true
   paymentType?: true
+  installments?: true
   validFrom?: true
   validUntil?: true
   sourceUrl?: true
@@ -152,7 +171,10 @@ export type BankPromoCountAggregateInputType = {
   promoType?: true
   maxAmount?: true
   storeSlug?: true
+  categorySlug?: true
+  commerceChannel?: true
   paymentType?: true
+  installments?: true
   validFrom?: true
   validUntil?: true
   sourceUrl?: true
@@ -258,7 +280,10 @@ export type BankPromoGroupByOutputType = {
   promoType: string
   maxAmount: number | null
   storeSlug: string | null
+  categorySlug: string | null
+  commerceChannel: string
   paymentType: string
+  installments: number | null
   validFrom: Date
   validUntil: Date | null
   sourceUrl: string | null
@@ -300,7 +325,10 @@ export type BankPromoWhereInput = {
   promoType?: Prisma.StringFilter<"BankPromo"> | string
   maxAmount?: Prisma.IntNullableFilter<"BankPromo"> | number | null
   storeSlug?: Prisma.StringNullableFilter<"BankPromo"> | string | null
+  categorySlug?: Prisma.StringNullableFilter<"BankPromo"> | string | null
+  commerceChannel?: Prisma.StringFilter<"BankPromo"> | string
   paymentType?: Prisma.StringFilter<"BankPromo"> | string
+  installments?: Prisma.IntNullableFilter<"BankPromo"> | number | null
   validFrom?: Prisma.DateTimeFilter<"BankPromo"> | Date | string
   validUntil?: Prisma.DateTimeNullableFilter<"BankPromo"> | Date | string | null
   sourceUrl?: Prisma.StringNullableFilter<"BankPromo"> | string | null
@@ -319,7 +347,10 @@ export type BankPromoOrderByWithRelationInput = {
   promoType?: Prisma.SortOrder
   maxAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   storeSlug?: Prisma.SortOrderInput | Prisma.SortOrder
+  categorySlug?: Prisma.SortOrderInput | Prisma.SortOrder
+  commerceChannel?: Prisma.SortOrder
   paymentType?: Prisma.SortOrder
+  installments?: Prisma.SortOrderInput | Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validUntil?: Prisma.SortOrderInput | Prisma.SortOrder
   sourceUrl?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -341,7 +372,10 @@ export type BankPromoWhereUniqueInput = Prisma.AtLeast<{
   promoType?: Prisma.StringFilter<"BankPromo"> | string
   maxAmount?: Prisma.IntNullableFilter<"BankPromo"> | number | null
   storeSlug?: Prisma.StringNullableFilter<"BankPromo"> | string | null
+  categorySlug?: Prisma.StringNullableFilter<"BankPromo"> | string | null
+  commerceChannel?: Prisma.StringFilter<"BankPromo"> | string
   paymentType?: Prisma.StringFilter<"BankPromo"> | string
+  installments?: Prisma.IntNullableFilter<"BankPromo"> | number | null
   validFrom?: Prisma.DateTimeFilter<"BankPromo"> | Date | string
   validUntil?: Prisma.DateTimeNullableFilter<"BankPromo"> | Date | string | null
   sourceUrl?: Prisma.StringNullableFilter<"BankPromo"> | string | null
@@ -360,7 +394,10 @@ export type BankPromoOrderByWithAggregationInput = {
   promoType?: Prisma.SortOrder
   maxAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   storeSlug?: Prisma.SortOrderInput | Prisma.SortOrder
+  categorySlug?: Prisma.SortOrderInput | Prisma.SortOrder
+  commerceChannel?: Prisma.SortOrder
   paymentType?: Prisma.SortOrder
+  installments?: Prisma.SortOrderInput | Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validUntil?: Prisma.SortOrderInput | Prisma.SortOrder
   sourceUrl?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -387,7 +424,10 @@ export type BankPromoScalarWhereWithAggregatesInput = {
   promoType?: Prisma.StringWithAggregatesFilter<"BankPromo"> | string
   maxAmount?: Prisma.IntNullableWithAggregatesFilter<"BankPromo"> | number | null
   storeSlug?: Prisma.StringNullableWithAggregatesFilter<"BankPromo"> | string | null
+  categorySlug?: Prisma.StringNullableWithAggregatesFilter<"BankPromo"> | string | null
+  commerceChannel?: Prisma.StringWithAggregatesFilter<"BankPromo"> | string
   paymentType?: Prisma.StringWithAggregatesFilter<"BankPromo"> | string
+  installments?: Prisma.IntNullableWithAggregatesFilter<"BankPromo"> | number | null
   validFrom?: Prisma.DateTimeWithAggregatesFilter<"BankPromo"> | Date | string
   validUntil?: Prisma.DateTimeNullableWithAggregatesFilter<"BankPromo"> | Date | string | null
   sourceUrl?: Prisma.StringNullableWithAggregatesFilter<"BankPromo"> | string | null
@@ -406,7 +446,10 @@ export type BankPromoCreateInput = {
   promoType?: string
   maxAmount?: number | null
   storeSlug?: string | null
+  categorySlug?: string | null
+  commerceChannel?: string
   paymentType?: string
+  installments?: number | null
   validFrom?: Date | string
   validUntil?: Date | string | null
   sourceUrl?: string | null
@@ -425,7 +468,10 @@ export type BankPromoUncheckedCreateInput = {
   promoType?: string
   maxAmount?: number | null
   storeSlug?: string | null
+  categorySlug?: string | null
+  commerceChannel?: string
   paymentType?: string
+  installments?: number | null
   validFrom?: Date | string
   validUntil?: Date | string | null
   sourceUrl?: string | null
@@ -444,7 +490,10 @@ export type BankPromoUpdateInput = {
   promoType?: Prisma.StringFieldUpdateOperationsInput | string
   maxAmount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   storeSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categorySlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commerceChannel?: Prisma.StringFieldUpdateOperationsInput | string
   paymentType?: Prisma.StringFieldUpdateOperationsInput | string
+  installments?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -463,7 +512,10 @@ export type BankPromoUncheckedUpdateInput = {
   promoType?: Prisma.StringFieldUpdateOperationsInput | string
   maxAmount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   storeSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categorySlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commerceChannel?: Prisma.StringFieldUpdateOperationsInput | string
   paymentType?: Prisma.StringFieldUpdateOperationsInput | string
+  installments?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -482,7 +534,10 @@ export type BankPromoCreateManyInput = {
   promoType?: string
   maxAmount?: number | null
   storeSlug?: string | null
+  categorySlug?: string | null
+  commerceChannel?: string
   paymentType?: string
+  installments?: number | null
   validFrom?: Date | string
   validUntil?: Date | string | null
   sourceUrl?: string | null
@@ -501,7 +556,10 @@ export type BankPromoUpdateManyMutationInput = {
   promoType?: Prisma.StringFieldUpdateOperationsInput | string
   maxAmount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   storeSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categorySlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commerceChannel?: Prisma.StringFieldUpdateOperationsInput | string
   paymentType?: Prisma.StringFieldUpdateOperationsInput | string
+  installments?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -520,7 +578,10 @@ export type BankPromoUncheckedUpdateManyInput = {
   promoType?: Prisma.StringFieldUpdateOperationsInput | string
   maxAmount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   storeSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categorySlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commerceChannel?: Prisma.StringFieldUpdateOperationsInput | string
   paymentType?: Prisma.StringFieldUpdateOperationsInput | string
+  installments?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -547,7 +608,10 @@ export type BankPromoCountOrderByAggregateInput = {
   promoType?: Prisma.SortOrder
   maxAmount?: Prisma.SortOrder
   storeSlug?: Prisma.SortOrder
+  categorySlug?: Prisma.SortOrder
+  commerceChannel?: Prisma.SortOrder
   paymentType?: Prisma.SortOrder
+  installments?: Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validUntil?: Prisma.SortOrder
   sourceUrl?: Prisma.SortOrder
@@ -561,6 +625,7 @@ export type BankPromoAvgOrderByAggregateInput = {
   dayOfWeek?: Prisma.SortOrder
   discountPct?: Prisma.SortOrder
   maxAmount?: Prisma.SortOrder
+  installments?: Prisma.SortOrder
 }
 
 export type BankPromoMaxOrderByAggregateInput = {
@@ -571,7 +636,10 @@ export type BankPromoMaxOrderByAggregateInput = {
   promoType?: Prisma.SortOrder
   maxAmount?: Prisma.SortOrder
   storeSlug?: Prisma.SortOrder
+  categorySlug?: Prisma.SortOrder
+  commerceChannel?: Prisma.SortOrder
   paymentType?: Prisma.SortOrder
+  installments?: Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validUntil?: Prisma.SortOrder
   sourceUrl?: Prisma.SortOrder
@@ -589,7 +657,10 @@ export type BankPromoMinOrderByAggregateInput = {
   promoType?: Prisma.SortOrder
   maxAmount?: Prisma.SortOrder
   storeSlug?: Prisma.SortOrder
+  categorySlug?: Prisma.SortOrder
+  commerceChannel?: Prisma.SortOrder
   paymentType?: Prisma.SortOrder
+  installments?: Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validUntil?: Prisma.SortOrder
   sourceUrl?: Prisma.SortOrder
@@ -603,6 +674,7 @@ export type BankPromoSumOrderByAggregateInput = {
   dayOfWeek?: Prisma.SortOrder
   discountPct?: Prisma.SortOrder
   maxAmount?: Prisma.SortOrder
+  installments?: Prisma.SortOrder
 }
 
 export type BankPromoCreatedayOfWeekInput = {
@@ -625,7 +697,10 @@ export type BankPromoSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   promoType?: boolean
   maxAmount?: boolean
   storeSlug?: boolean
+  categorySlug?: boolean
+  commerceChannel?: boolean
   paymentType?: boolean
+  installments?: boolean
   validFrom?: boolean
   validUntil?: boolean
   sourceUrl?: boolean
@@ -644,7 +719,10 @@ export type BankPromoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   promoType?: boolean
   maxAmount?: boolean
   storeSlug?: boolean
+  categorySlug?: boolean
+  commerceChannel?: boolean
   paymentType?: boolean
+  installments?: boolean
   validFrom?: boolean
   validUntil?: boolean
   sourceUrl?: boolean
@@ -663,7 +741,10 @@ export type BankPromoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   promoType?: boolean
   maxAmount?: boolean
   storeSlug?: boolean
+  categorySlug?: boolean
+  commerceChannel?: boolean
   paymentType?: boolean
+  installments?: boolean
   validFrom?: boolean
   validUntil?: boolean
   sourceUrl?: boolean
@@ -682,7 +763,10 @@ export type BankPromoSelectScalar = {
   promoType?: boolean
   maxAmount?: boolean
   storeSlug?: boolean
+  categorySlug?: boolean
+  commerceChannel?: boolean
   paymentType?: boolean
+  installments?: boolean
   validFrom?: boolean
   validUntil?: boolean
   sourceUrl?: boolean
@@ -692,7 +776,7 @@ export type BankPromoSelectScalar = {
   updatedAt?: boolean
 }
 
-export type BankPromoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "entity" | "entitySlug" | "dayOfWeek" | "discountPct" | "promoType" | "maxAmount" | "storeSlug" | "paymentType" | "validFrom" | "validUntil" | "sourceUrl" | "active" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["bankPromo"]>
+export type BankPromoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "entity" | "entitySlug" | "dayOfWeek" | "discountPct" | "promoType" | "maxAmount" | "storeSlug" | "categorySlug" | "commerceChannel" | "paymentType" | "installments" | "validFrom" | "validUntil" | "sourceUrl" | "active" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["bankPromo"]>
 
 export type $BankPromoPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "BankPromo"
@@ -706,7 +790,10 @@ export type $BankPromoPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     promoType: string
     maxAmount: number | null
     storeSlug: string | null
+    categorySlug: string | null
+    commerceChannel: string
     paymentType: string
+    installments: number | null
     validFrom: Date
     validUntil: Date | null
     sourceUrl: string | null
@@ -1145,7 +1232,10 @@ export interface BankPromoFieldRefs {
   readonly promoType: Prisma.FieldRef<"BankPromo", 'String'>
   readonly maxAmount: Prisma.FieldRef<"BankPromo", 'Int'>
   readonly storeSlug: Prisma.FieldRef<"BankPromo", 'String'>
+  readonly categorySlug: Prisma.FieldRef<"BankPromo", 'String'>
+  readonly commerceChannel: Prisma.FieldRef<"BankPromo", 'String'>
   readonly paymentType: Prisma.FieldRef<"BankPromo", 'String'>
+  readonly installments: Prisma.FieldRef<"BankPromo", 'Int'>
   readonly validFrom: Prisma.FieldRef<"BankPromo", 'DateTime'>
   readonly validUntil: Prisma.FieldRef<"BankPromo", 'DateTime'>
   readonly sourceUrl: Prisma.FieldRef<"BankPromo", 'String'>

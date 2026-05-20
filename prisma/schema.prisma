@@ -405,7 +405,10 @@ model BankPromo {
   promoType   String    @default("percentage")
   maxAmount   Int?
   storeSlug   String?
+  categorySlug String?
+  commerceChannel String @default("online")
   paymentType String    @default("cualquiera")
+  installments Int?
   validFrom   DateTime  @default(now())
   validUntil  DateTime?
   sourceUrl   String?
@@ -415,5 +418,7 @@ model BankPromo {
   updatedAt   DateTime  @updatedAt
 
   @@index([entitySlug, active])
+  @@index([storeSlug, active])
+  @@index([categorySlug, active])
   @@index([active])
 }

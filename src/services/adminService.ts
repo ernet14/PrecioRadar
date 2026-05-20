@@ -4,6 +4,7 @@ import { logger } from "@/lib/logger";
 type AdminCounts = {
   affiliateLinks: number;
   alerts: number;
+  bankPromos: number;
   categories: number;
   clicks: number;
   offers: number;
@@ -161,6 +162,7 @@ export type AdminOverview =
 const emptyCounts: AdminCounts = {
   affiliateLinks: 0,
   alerts: 0,
+  bankPromos: 0,
   categories: 0,
   clicks: 0,
   offers: 0,
@@ -252,6 +254,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     const searches = await prisma.searchLog.count();
     const clicks = await prisma.clickTracking.count();
     const alerts = await prisma.alert.count();
+    const bankPromos = await prisma.bankPromo.count();
     const reports = await prisma.productReport.count();
     const affiliateLinks = await prisma.affiliateLink.count();
     const providerErrors = await prisma.providerLog.count({
@@ -376,6 +379,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       counts: {
         affiliateLinks,
         alerts,
+        bankPromos,
         categories,
         clicks,
         offers,

@@ -7,6 +7,10 @@
     {
       "path": "/api/internal/evaluate-alerts",
       "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/internal/evaluate-bank-promos",
+      "schedule": "0 10 * * *"
     }
   ]
 }

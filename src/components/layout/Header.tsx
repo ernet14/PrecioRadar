@@ -45,6 +45,9 @@ export async function Header() {
           <Link className={navLinkClass} href="/guias">
             Guías
           </Link>
+          <Link className={navLinkClass} href="/promos-hoy">
+            Promos
+          </Link>
           <Link className={navLinkClass} href="/#como-funciona">
             Cómo funciona
           </Link>
