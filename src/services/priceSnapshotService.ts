@@ -2,7 +2,7 @@ import { getPrismaClient } from "@/lib/prisma";
 import { logger } from "@/lib/logger";
 import { providerByStoreSlug } from "@/providers/stores";
 import type { ProviderProduct } from "@/providers/stores/types";
-import { slugify } from "@/lib/utils";
+import { getCanonicalProductKey, slugify } from "@/lib/utils";
 
 export type SnapshotResult = {
   status: "completed" | "database_unavailable" | "error" | "no_offers";
@@ -61,7 +61,13 @@ async function ensureProduct(
   offer: ProviderProduct,
   categoryId: string,
 ) {
-  const productSlug = offer.slug ?? slugify(offer.name);
+  // Slug canónico (marca + SKU) cuando existe: hace que la MISMA oferta de
+  // distintas tiendas caiga en un único Product y se compare entre tiendas.
+  // Si no hay SKU confiable, cae al slug por nombre (sin agrupar cross-store).
+  const productSlug =
+    getCanonicalProductKey({ name: offer.name, brand: offer.brand }) ??
+    offer.slug ??
+    slugify(offer.name);
 
   return prisma.product.upsert({
     where: { slug: productSlug },
@@ -92,7 +98,15 @@ async function upsertOffer(
   if (existing) {
     return prisma.productOffer.update({
       where: { id: existing.id },
-      data: { price: offer.price, available: offer.available, lastCheckedAt: offer.lastCheckedAt },
+      // Reasignamos productId: si la oferta venía bajo un Product viejo (slug
+      // por nombre) la consolidamos en el Product canónico. El historial sigue
+      // ligado por offerId, así que no se pierde.
+      data: {
+        productId,
+        price: offer.price,
+        available: offer.available,
+        lastCheckedAt: offer.lastCheckedAt,
+      },
     });
   }
 

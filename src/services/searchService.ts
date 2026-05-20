@@ -7,6 +7,7 @@ import { persistSearchResults } from "@/services/priceSnapshotService";
 import type { ProviderProduct } from "@/providers/stores";
 import {
   detectInputType,
+  getCanonicalProductKey,
   normalizeProductName,
   slugify,
 } from "@/lib/utils";
@@ -321,7 +322,12 @@ function providerProductToSearchResultItem(
   const bestScoredProduct = sortedProducts[0];
   const product = bestScoredProduct.product;
   const normalizedName = product.normalizedName;
-  const productSlug = product.slug ?? slugify(product.name);
+  // Slug canónico (marca + SKU) para que la tarjeta enlace al mismo detalle que
+  // persiste el cron, fusionando las ofertas de varias tiendas.
+  const productSlug =
+    getCanonicalProductKey({ name: product.name, brand: product.brand }) ??
+    product.slug ??
+    slugify(product.name);
   const productId = `product-${productSlug}`;
   const offers: ProductOffer[] = sortedProducts.map(({ product: offerProduct }) => {
     const store = getStoreFromProviderProduct(offerProduct);
@@ -534,7 +540,14 @@ function splitMatches(products: ProviderProduct[], query: string) {
   const productGroups = new Map<string, ScoredProviderProduct[]>();
 
   for (const scoredProduct of scoredProducts) {
-    const key = scoredProduct.product.normalizedName;
+    // Agrupamos por clave canónica (marca + SKU) para fusionar el MISMO
+    // producto entre tiendas; si no hay SKU confiable caemos al nombre
+    // normalizado (comportamiento previo, sin agrupar cross-store).
+    const key =
+      getCanonicalProductKey({
+        name: scoredProduct.product.name,
+        brand: scoredProduct.product.brand,
+      }) ?? scoredProduct.product.normalizedName;
     const currentGroup = productGroups.get(key) ?? [];
     currentGroup.push(scoredProduct);
     productGroups.set(key, currentGroup);
