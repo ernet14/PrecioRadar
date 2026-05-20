@@ -19,7 +19,7 @@ const contentSecurityPolicy = [
   "object-src 'none'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.vercel-insights.com https://*.vercel-analytics.com https://*.sentry.io",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://*.mlstatic.com https://http2.mlstatic.com https://*.fravega.com https://fravega.com https://cdn.simpleicons.org",
+  "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
   [
     "connect-src 'self'",
@@ -76,12 +76,8 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
-    remotePatterns: [
-      { protocol: "https", hostname: "http2.mlstatic.com" },
-      { protocol: "https", hostname: "*.mlstatic.com" },
-      { protocol: "https", hostname: "fravega.com" },
-      { protocol: "https", hostname: "*.fravega.com" },
-    ],
+    // Las imagenes de producto provienen de CDNs variados segun la tienda importada.
+    remotePatterns: [{ protocol: "https", hostname: "**" }],
   },
 };
 
