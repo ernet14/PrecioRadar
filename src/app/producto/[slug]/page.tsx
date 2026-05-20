@@ -15,8 +15,9 @@ import {
   DealQualityPanel,
 } from "@/components/product/DealQualityBadge";
 import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { ShareButton } from "@/components/product/ShareButton";
+import { PushToggle } from "@/components/pwa/PushToggle";
 import { formatCurrencyARS, formatDate } from "@/lib/utils";
 import { getCurrentUser } from "@/lib/supabase/auth";
 import { buildOfferClickHref } from "@/services/clickTrackingService";
@@ -196,13 +197,12 @@ function ActionPanel({
           productSlug={product.slug}
           returnTo={`/producto/${product.slug}`}
         />
-        <Button
+        <ShareButton
           className="w-full border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-          size="lg"
-          variant="ghost"
-        >
-          Compartir
-        </Button>
+          title={`${product.name} — PrecioRadar`}
+          text={`Mirá el precio de ${product.name} en PrecioRadar`}
+        />
+        <PushToggle className="w-full border border-slate-200 bg-white text-slate-700 hover:bg-slate-50" />
       </div>
       <p className="mt-4 rounded-lg bg-slate-50 px-3 py-2 text-xs font-medium leading-5 text-slate-500">
         Ultima actualizacion: {formatDate(product.priceHistoryStats.lastUpdatedAt)}

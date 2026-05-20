@@ -6,6 +6,7 @@ import {
   type SendAlertEmailResult,
 } from "@/services/emailService";
 import { createNotification } from "@/services/notificationService";
+import { sendPushToUser } from "@/services/pushService";
 import {
   getMockProductDetailBySlug,
   type ProductDetail,
@@ -646,6 +647,14 @@ export async function evaluateUserAlerts(
         recipientEmail: alert.user.email,
       });
       trackEmailResult(emailResult, emailCounts);
+
+      // Web Push complementario (no-op si no hay claves VAPID configuradas).
+      await sendPushToUser(userId, {
+        title: notification.title,
+        body: notification.message,
+        url: `/producto/${product.slug}`,
+        tag: `alert-${alert.id}`,
+      }).catch(() => {});
 
       await prisma.alert.update({
         where: { id: alert.id },

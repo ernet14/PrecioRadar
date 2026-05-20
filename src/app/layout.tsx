@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { BetaBanner } from "@/components/layout/BetaBanner";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { CookieBanner } from "@/components/legal/CookieBanner";
+import { ServiceWorkerRegistrar } from "@/components/pwa/ServiceWorkerRegistrar";
 import { getSiteUrl } from "@/lib/seo/site";
 import "./globals.css";
 
@@ -23,6 +24,11 @@ export const metadata: Metadata = {
     },
   },
   applicationName: "PrecioRadar",
+  appleWebApp: {
+    capable: true,
+    title: "PrecioRadar",
+    statusBarStyle: "default",
+  },
   openGraph: {
     title: "PrecioRadar",
     description:
@@ -44,6 +50,10 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: "#4f46e5",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -59,6 +69,7 @@ export default function RootLayout({
           <Footer />
         </div>
         <CookieBanner />
+        <ServiceWorkerRegistrar />
         <Analytics />
       </body>
     </html>

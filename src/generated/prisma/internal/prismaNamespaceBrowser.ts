@@ -62,6 +62,7 @@ export const ModelName = {
   Alert: 'Alert',
   Notification: 'Notification',
   ClickTracking: 'ClickTracking',
+  PushSubscription: 'PushSubscription',
   AffiliateLink: 'AffiliateLink',
   SearchLog: 'SearchLog',
   ProviderLog: 'ProviderLog',
@@ -281,6 +282,19 @@ export const ClickTrackingScalarFieldEnum = {
 } as const
 
 export type ClickTrackingScalarFieldEnum = (typeof ClickTrackingScalarFieldEnum)[keyof typeof ClickTrackingScalarFieldEnum]
+
+
+export const PushSubscriptionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  endpoint: 'endpoint',
+  p256dh: 'p256dh',
+  auth: 'auth',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt'
+} as const
+
+export type PushSubscriptionScalarFieldEnum = (typeof PushSubscriptionScalarFieldEnum)[keyof typeof PushSubscriptionScalarFieldEnum]
 
 
 export const AffiliateLinkScalarFieldEnum = {

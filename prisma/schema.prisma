@@ -45,12 +45,13 @@ model User {
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 
-  alerts          Alert[]
-  clickTracking   ClickTracking[]
-  notifications   Notification[]
-  productReports  ProductReport[]
-  searchLogs      SearchLog[]
-  trackedProducts TrackedProduct[]
+  alerts            Alert[]
+  clickTracking     ClickTracking[]
+  notifications     Notification[]
+  productReports    ProductReport[]
+  pushSubscriptions PushSubscription[]
+  searchLogs        SearchLog[]
+  trackedProducts   TrackedProduct[]
 }
 
 model Category {
@@ -284,6 +285,20 @@ model ClickTracking {
   @@index([clickedAt])
   @@index([isAffiliate])
   @@index([program])
+}
+
+model PushSubscription {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @db.Uuid
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
 
 model AffiliateLink {

@@ -73,6 +73,11 @@ export type Notification = Prisma.NotificationModel
  */
 export type ClickTracking = Prisma.ClickTrackingModel
 /**
+ * Model PushSubscription
+ * 
+ */
+export type PushSubscription = Prisma.PushSubscriptionModel
+/**
  * Model AffiliateLink
  * 
  */
