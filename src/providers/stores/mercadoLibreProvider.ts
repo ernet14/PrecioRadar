@@ -55,6 +55,17 @@ function getSiteId() {
   return process.env.MERCADOLIBRE_SITE_ID ?? defaultSiteId;
 }
 
+// MeLi bloquea /sites/{site}/search con HTTP 403 incluso con un token válido de
+// client_credentials (confirmado manualmente: /oauth/token y /users/me funcionan,
+// /sites/MLA/search devuelve 403). No es problema de CLIENT_ID/SECRET ni de Vercel,
+// sino de permisos de la app — ver docs/mercadolibre-permiso-busqueda.md.
+// Por eso el search arranca DESACTIVADO: no gastamos latencia ni ensuciamos logs
+// intentando un endpoint que sabemos bloqueado. Si MeLi habilita el permiso,
+// alcanza con MERCADOLIBRE_SEARCH_ENABLED=true para reactivarlo sin tocar código.
+function isMercadoLibreSearchEnabled() {
+  return process.env.MERCADOLIBRE_SEARCH_ENABLED === "true";
+}
+
 function parseUrl(input: string) {
   const trimmedInput = input.trim();
 
@@ -416,6 +427,13 @@ export const mercadoLibreProvider: StoreProvider = {
   async searchProducts(query: string) {
     try {
       if (!query.trim()) {
+        return [];
+      }
+
+      // Search bloqueado por permisos de MeLi: no intentamos la llamada hasta
+      // que se habilite vía MERCADOLIBRE_SEARCH_ENABLED. El sitio usa VTEX +
+      // datos manuales/demo mientras tanto.
+      if (!isMercadoLibreSearchEnabled()) {
         return [];
       }
 

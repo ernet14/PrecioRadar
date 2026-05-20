@@ -110,15 +110,25 @@ curl -s -H "x-cron-secret: $CRON_SECRET" \
 ```
 
 - Si `probes.search.bearer.status` pasa de `403` a `200` con `resultCount > 0`,
-  la búsqueda quedó habilitada y `/buscar?q=` empieza a traer ofertas reales con
-  precio sin tocar código (el provider ya usa `/sites/{site}/search`).
+  la búsqueda quedó habilitada.
+- **Para reactivarla**, poné `MERCADOLIBRE_SEARCH_ENABLED=true` en las env vars
+  (Vercel + `.env`). El search está apagado por un *capability gate* en
+  `mercadoLibreProvider.searchProducts`: con el flag en `true` vuelve a usar
+  `/sites/{site}/search` sin ningún otro cambio de código. Mientras el flag no
+  esté, el provider ni siquiera llama al endpoint (evita latencia y ruido de logs).
 - Si en cambio MeLi habilita solo `buy_box_winner` en la Catalog API, hay que
   reescribir `mercadoLibreProvider.searchProducts` para usar `/products/search` +
   `buy_box_winner` (cambio de código aparte, planificable).
 
 ## Mientras tanto
 
-- El flujo por **link pegado** (`/items/{id}`) sí trae precio real. El fix del
-  circuit breaker (2026-05-20) evita que el `403 forbidden` de search abra el
-  circuito y tumbe también ese flujo.
+- **No tocar env vars de credenciales ni Vercel:** el token funciona
+  (`client_credentials` + `/users/me` OK). El único faltante es el permiso de
+  search del lado de MeLi. Re-confirmado manualmente el 2026-05-20 por PowerShell.
+- El **capability gate** (`MERCADOLIBRE_SEARCH_ENABLED`, default off) mantiene el
+  search MeLi desactivado sin romper nada: el sitio usa proveedores VTEX + datos
+  manuales/demo cargados desde admin. Se reactiva con una sola env var.
+- El flujo por **link pegado** (`/items/{id}`) sí trae precio real y queda
+  siempre activo (no pasa por el gate). El fix del circuit breaker (2026-05-20)
+  evita que el `403 forbidden` de search abra el circuito y tumbe ese flujo.
 - La búsqueda por texto sigue cayendo a datos demo hasta que se habilite el permiso.

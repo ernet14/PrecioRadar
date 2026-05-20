@@ -1,10 +1,16 @@
 import assert from "node:assert/strict";
-import test, { afterEach } from "node:test";
+import test, { afterEach, beforeEach } from "node:test";
 import { mercadoLibreProvider } from "../src/providers/stores/mercadoLibreProvider";
 
 const originalFetch = globalThis.fetch;
 const originalDatabaseUrl = process.env.DATABASE_URL;
 const originalDirectUrl = process.env.DIRECT_URL;
+
+// El search está apagado por defecto (MeLi lo bloquea con 403). Lo habilitamos
+// para los tests que ejercitan el camino real de búsqueda.
+beforeEach(() => {
+  process.env.MERCADOLIBRE_SEARCH_ENABLED = "true";
+});
 
 function mockJsonFetch(
   handler: (input: RequestInfo | URL, init?: RequestInit) => unknown,
@@ -31,8 +37,24 @@ afterEach(() => {
   globalThis.fetch = originalFetch;
   delete process.env.MERCADOLIBRE_ACCESS_TOKEN;
   delete process.env.MERCADOLIBRE_SITE_ID;
+  delete process.env.MERCADOLIBRE_SEARCH_ENABLED;
   restoreEnv("DATABASE_URL", originalDatabaseUrl);
   restoreEnv("DIRECT_URL", originalDirectUrl);
+});
+
+test("no consulta la API de search cuando está deshabilitado", async () => {
+  delete process.env.MERCADOLIBRE_SEARCH_ENABLED;
+  process.env.MERCADOLIBRE_ACCESS_TOKEN = "test-token";
+  let fetchCalled = false;
+  globalThis.fetch = (async () => {
+    fetchCalled = true;
+    return new Response("{}", { headers: { "content-type": "application/json" } });
+  }) as typeof fetch;
+
+  const products = await mercadoLibreProvider.searchProducts("Galaxy A55");
+
+  assert.deepEqual(products, []);
+  assert.equal(fetchCalled, false);
 });
 
 test("searches MercadoLibre MLA and normalizes results", async () => {

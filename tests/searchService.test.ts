@@ -18,10 +18,13 @@ function mockJsonFetch(
 afterEach(() => {
   globalThis.fetch = originalFetch;
   delete process.env.MERCADOLIBRE_ACCESS_TOKEN;
+  delete process.env.MERCADOLIBRE_SEARCH_ENABLED;
 });
 
 test("labels real MercadoLibre best offers without demo copy", async () => {
   process.env.MERCADOLIBRE_ACCESS_TOKEN = "test-token";
+  // Este test ejercita el camino de resultados reales de MeLi search.
+  process.env.MERCADOLIBRE_SEARCH_ENABLED = "true";
   mockJsonFetch(() => ({
     results: [
       {

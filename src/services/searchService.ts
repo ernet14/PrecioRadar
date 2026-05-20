@@ -585,9 +585,10 @@ function splitMatches(products: ProviderProduct[], query: string) {
 async function searchText(query: string, searchedAt: Date) {
   // Consultamos todos los proveedores reales en paralelo. Las tiendas VTEX
   // (Frávega, Cetrogar, Naldo, OnCity, Easy, Coppel, Carrefour, Jumbo) sí
-  // devuelven precios; MercadoLibre hoy responde 403 en /sites/search (ver
-  // docs/mercadolibre-permiso-busqueda.md) pero se suma solo si trae datos.
-  // Cada provider captura sus errores y devuelve [], así que allSettled nunca
+  // devuelven precios; el search de MercadoLibre está apagado por permisos
+  // (gate MERCADOLIBRE_SEARCH_ENABLED, default off → devuelve []; ver
+  // docs/mercadolibre-permiso-busqueda.md) y se suma solo si se reactiva.
+  // Cada provider captura sus errores y devuelve [], así que Promise.all nunca
   // descarta resultados por culpa de una tienda caída o lenta.
   const providerResults = await Promise.all([
     mercadoLibreProvider.searchProducts(query),
