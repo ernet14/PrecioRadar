@@ -306,7 +306,16 @@ async function fetchMercadoLibreJson(
       storeSlug: "mercadolibre",
     });
   } else {
-    recordCircuitFailure(circuitName);
+    // El circuit breaker existe para fallos TRANSITORIOS (timeout, red, 5xx).
+    // Un 4xx (401/403/404) es permanente: significa "no permitido / no existe",
+    // no "provider caido". Contarlo abria el circuito y tumbaba tambien
+    // /items/{id} (que funciona) cuando /sites/search devuelve 403 forbidden.
+    const status = finalOutcome.status;
+    const isPermanentClientError =
+      typeof status === "number" && status >= 400 && status < 500;
+    if (!isPermanentClientError) {
+      recordCircuitFailure(circuitName);
+    }
   }
 
   return {

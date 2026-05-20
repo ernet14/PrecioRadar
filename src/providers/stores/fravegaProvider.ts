@@ -1,6 +1,3 @@
-import { createStubProvider } from "@/providers/stores/stubProvider";
-
-export const fravegaProvider = createStubProvider({
-  name: "fravega",
-  todo: "Use an official or permitted integration before enabling real Fravega data. Do not scrape aggressively or invent APIs.",
-});
+// Frávega usa la integración VTEX genérica (ver vtexProvider/vtexStores).
+// Se mantiene este export por compatibilidad con imports existentes.
+export { fravegaProvider } from "@/providers/stores/vtexStores";

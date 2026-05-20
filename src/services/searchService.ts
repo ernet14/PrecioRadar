@@ -1,4 +1,8 @@
-import { mercadoLibreProvider, mockProvider } from "@/providers/stores";
+import {
+  mercadoLibreProvider,
+  mockProvider,
+  vtexProviders,
+} from "@/providers/stores";
 import type { ProviderProduct } from "@/providers/stores";
 import {
   detectInputType,
@@ -595,19 +599,35 @@ async function searchText(query: string, searchedAt: Date) {
     });
   }
 
-  const mercadoLibreProducts = await mercadoLibreProvider.searchProducts(query);
-  const mercadoLibreMatches = splitMatches(mercadoLibreProducts, query);
-  const mercadoLibreTotal =
-    mercadoLibreMatches.exactMatches.length +
-    mercadoLibreMatches.similarMatches.length;
+  // Consultamos todos los proveedores reales en paralelo. Las tiendas VTEX
+  // (Frávega, Cetrogar, Naldo, OnCity, Easy, Coppel, Carrefour, Jumbo) sí
+  // devuelven precios; MercadoLibre hoy responde 403 en /sites/search (ver
+  // docs/mercadolibre-permiso-busqueda.md) pero se suma solo si trae datos.
+  // Cada provider captura sus errores y devuelve [], así que allSettled nunca
+  // descarta resultados por culpa de una tienda caída o lenta.
+  const providerResults = await Promise.all([
+    mercadoLibreProvider.searchProducts(query),
+    ...vtexProviders.map((provider) => provider.searchProducts(query)),
+  ]);
+  const realProducts = providerResults.flat();
+  const realMatches = splitMatches(realProducts, query);
+  const realTotal =
+    realMatches.exactMatches.length + realMatches.similarMatches.length;
 
-  if (mercadoLibreTotal > 0) {
+  if (realTotal > 0) {
+    const storeNames = Array.from(
+      new Set(realProducts.map((product) => product.storeName)),
+    );
+    const storesLabel =
+      storeNames.length > 1
+        ? `${storeNames.slice(0, -1).join(", ")} y ${storeNames.at(-1)}`
+        : storeNames[0];
     return createBaseResult({
       query,
       detectedType: "text",
-      ...mercadoLibreMatches,
+      ...realMatches,
       status: "ready",
-      message: "Resultados reales obtenidos desde MercadoLibre.",
+      message: `Resultados reales obtenidos desde ${storesLabel}.`,
       usedDemoFallback: false,
       searchedAt,
     });
