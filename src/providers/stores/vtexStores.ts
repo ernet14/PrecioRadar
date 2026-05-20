@@ -13,6 +13,8 @@ const vtexStoreConfigs: VtexStoreConfig[] = [
   { name: "coppel", storeSlug: "coppel", storeName: "Coppel", baseUrl: "https://www.coppel.com.ar" },
   { name: "carrefour", storeSlug: "carrefour", storeName: "Carrefour", baseUrl: "https://www.carrefour.com.ar" },
   { name: "jumbo", storeSlug: "jumbo", storeName: "Jumbo", baseUrl: "https://www.jumbo.com.ar" },
+  { name: "vea", storeSlug: "vea", storeName: "Vea", baseUrl: "https://www.vea.com.ar" },
+  { name: "dia", storeSlug: "dia", storeName: "Día", baseUrl: "https://diaonline.supermercadosdia.com.ar" },
 ];
 
 export const vtexProviders = vtexStoreConfigs.map(createVtexProvider);
@@ -28,3 +30,5 @@ export const easyProvider = bySlug.get("easy")!;
 export const coppelProvider = bySlug.get("coppel")!;
 export const carrefourProvider = bySlug.get("carrefour")!;
 export const jumboProvider = bySlug.get("jumbo")!;
+export const veaProvider = bySlug.get("vea")!;
+export const diaProvider = bySlug.get("dia")!;

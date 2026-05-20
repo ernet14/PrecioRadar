@@ -21,11 +21,6 @@ import type {
   Store,
 } from "@/types";
 
-type ComingSoonCategory = {
-  label: string;
-  terms: string[];
-};
-
 type ScoredProviderProduct = {
   product: ProviderProduct;
   matchType: MatchType;
@@ -46,41 +41,6 @@ const relatedCategorySlugs: Record<string, string[]> = {
   electrodomesticos: ["electrodomesticos"],
   "consolas-videojuegos": ["consolas-videojuegos"],
 };
-
-const comingSoonCategories: ComingSoonCategory[] = [
-  {
-    label: "Ropa, calzado y moda",
-    terms: [
-      "ropa",
-      "zapatilla",
-      "zapatillas",
-      "zapato",
-      "zapatos",
-      "calzado",
-      "remera",
-      "camisa",
-      "pantalon",
-      "jean",
-      "buzo",
-      "campera",
-      "vestido",
-      "nike",
-      "adidas",
-    ],
-  },
-  {
-    label: "Perfumeria y belleza",
-    terms: ["perfume", "perfumes", "maquillaje", "crema facial", "skincare"],
-  },
-  {
-    label: "Supermercado",
-    terms: ["supermercado", "yerba", "leche", "aceite", "gaseosa"],
-  },
-  {
-    label: "Hogar no tecnologico",
-    terms: ["sillon", "colchon", "mueble", "mesa comedor", "silla gamer"],
-  },
-];
 
 function createBaseResult({
   detectedType,
@@ -126,33 +86,6 @@ function parseUrl(input: string) {
       return null;
     }
   }
-}
-
-function getComingSoonCategory(query: string) {
-  const normalizedQuery = normalizeProductName(query);
-
-  if (!normalizedQuery) {
-    return null;
-  }
-
-  const queryTokens = new Set(getQueryTokens(normalizedQuery));
-  const paddedQuery = ` ${normalizedQuery} `;
-
-  return (
-    comingSoonCategories.find((category) => {
-      return category.terms.some((term) => {
-        const normalizedTerm = normalizeProductName(term);
-
-        if (!normalizedTerm) {
-          return false;
-        }
-
-        return normalizedTerm.includes(" ")
-          ? paddedQuery.includes(` ${normalizedTerm} `)
-          : queryTokens.has(normalizedTerm);
-      });
-    }) ?? null
-  );
 }
 
 function getQueryTokens(normalizedQuery: string) {
@@ -439,6 +372,25 @@ function providerProductToSearchResultItem(
   };
 }
 
+// Términos que denotan accesorios. Si el nombre del producto ARRANCA con uno de
+// estos y el query no los pide explícitamente, lo excluimos: evita que "samsung
+// galaxy a55" devuelva fundas, vidrios y cargadores antes que el producto real.
+const ACCESSORY_TERMS = new Set([
+  "funda", "fundas", "carcasa", "carcasas", "protector", "protectores",
+  "vidrio", "templado", "glass", "film", "mica", "pelicula", "cargador",
+  "cargadores", "cable", "cables", "adaptador", "adaptadores", "soporte",
+  "soportes", "case", "cover", "estuche", "forro", "correa", "malla",
+]);
+
+function isAccessoryProduct(normalizedName: string) {
+  const firstToken = getQueryTokens(normalizedName)[0];
+  return firstToken ? ACCESSORY_TERMS.has(firstToken) : false;
+}
+
+function queryWantsAccessory(queryTokens: string[]) {
+  return queryTokens.some((token) => ACCESSORY_TERMS.has(token));
+}
+
 function scoreProduct(
   product: ProviderProduct,
   normalizedQuery: string,
@@ -449,6 +401,11 @@ function scoreProduct(
 
   const queryTokens = getQueryTokens(normalizedQuery);
   const normalizedName = normalizeProductName(product.name);
+
+  if (isAccessoryProduct(normalizedName) && !queryWantsAccessory(queryTokens)) {
+    return null;
+  }
+
   const normalizedTitle = normalizeProductName(product.title);
   const productModelText = normalizeProductName(
     `${product.name} ${product.title} ${product.model ?? ""}`,
@@ -586,19 +543,6 @@ function splitMatches(products: ProviderProduct[], query: string) {
 }
 
 async function searchText(query: string, searchedAt: Date) {
-  const comingSoonCategory = getComingSoonCategory(query);
-
-  if (comingSoonCategory) {
-    return createBaseResult({
-      query,
-      detectedType: "text",
-      status: "coming_soon",
-      message: `Pr\u00f3ximamente vamos a sumar ${comingSoonCategory.label}. En este MVP priorizamos tecnologia, electrodomesticos y herramientas.`,
-      usedDemoFallback: true,
-      searchedAt,
-    });
-  }
-
   // Consultamos todos los proveedores reales en paralelo. Las tiendas VTEX
   // (Frávega, Cetrogar, Naldo, OnCity, Easy, Coppel, Carrefour, Jumbo) sí
   // devuelven precios; MercadoLibre hoy responde 403 en /sites/search (ver
@@ -713,33 +657,33 @@ async function searchMercadoLibreUrl(query: string, searchedAt: Date) {
   }
 
   const fallbackQuery = getMercadoLibreSearchHint(query);
-  const comingSoonCategory = fallbackQuery
-    ? getComingSoonCategory(fallbackQuery)
-    : null;
 
-  if (comingSoonCategory) {
-    return createBaseResult({
-      query,
-      detectedType: "mercadolibre_url",
-      status: "coming_soon",
-      message: `No pudimos resolver el link con MercadoLibre. ${comingSoonCategory.label} queda para una etapa proxima.`,
-      usedDemoFallback: true,
-      searchedAt,
-    });
+  if (fallbackQuery) {
+    const providerResults = await Promise.all(
+      vtexProviders.map((provider) => provider.searchProducts(fallbackQuery)),
+    );
+    const fallbackProducts = providerResults.flat();
+    const matches = splitMatches(fallbackProducts, fallbackQuery);
+
+    if (matches.exactMatches.length + matches.similarMatches.length > 0) {
+      return createBaseResult({
+        query,
+        detectedType: "mercadolibre_url",
+        ...matches,
+        status: "ready",
+        message:
+          "No resolvimos el link de MercadoLibre; te mostramos productos equivalentes en otras tiendas.",
+        usedDemoFallback: false,
+        searchedAt,
+      });
+    }
   }
-
-  const fallbackProducts = fallbackQuery
-    ? await mockProvider.searchProducts(fallbackQuery)
-    : [];
-  const matches = splitMatches(fallbackProducts, fallbackQuery || query);
 
   return createBaseResult({
     query,
     detectedType: "mercadolibre_url",
-    ...matches,
     status: "mercadolibre_pending",
-    message:
-      "No pudimos resolver el link con MercadoLibre; se muestra fallback demo cuando el link permite inferir una busqueda.",
+    message: "No pudimos resolver el link de MercadoLibre.",
     usedDemoFallback: true,
     searchedAt,
   });

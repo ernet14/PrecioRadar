@@ -12,6 +12,8 @@ export {
   coppelProvider,
   carrefourProvider,
   jumboProvider,
+  veaProvider,
+  diaProvider,
 } from "@/providers/stores/vtexStores";
 // ETAPA 1: providers stub (megatone, musimundo, temu, tiendamia) quedan fuera del
 // barrel hasta tener integración real. Megatone/Musimundo no exponen VTEX público.

@@ -105,11 +105,13 @@ test("vtex registry exposes the expected AR stores", () => {
     "carrefour",
     "cetrogar",
     "coppel",
+    "dia",
     "easy",
     "fravega",
     "jumbo",
     "naldo",
     "oncity",
+    "vea",
   ]);
 });
 
