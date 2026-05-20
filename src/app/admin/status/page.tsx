@@ -523,6 +523,33 @@ async function loadActivity(
   }
 }
 
+type AffiliateProgramClicks = { program: string; clicks: number };
+
+async function loadAffiliateBreakdown(): Promise<AffiliateProgramClicks[] | null> {
+  const prisma = getPrismaClient();
+
+  if (!prisma) {
+    return null;
+  }
+
+  try {
+    const groups = await prisma.clickTracking.groupBy({
+      by: ["program"],
+      where: { isAffiliate: true },
+      _count: { _all: true },
+    });
+
+    return groups
+      .map((group) => ({
+        program: group.program ?? "sin-programa",
+        clicks: group._count._all,
+      }))
+      .sort((left, right) => right.clicks - left.clicks);
+  } catch {
+    return null;
+  }
+}
+
 function computeAgeHours(date: Date | null) {
   if (!date) {
     return null;
@@ -941,6 +968,7 @@ export default async function AdminStatusPage({
     activity,
     recentErrors,
     lastSuccessfulJob,
+    affiliateBreakdown,
   ] = await Promise.all([
     checkDatabase(),
     checkSitemap(),
@@ -950,6 +978,7 @@ export default async function AdminStatusPage({
     loadActivity(range),
     countRecentErrors(),
     getLastSuccessfulJob(),
+    loadAffiliateBreakdown(),
   ]);
 
   const cronJobs = (vercelConfig.crons ?? []) as Array<{
@@ -1380,6 +1409,41 @@ export default async function AdminStatusPage({
                 <ActivityChart days={activity} />
               )}
             </>
+          )}
+        </SectionCard>
+
+        <SectionCard
+          description="Clicks salientes atribuidos a cada programa de afiliados."
+          title="Clicks de afiliado por programa"
+        >
+          {affiliateBreakdown === null ? (
+            <p className="rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+              No pudimos leer la atribución (base no disponible o error).
+            </p>
+          ) : affiliateBreakdown.length === 0 ? (
+            <p className="rounded-md border border-dashed border-slate-200 bg-slate-50 p-3 text-xs text-slate-500">
+              Todavía no hay clicks de afiliado registrados.
+            </p>
+          ) : (
+            <ul className="space-y-2">
+              {affiliateBreakdown.map((row) => {
+                const max = affiliateBreakdown[0].clicks || 1;
+                return (
+                  <li key={row.program}>
+                    <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
+                      <span>{row.program}</span>
+                      <span>{row.clicks}</span>
+                    </div>
+                    <div className="mt-1 h-2 rounded-full bg-slate-100">
+                      <div
+                        className="h-2 rounded-full bg-indigo-500"
+                        style={{ width: `${Math.round((row.clicks / max) * 100)}%` }}
+                      />
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
           )}
         </SectionCard>
 
