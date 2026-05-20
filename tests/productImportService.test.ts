@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   analyzeProductImportUrl,
+  extractMetadataFromHtml,
+  parseImportPrice,
   suggestCategorySlug,
 } from "../src/services/productImportService";
 
@@ -57,4 +59,42 @@ test("sugiere categorias por palabras clave", () => {
   assert.equal(suggestCategorySlug("Smart TV Samsung QLED 55 pulgadas"), "televisores");
   assert.equal(suggestCategorySlug("Taladro percutor Bosch 13mm"), "herramientas");
   assert.equal(suggestCategorySlug("Producto sin pista clara"), null);
+});
+
+test("parsea precios en formatos AR y machine-readable", () => {
+  assert.equal(parseImportPrice("$1.299.999,00"), 1299999);
+  assert.equal(parseImportPrice("1299999.00"), 1299999);
+  assert.equal(parseImportPrice("1.299.999"), 1299999);
+  assert.equal(parseImportPrice("799,90"), 799.9);
+  assert.equal(parseImportPrice(549999), 549999);
+  assert.equal(parseImportPrice("sin precio"), null);
+  assert.equal(parseImportPrice(null), null);
+});
+
+test("extrae metadatos desde Open Graph y JSON-LD", () => {
+  const html = `
+    <html><head>
+      <meta property="og:title" content="Smart TV LG OLED 55 pulgadas" />
+      <meta property="og:image" content="https://cdn.tienda.com/tv.jpg" />
+      <meta property="og:description" content="Televisor 4K con panel OLED y &quot;HDR&quot;." />
+      <script type="application/ld+json">
+        {"@type":"Product","name":"Smart TV LG","offers":{"@type":"Offer","price":"1299999.00","priceCurrency":"ARS"}}
+      </script>
+    </head><body></body></html>`;
+  const meta = extractMetadataFromHtml(html);
+
+  assert.equal(meta.title, "Smart TV LG OLED 55 pulgadas");
+  assert.equal(meta.imageUrl, "https://cdn.tienda.com/tv.jpg");
+  assert.equal(meta.description, 'Televisor 4K con panel OLED y "HDR".');
+  assert.equal(parseImportPrice(meta.price), 1299999);
+});
+
+test("toma precio de JSON-LD aunque falten meta tags de precio", () => {
+  const html = `
+    <script type="application/ld+json">
+      [{"@type":"BreadcrumbList"},{"@type":"Product","offers":[{"price":549990,"priceCurrency":"ARS"}]}]
+    </script>`;
+  const meta = extractMetadataFromHtml(html);
+
+  assert.equal(parseImportPrice(meta.price), 549990);
 });

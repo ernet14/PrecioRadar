@@ -1,6 +1,7 @@
 import { mvpCategoryDescriptors } from "@/data/categories";
 import { getPrismaClient } from "@/lib/prisma";
 import { normalizeProductName, slugify } from "@/lib/utils";
+import { isAllowedSearchUrl } from "@/lib/utils/input";
 import { logger } from "@/lib/logger";
 import type { ProductImportDraft } from "@/generated/prisma/client";
 
@@ -212,6 +213,193 @@ export function suggestCategorySlug(text: string): string | null {
   return match?.slug ?? null;
 }
 
+export type PageMetadata = {
+  description: string | null;
+  imageUrl: string | null;
+  price: string | null;
+  title: string | null;
+};
+
+export type ProductImportEnrichment = {
+  categorySlug: string | null;
+  currentPrice: number | null;
+  imageUrl: string | null;
+  shortDescription: string | null;
+  title: string | null;
+};
+
+export function parseImportPrice(
+  raw: string | number | null | undefined,
+): number | null {
+  if (raw === null || raw === undefined) return null;
+  if (typeof raw === "number") {
+    return Number.isFinite(raw) && raw > 0 ? raw : null;
+  }
+
+  let value = raw.replace(/[^\d.,]/g, "");
+  if (!value) return null;
+
+  const hasComma = value.includes(",");
+  const hasDot = value.includes(".");
+
+  if (hasComma && hasDot) {
+    // El ultimo separador es el decimal (formato AR: 1.299.999,00).
+    value =
+      value.lastIndexOf(",") > value.lastIndexOf(".")
+        ? value.replace(/\./g, "").replace(",", ".")
+        : value.replace(/,/g, "");
+  } else if (hasComma) {
+    const parts = value.split(",");
+    value =
+      parts.length === 2 && parts[1].length <= 2
+        ? `${parts[0]}.${parts[1]}`
+        : value.replace(/,/g, "");
+  } else if (hasDot && value.split(".").length > 2) {
+    // Multiples puntos => separadores de miles (1.299.999).
+    value = value.replace(/\./g, "");
+  }
+
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
+
+function clampText(text: string, max: number): string {
+  const collapsed = text.replace(/\s+/g, " ").trim();
+  return collapsed.length > max ? `${collapsed.slice(0, max - 1).trimEnd()}…` : collapsed;
+}
+
+function decodeHtmlEntities(text: string): string {
+  return text
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#0?39;|&apos;/gi, "'")
+    .replace(/&nbsp;/gi, " ");
+}
+
+function readMetaTags(html: string): Map<string, string> {
+  const tags = new Map<string, string>();
+  const metaRegex = /<meta\b[^>]*>/gi;
+  const attrRegex = /([\w:-]+)\s*=\s*("([^"]*)"|'([^']*)')/g;
+
+  for (const tag of html.match(metaRegex) ?? []) {
+    const attrs: Record<string, string> = {};
+    let attr: RegExpExecArray | null;
+    attrRegex.lastIndex = 0;
+    while ((attr = attrRegex.exec(tag))) {
+      attrs[attr[1].toLowerCase()] = attr[3] ?? attr[4] ?? "";
+    }
+
+    const key = (attrs.property ?? attrs.name ?? attrs.itemprop)?.toLowerCase();
+    if (key && attrs.content && !tags.has(key)) {
+      tags.set(key, decodeHtmlEntities(attrs.content));
+    }
+  }
+
+  return tags;
+}
+
+function findInJsonLd(node: unknown, key: "price" | "image" | "name" | "description"): string | null {
+  if (!node) return null;
+
+  if (Array.isArray(node)) {
+    for (const item of node) {
+      const found = findInJsonLd(item, key);
+      if (found) return found;
+    }
+    return null;
+  }
+
+  if (typeof node !== "object") return null;
+  const record = node as Record<string, unknown>;
+
+  if (key === "price") {
+    const offers = record.offers;
+    if (offers) {
+      const fromOffers = findInJsonLd(offers, "price");
+      if (fromOffers) return fromOffers;
+    }
+    const spec = record.priceSpecification;
+    if (spec) {
+      const fromSpec = findInJsonLd(spec, "price");
+      if (fromSpec) return fromSpec;
+    }
+    const direct = record.price ?? record.lowPrice;
+    if (typeof direct === "string" || typeof direct === "number") {
+      return String(direct);
+    }
+  } else {
+    const value = record[key];
+    if (typeof value === "string" && value) return value;
+    if (key === "image") {
+      if (Array.isArray(value) && typeof value[0] === "string") return value[0];
+      if (value && typeof value === "object") {
+        const url = (value as Record<string, unknown>).url;
+        if (typeof url === "string") return url;
+      }
+    }
+  }
+
+  // Recorre @graph u objetos anidados.
+  for (const child of Object.values(record)) {
+    if (child && typeof child === "object") {
+      const found = findInJsonLd(child, key);
+      if (found) return found;
+    }
+  }
+
+  return null;
+}
+
+function readJsonLd(html: string): PageMetadata {
+  const result: PageMetadata = { description: null, imageUrl: null, price: null, title: null };
+  const scriptRegex =
+    /<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  let match: RegExpExecArray | null;
+
+  while ((match = scriptRegex.exec(html))) {
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(match[1].trim());
+    } catch {
+      continue;
+    }
+
+    result.price ??= findInJsonLd(parsed, "price");
+    result.imageUrl ??= findInJsonLd(parsed, "image");
+    result.title ??= findInJsonLd(parsed, "name");
+    result.description ??= findInJsonLd(parsed, "description");
+
+    if (result.price && result.imageUrl && result.title) break;
+  }
+
+  return result;
+}
+
+export function extractMetadataFromHtml(html: string): PageMetadata {
+  const meta = readMetaTags(html);
+  const jsonLd = readJsonLd(html);
+
+  const price =
+    jsonLd.price ??
+    meta.get("product:price:amount") ??
+    meta.get("og:price:amount") ??
+    meta.get("price") ??
+    null;
+  const imageUrl = meta.get("og:image") ?? meta.get("twitter:image") ?? jsonLd.imageUrl ?? null;
+  const description =
+    meta.get("og:description") ?? meta.get("description") ?? jsonLd.description ?? null;
+  const title = meta.get("og:title") ?? jsonLd.title ?? null;
+
+  return {
+    description: description ? clampText(description, 280) : null,
+    imageUrl: imageUrl ? imageUrl.trim() : null,
+    price: price ? String(price).trim() : null,
+    title: title ? clampText(title, 160) : null,
+  };
+}
+
 export function analyzeProductImportUrl(input: string): ProductImportAnalysis {
   const originalUrl = input.trim();
   const parsedUrl = parseUrl(originalUrl);
@@ -371,6 +559,138 @@ function markChangedSources(
   return next;
 }
 
+const FETCH_TIMEOUT_MS = 6000;
+const MAX_HTML_BYTES = 1_500_000;
+const BROWSER_USER_AGENT =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
+
+async function fetchPageHtml(url: string): Promise<string | null> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(url, {
+      headers: { Accept: "text/html,application/xhtml+xml", "User-Agent": BROWSER_USER_AGENT },
+      redirect: "follow",
+      signal: controller.signal,
+    });
+
+    if (!response.ok) return null;
+    if (!(response.headers.get("content-type") ?? "").includes("text/html")) return null;
+
+    return (await response.text()).slice(0, MAX_HTML_BYTES);
+  } catch (error) {
+    logger.warn("No se pudo leer la pagina para enriquecer el borrador.", {
+      error,
+      metadata: { url },
+    });
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function resolveImageUrl(image: string, base: string): string | null {
+  try {
+    return new URL(image, base).toString();
+  } catch {
+    return null;
+  }
+}
+
+const emptyEnrichment: ProductImportEnrichment = {
+  categorySlug: null,
+  currentPrice: null,
+  imageUrl: null,
+  shortDescription: null,
+  title: null,
+};
+
+async function enrichDraftFromPage(
+  analysis: ProductImportAnalysis,
+): Promise<ProductImportEnrichment> {
+  const targetUrl = analysis.normalizedUrl;
+
+  if (!targetUrl || analysis.unexpandedShortUrl || !isAllowedSearchUrl(targetUrl)) {
+    return emptyEnrichment;
+  }
+
+  const html = await fetchPageHtml(targetUrl);
+  if (!html) return emptyEnrichment;
+
+  const meta = extractMetadataFromHtml(html);
+  const imageUrl = meta.imageUrl ? resolveImageUrl(meta.imageUrl, targetUrl) : null;
+  const categoryHint = [meta.title, meta.description].filter(Boolean).join(" ");
+
+  return {
+    categorySlug: categoryHint ? suggestCategorySlug(categoryHint) : null,
+    currentPrice: parseImportPrice(meta.price),
+    imageUrl,
+    shortDescription: meta.description,
+    title: meta.title,
+  };
+}
+
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  limit: number,
+  task: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let cursor = 0;
+
+  async function worker() {
+    while (cursor < items.length) {
+      const index = cursor++;
+      results[index] = await task(items[index]);
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: Math.min(limit, items.length) }, () => worker()),
+  );
+
+  return results;
+}
+
+function buildImportDraftData(
+  analysis: ProductImportAnalysis,
+  enrichment: ProductImportEnrichment,
+) {
+  const productName = enrichment.title ?? analysis.suggestedTitle;
+  const categorySlug = enrichment.categorySlug ?? analysis.suggestedCategorySlug;
+
+  return {
+    categorySlug,
+    currentPrice: toDecimalString(enrichment.currentPrice),
+    detectedStoreName: analysis.detectedStoreName,
+    detectedStoreSlug: analysis.detectedStoreSlug,
+    externalUrl: analysis.normalizedUrl,
+    fieldSources: {
+      ...analysis.fieldSources,
+      categorySlug: categorySlug ? "auto" : "empty",
+      currentPrice: enrichment.currentPrice !== null ? "auto" : "empty",
+      imageUrl: enrichment.imageUrl ? "auto" : "empty",
+      productName: productName ? "auto" : "empty",
+      shortDescription: enrichment.shortDescription ? "auto" : "empty",
+    },
+    imageUrl: enrichment.imageUrl,
+    normalizedUrl: analysis.normalizedUrl,
+    originalUrl: analysis.originalUrl,
+    productName,
+    shortDescription: enrichment.shortDescription,
+    shortUrl: analysis.shortUrl,
+    sourceDomain: analysis.sourceDomain,
+    status: "DRAFT",
+    storeName: analysis.detectedStoreName,
+    storeSlug: analysis.detectedStoreSlug,
+    suggestedCategorySlug: analysis.suggestedCategorySlug,
+    suggestedSlug: analysis.suggestedSlug,
+    suggestedTitle: analysis.suggestedTitle,
+    unexpandedShortUrl: analysis.unexpandedShortUrl,
+  };
+}
+
 export async function createImportDraftsFromLinks(
   rawLinks: string,
 ): Promise<CreateImportDraftsResult> {
@@ -387,30 +707,14 @@ export async function createImportDraftsFromLinks(
   }
 
   try {
-    for (const link of links) {
+    const draftsData = await mapWithConcurrency(links, 5, async (link) => {
       const analysis = analyzeProductImportUrl(link);
+      const enrichment = await enrichDraftFromPage(analysis);
+      return buildImportDraftData(analysis, enrichment);
+    });
 
-      await prisma.productImportDraft.create({
-        data: {
-          categorySlug: analysis.suggestedCategorySlug,
-          detectedStoreName: analysis.detectedStoreName,
-          detectedStoreSlug: analysis.detectedStoreSlug,
-          externalUrl: analysis.normalizedUrl,
-          fieldSources: analysis.fieldSources,
-          normalizedUrl: analysis.normalizedUrl,
-          originalUrl: analysis.originalUrl,
-          productName: analysis.suggestedTitle,
-          shortUrl: analysis.shortUrl,
-          sourceDomain: analysis.sourceDomain,
-          status: "DRAFT",
-          storeName: analysis.detectedStoreName,
-          storeSlug: analysis.detectedStoreSlug,
-          suggestedCategorySlug: analysis.suggestedCategorySlug,
-          suggestedSlug: analysis.suggestedSlug,
-          suggestedTitle: analysis.suggestedTitle,
-          unexpandedShortUrl: analysis.unexpandedShortUrl,
-        },
-      });
+    for (const data of draftsData) {
+      await prisma.productImportDraft.create({ data });
     }
 
     return { status: "created", createdCount: links.length };
