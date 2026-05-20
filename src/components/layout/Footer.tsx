@@ -6,6 +6,7 @@ const productLinks = [
   { href: "/#categorias", label: "Categorías" },
   { href: "/guias", label: "Guías de compra" },
   { href: "/promos-hoy", label: "Promos bancarias" },
+  { href: "/termometro", label: "Termómetro de ofertas" },
   { href: "/#como-funciona", label: "Cómo funciona" },
 ];
 

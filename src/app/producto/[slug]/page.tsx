@@ -10,6 +10,10 @@ import { ReportFeedback } from "@/components/product/ReportFeedback";
 import { ReportProblemForm } from "@/components/product/ReportProblemForm";
 import { TrackProductButton } from "@/components/product/TrackProductButton";
 import { TrackingFeedback } from "@/components/product/TrackingFeedback";
+import {
+  DealQualityBadge,
+  DealQualityPanel,
+} from "@/components/product/DealQualityBadge";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -503,6 +507,7 @@ export default async function ProductoPage({
                   label={product.recommendation.label}
                   level={product.recommendation.level}
                 />
+                <DealQualityBadge dealQuality={product.dealQuality} />
               </div>
               <h1 className="mt-5 break-words text-3xl font-semibold leading-tight text-slate-950 sm:text-4xl">
                 {product.name}
@@ -535,6 +540,9 @@ export default async function ProductoPage({
                     {product.recommendation.reason}
                   </span>
                 </p>
+                <div className="mt-4">
+                  <DealQualityPanel dealQuality={product.dealQuality} />
+                </div>
               </div>
             </Card>
           </div>

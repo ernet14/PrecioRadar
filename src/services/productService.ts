@@ -8,6 +8,7 @@ import {
   type PriceHistoryStats,
 } from "@/services/priceHistoryService";
 import { getPurchaseRecommendation } from "@/services/recommendationService";
+import { detectDealQuality, type DealQuality } from "@/services/fakeDiscountService";
 import { getPrismaClient } from "@/lib/prisma";
 import { persistProductOfferView } from "@/services/priceSnapshotService";
 
@@ -24,6 +25,7 @@ export type ProductDetail = {
   priceHistory: PriceHistoryPoint[];
   priceHistoryStats: PriceHistoryStats;
   recommendation: Recommendation;
+  dealQuality: DealQuality;
   historyMessage: string;
   similarProducts: ProductSummary[];
 };
@@ -170,6 +172,11 @@ export function getMockProductDetailBySlug(
     priceHistory,
     priceHistoryStats,
     recommendation,
+    dealQuality: detectDealQuality({
+      currentPrice: bestOffer.price,
+      history: priceHistory,
+      categorySlug: bestOffer.categorySlug,
+    }),
     historyMessage: createHistoryMessage({ stats: priceHistoryStats }),
     similarProducts,
   };
@@ -362,6 +369,11 @@ async function getRealProductDetailBySlug(
       priceHistory,
       priceHistoryStats,
       recommendation,
+      dealQuality: detectDealQuality({
+        currentPrice: bestOffer.price,
+        history: priceHistory,
+        categorySlug,
+      }),
       historyMessage: createHistoryMessage({ stats: priceHistoryStats }),
       similarProducts,
     };
@@ -402,6 +414,11 @@ export async function getProductDetailBySlug(slug: string): Promise<ProductDetai
     priceHistory: realHistory,
     priceHistoryStats,
     recommendation,
+    dealQuality: detectDealQuality({
+      currentPrice: mockDetail.bestOffer.price,
+      history: realHistory,
+      categorySlug: mockDetail.bestOffer.categorySlug,
+    }),
     historyMessage: createHistoryMessage({ stats: priceHistoryStats }),
   };
 }

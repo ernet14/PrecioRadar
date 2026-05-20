@@ -10,6 +10,7 @@ const staticRoutes: MetadataRoute.Sitemap = [
   { url: getAbsoluteUrl(), changeFrequency: "daily", lastModified, priority: 1 },
   { url: getAbsoluteUrl("/buscar"), changeFrequency: "daily", lastModified, priority: 0.8 },
   { url: getAbsoluteUrl("/promos-hoy"), changeFrequency: "daily", lastModified, priority: 0.86 },
+  { url: getAbsoluteUrl("/termometro"), changeFrequency: "daily", lastModified, priority: 0.84 },
   { url: getAbsoluteUrl("/guias"), changeFrequency: "weekly", lastModified, priority: 0.7 },
   { url: getAbsoluteUrl("/como-funcionamos"), changeFrequency: "monthly", lastModified, priority: 0.5 },
   { url: getAbsoluteUrl("/privacidad"), changeFrequency: "yearly", lastModified, priority: 0.3 },
