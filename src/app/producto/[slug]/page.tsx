@@ -474,7 +474,11 @@ export default async function ProductoPage({
           <div className="space-y-5">
             <Card className="border-slate-200 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
               <div className="flex flex-wrap gap-2">
-                <Badge variant="brand">Demo</Badge>
+                {product.bestOffer.isDemo ? (
+                  <Badge variant="brand">Demo</Badge>
+                ) : (
+                  <Badge variant="neutral">Precio real</Badge>
+                )}
                 {product.categorySlug ? (
                   (() => {
                     const descriptor = getCategoryDescriptorBySlug(

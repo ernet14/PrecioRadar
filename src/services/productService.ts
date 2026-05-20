@@ -1,7 +1,7 @@
 import { mockStoreProducts } from "@/data/mockStoreProducts";
 import type { ProviderProduct } from "@/providers/stores";
 import { normalizeProductName, slugify } from "@/lib/utils";
-import type { CurrencyCode, Recommendation } from "@/types";
+import type { CurrencyCode, ProductCondition, Recommendation } from "@/types";
 import {
   calculatePriceHistoryStats,
   type PriceHistoryPoint,
@@ -219,7 +219,163 @@ async function getRealPriceHistoryForOffer(
   }
 }
 
+type DbOfferInput = {
+  externalId: string | null;
+  id: string;
+  title: string;
+  price: unknown;
+  currency: string;
+  productUrl: string;
+  imageUrl: string | null;
+  available: boolean;
+  condition: ProductCondition;
+  lastCheckedAt: Date | null;
+};
+
+function dbToProviderProduct(args: {
+  product: {
+    name: string;
+    normalizedName: string;
+    brand: string | null;
+    model: string | null;
+    slug: string;
+    imageUrl: string | null;
+  };
+  categorySlug: string | null;
+  offer: DbOfferInput;
+  store: { slug: string; name: string };
+}): ProviderProduct {
+  const { product, categorySlug, offer, store } = args;
+
+  return {
+    externalId: offer.externalId ?? offer.id,
+    provider: store.slug,
+    slug: product.slug,
+    storeSlug: store.slug,
+    storeName: store.name,
+    title: offer.title,
+    name: product.name,
+    normalizedName: product.normalizedName,
+    brand: product.brand,
+    model: product.model,
+    categorySlug,
+    imageUrl: offer.imageUrl ?? product.imageUrl,
+    productUrl: offer.productUrl,
+    price: Number(offer.price),
+    currency: offer.currency as CurrencyCode,
+    condition: offer.condition,
+    available: offer.available,
+    isDemo: false,
+    lastCheckedAt: offer.lastCheckedAt ?? new Date(),
+  };
+}
+
+async function getRealSimilarProducts(
+  prisma: NonNullable<ReturnType<typeof getPrismaClient>>,
+  product: { id: string; categoryId: string },
+): Promise<ProductSummary[]> {
+  const others = await prisma.product.findMany({
+    where: {
+      categoryId: product.categoryId,
+      deletedAt: null,
+      isDemo: false,
+      id: { not: product.id },
+    },
+    include: {
+      offers: {
+        where: { isDemo: false, available: true },
+        orderBy: { price: "asc" },
+        take: 1,
+        include: { store: true },
+      },
+    },
+    take: 12,
+  });
+
+  return others
+    .filter((candidate) => candidate.offers.length > 0)
+    .slice(0, 4)
+    .map((candidate) => ({
+      slug: candidate.slug,
+      name: candidate.name,
+      imageUrl: candidate.imageUrl,
+      price: Number(candidate.offers[0].price),
+      storeName: candidate.offers[0].store.name,
+      recommendationLabel: "Sin historial verificado",
+    }));
+}
+
+async function getRealProductDetailBySlug(
+  slug: string,
+): Promise<ProductDetail | null> {
+  const prisma = getPrismaClient();
+
+  if (!prisma) return null;
+
+  try {
+    const product = await prisma.product.findFirst({
+      where: { slug, deletedAt: null, isDemo: false },
+      include: {
+        category: true,
+        offers: { where: { isDemo: false }, include: { store: true } },
+      },
+    });
+
+    if (!product) return null;
+
+    const liveOffers = product.offers.filter((offer) => !offer.store.deletedAt);
+
+    if (liveOffers.length === 0) return null;
+
+    const categorySlug = product.category?.slug ?? null;
+    const offers = sortOffers(
+      liveOffers.map((offer) =>
+        dbToProviderProduct({ product, categorySlug, offer, store: offer.store }),
+      ),
+    );
+    const bestOffer = offers[0];
+    const priceHistory = await getRealPriceHistoryForOffer(
+      bestOffer.externalId,
+      bestOffer.storeSlug,
+    );
+    const priceHistoryStats = calculatePriceHistoryStats(
+      priceHistory,
+      bestOffer.price,
+    );
+    const recommendation = getPurchaseRecommendation({
+      product: bestOffer,
+      history: priceHistory,
+      currentPrice: bestOffer.price,
+    });
+    const similarProducts = await getRealSimilarProducts(prisma, product);
+
+    return {
+      slug: product.slug,
+      name: product.name,
+      normalizedName: product.normalizedName,
+      brand: product.brand,
+      model: product.model,
+      categorySlug,
+      imageUrl: product.imageUrl,
+      bestOffer,
+      offers,
+      priceHistory,
+      priceHistoryStats,
+      recommendation,
+      historyMessage: createHistoryMessage({ stats: priceHistoryStats }),
+      similarProducts,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function getProductDetailBySlug(slug: string): Promise<ProductDetail | null> {
+  // Productos reales persistidos (búsqueda + cron) tienen prioridad sobre el demo.
+  const realDetail = await getRealProductDetailBySlug(slug);
+
+  if (realDetail) return realDetail;
+
   const mockDetail = getMockProductDetailBySlug(slug);
 
   if (!mockDetail) return null;
