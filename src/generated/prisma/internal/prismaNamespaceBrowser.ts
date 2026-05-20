@@ -127,6 +127,7 @@ export const StoreScalarFieldEnum = {
   isDemo: 'isDemo',
   hasAffiliate: 'hasAffiliate',
   affiliateEnabled: 'affiliateEnabled',
+  affiliateProgram: 'affiliateProgram',
   active: 'active',
   deletedAt: 'deletedAt',
   createdAt: 'createdAt',
@@ -275,6 +276,7 @@ export const ClickTrackingScalarFieldEnum = {
   offerId: 'offerId',
   url: 'url',
   isAffiliate: 'isAffiliate',
+  program: 'program',
   clickedAt: 'clickedAt'
 } as const
 

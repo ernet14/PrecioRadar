@@ -2,6 +2,12 @@ import { getPrismaClient } from "@/lib/prisma";
 import { logger } from "@/lib/logger";
 import { getMockProductDetailBySlug } from "@/services/productService";
 import {
+  buildProgramAffiliateUrl,
+  getProgramAffiliateTag,
+  normalizeAffiliateProgram,
+  type AffiliateProgram,
+} from "@/services/affiliateService";
+import {
   ensureProductForSlug,
   ensureProductOffer,
   findProductOffer,
@@ -17,10 +23,17 @@ export type AffiliateLinkCandidate = {
   affiliateUrl: string;
   originalUrl: string;
   productId: string | null;
+  program?: string | null;
+};
+
+export type AffiliateDestination = {
+  isAffiliate: boolean;
+  url: string;
+  program: AffiliateProgram;
 };
 
 export type RecordOfferClickResult =
-  | { isAffiliate: boolean; status: "tracked"; url: string }
+  | { isAffiliate: boolean; status: "tracked"; url: string; program: AffiliateProgram }
   | { isAffiliate: false; status: "database_unavailable"; url: string }
   | { isAffiliate: false; status: "error"; url: string }
   | { status: "not_found" };
@@ -72,6 +85,7 @@ export function getAffiliateDestination({
   offerAffiliateUrl,
   productId,
   productUrl,
+  program = "mercadolibre",
 }: {
   affiliateEnabled: boolean;
   affiliateLinks: AffiliateLinkCandidate[];
@@ -79,44 +93,53 @@ export function getAffiliateDestination({
   offerAffiliateUrl?: string | null;
   productId: string;
   productUrl: string;
-}) {
+  program?: AffiliateProgram;
+}): AffiliateDestination {
   if (!affiliateEnabled) {
-    return { isAffiliate: false, url: productUrl };
+    return { isAffiliate: false, url: productUrl, program: "none" };
   }
 
   const directAffiliateUrl = offerAffiliateUrl?.trim();
 
   if (directAffiliateUrl) {
-    return { isAffiliate: true, url: directAffiliateUrl };
+    return { isAffiliate: true, url: directAffiliateUrl, program };
   }
 
-  const productAffiliateUrl = affiliateLinks.find(
+  const productLink = affiliateLinks.find(
     (link) => link.productId === productId && link.affiliateUrl.trim(),
-  )?.affiliateUrl;
+  );
 
-  if (productAffiliateUrl) {
-    return { isAffiliate: true, url: productAffiliateUrl };
+  if (productLink) {
+    return {
+      isAffiliate: true,
+      url: productLink.affiliateUrl,
+      program: normalizeAffiliateProgram(productLink.program ?? program),
+    };
   }
 
-  const urlAffiliateUrl = affiliateLinks.find(
+  const urlLink = affiliateLinks.find(
     (link) => link.originalUrl === productUrl && link.affiliateUrl.trim(),
-  )?.affiliateUrl;
+  );
 
-  if (urlAffiliateUrl) {
-    return { isAffiliate: true, url: urlAffiliateUrl };
+  if (urlLink) {
+    return {
+      isAffiliate: true,
+      url: urlLink.affiliateUrl,
+      program: normalizeAffiliateProgram(urlLink.program ?? program),
+    };
   }
 
-  if (affiliateTag) {
-    try {
-      const tagged = new URL(productUrl);
-      tagged.searchParams.set("custom_id", affiliateTag);
-      return { isAffiliate: true, url: tagged.toString() };
-    } catch {
-      // URL inválida — caer al fallback
-    }
+  const autoTaggedUrl = buildProgramAffiliateUrl({
+    program,
+    productUrl,
+    tag: affiliateTag,
+  });
+
+  if (autoTaggedUrl) {
+    return { isAffiliate: true, url: autoTaggedUrl, program };
   }
 
-  return { isAffiliate: false, url: productUrl };
+  return { isAffiliate: false, url: productUrl, program: "none" };
 }
 
 export async function recordOfferClick({
@@ -173,6 +196,7 @@ export async function recordOfferClick({
         store: {
           select: {
             affiliateEnabled: true,
+            affiliateProgram: true,
           },
         },
       },
@@ -193,6 +217,7 @@ export async function recordOfferClick({
             affiliateUrl: true,
             originalUrl: true,
             productId: true,
+            program: true,
           },
           where: {
             active: true,
@@ -204,7 +229,8 @@ export async function recordOfferClick({
           },
         })
       : [];
-    const affiliateTag = process.env.MERCADOLIBRE_AFFILIATE_TAG?.trim() || undefined;
+    const storeProgram = normalizeAffiliateProgram(storedOffer.store.affiliateProgram);
+    const affiliateTag = getProgramAffiliateTag(storeProgram);
     const destination = getAffiliateDestination({
       affiliateEnabled: storedOffer.store.affiliateEnabled,
       affiliateLinks,
@@ -212,6 +238,7 @@ export async function recordOfferClick({
       offerAffiliateUrl: storedOffer.affiliateUrl,
       productId: storedOffer.productId,
       productUrl: storedOffer.productUrl,
+      program: storeProgram,
     });
 
     await prisma.clickTracking.create({
@@ -219,6 +246,7 @@ export async function recordOfferClick({
         isAffiliate: destination.isAffiliate,
         offerId: storedOffer.id,
         productId: storedOffer.productId,
+        program: destination.isAffiliate ? destination.program : null,
         storeId: storedOffer.storeId,
         url: destination.url,
         userId: userId ?? null,
@@ -227,6 +255,7 @@ export async function recordOfferClick({
 
     return {
       isAffiliate: destination.isAffiliate,
+      program: destination.program,
       status: "tracked",
       url: destination.url,
     };

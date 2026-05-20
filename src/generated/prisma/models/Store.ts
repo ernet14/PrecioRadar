@@ -33,6 +33,7 @@ export type StoreMinAggregateOutputType = {
   isDemo: boolean | null
   hasAffiliate: boolean | null
   affiliateEnabled: boolean | null
+  affiliateProgram: string | null
   active: boolean | null
   deletedAt: Date | null
   createdAt: Date | null
@@ -48,6 +49,7 @@ export type StoreMaxAggregateOutputType = {
   isDemo: boolean | null
   hasAffiliate: boolean | null
   affiliateEnabled: boolean | null
+  affiliateProgram: string | null
   active: boolean | null
   deletedAt: Date | null
   createdAt: Date | null
@@ -63,6 +65,7 @@ export type StoreCountAggregateOutputType = {
   isDemo: number
   hasAffiliate: number
   affiliateEnabled: number
+  affiliateProgram: number
   active: number
   deletedAt: number
   createdAt: number
@@ -80,6 +83,7 @@ export type StoreMinAggregateInputType = {
   isDemo?: true
   hasAffiliate?: true
   affiliateEnabled?: true
+  affiliateProgram?: true
   active?: true
   deletedAt?: true
   createdAt?: true
@@ -95,6 +99,7 @@ export type StoreMaxAggregateInputType = {
   isDemo?: true
   hasAffiliate?: true
   affiliateEnabled?: true
+  affiliateProgram?: true
   active?: true
   deletedAt?: true
   createdAt?: true
@@ -110,6 +115,7 @@ export type StoreCountAggregateInputType = {
   isDemo?: true
   hasAffiliate?: true
   affiliateEnabled?: true
+  affiliateProgram?: true
   active?: true
   deletedAt?: true
   createdAt?: true
@@ -198,6 +204,7 @@ export type StoreGroupByOutputType = {
   isDemo: boolean
   hasAffiliate: boolean
   affiliateEnabled: boolean
+  affiliateProgram: string | null
   active: boolean
   deletedAt: Date | null
   createdAt: Date
@@ -234,6 +241,7 @@ export type StoreWhereInput = {
   isDemo?: Prisma.BoolFilter<"Store"> | boolean
   hasAffiliate?: Prisma.BoolFilter<"Store"> | boolean
   affiliateEnabled?: Prisma.BoolFilter<"Store"> | boolean
+  affiliateProgram?: Prisma.StringNullableFilter<"Store"> | string | null
   active?: Prisma.BoolFilter<"Store"> | boolean
   deletedAt?: Prisma.DateTimeNullableFilter<"Store"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Store"> | Date | string
@@ -254,6 +262,7 @@ export type StoreOrderByWithRelationInput = {
   isDemo?: Prisma.SortOrder
   hasAffiliate?: Prisma.SortOrder
   affiliateEnabled?: Prisma.SortOrder
+  affiliateProgram?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -277,6 +286,7 @@ export type StoreWhereUniqueInput = Prisma.AtLeast<{
   isDemo?: Prisma.BoolFilter<"Store"> | boolean
   hasAffiliate?: Prisma.BoolFilter<"Store"> | boolean
   affiliateEnabled?: Prisma.BoolFilter<"Store"> | boolean
+  affiliateProgram?: Prisma.StringNullableFilter<"Store"> | string | null
   active?: Prisma.BoolFilter<"Store"> | boolean
   deletedAt?: Prisma.DateTimeNullableFilter<"Store"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Store"> | Date | string
@@ -297,6 +307,7 @@ export type StoreOrderByWithAggregationInput = {
   isDemo?: Prisma.SortOrder
   hasAffiliate?: Prisma.SortOrder
   affiliateEnabled?: Prisma.SortOrder
+  affiliateProgram?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -318,6 +329,7 @@ export type StoreScalarWhereWithAggregatesInput = {
   isDemo?: Prisma.BoolWithAggregatesFilter<"Store"> | boolean
   hasAffiliate?: Prisma.BoolWithAggregatesFilter<"Store"> | boolean
   affiliateEnabled?: Prisma.BoolWithAggregatesFilter<"Store"> | boolean
+  affiliateProgram?: Prisma.StringNullableWithAggregatesFilter<"Store"> | string | null
   active?: Prisma.BoolWithAggregatesFilter<"Store"> | boolean
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Store"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Store"> | Date | string
@@ -333,6 +345,7 @@ export type StoreCreateInput = {
   isDemo?: boolean
   hasAffiliate?: boolean
   affiliateEnabled?: boolean
+  affiliateProgram?: string | null
   active?: boolean
   deletedAt?: Date | string | null
   createdAt?: Date | string
@@ -353,6 +366,7 @@ export type StoreUncheckedCreateInput = {
   isDemo?: boolean
   hasAffiliate?: boolean
   affiliateEnabled?: boolean
+  affiliateProgram?: string | null
   active?: boolean
   deletedAt?: Date | string | null
   createdAt?: Date | string
@@ -373,6 +387,7 @@ export type StoreUpdateInput = {
   isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   affiliateEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affiliateProgram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -393,6 +408,7 @@ export type StoreUncheckedUpdateInput = {
   isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   affiliateEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affiliateProgram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -413,6 +429,7 @@ export type StoreCreateManyInput = {
   isDemo?: boolean
   hasAffiliate?: boolean
   affiliateEnabled?: boolean
+  affiliateProgram?: string | null
   active?: boolean
   deletedAt?: Date | string | null
   createdAt?: Date | string
@@ -428,6 +445,7 @@ export type StoreUpdateManyMutationInput = {
   isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   affiliateEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affiliateProgram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -443,6 +461,7 @@ export type StoreUncheckedUpdateManyInput = {
   isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   affiliateEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affiliateProgram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -458,6 +477,7 @@ export type StoreCountOrderByAggregateInput = {
   isDemo?: Prisma.SortOrder
   hasAffiliate?: Prisma.SortOrder
   affiliateEnabled?: Prisma.SortOrder
+  affiliateProgram?: Prisma.SortOrder
   active?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -473,6 +493,7 @@ export type StoreMaxOrderByAggregateInput = {
   isDemo?: Prisma.SortOrder
   hasAffiliate?: Prisma.SortOrder
   affiliateEnabled?: Prisma.SortOrder
+  affiliateProgram?: Prisma.SortOrder
   active?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -488,6 +509,7 @@ export type StoreMinOrderByAggregateInput = {
   isDemo?: Prisma.SortOrder
   hasAffiliate?: Prisma.SortOrder
   affiliateEnabled?: Prisma.SortOrder
+  affiliateProgram?: Prisma.SortOrder
   active?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -585,6 +607,7 @@ export type StoreCreateWithoutOffersInput = {
   isDemo?: boolean
   hasAffiliate?: boolean
   affiliateEnabled?: boolean
+  affiliateProgram?: string | null
   active?: boolean
   deletedAt?: Date | string | null
   createdAt?: Date | string
@@ -604,6 +627,7 @@ export type StoreUncheckedCreateWithoutOffersInput = {
   isDemo?: boolean
   hasAffiliate?: boolean
   affiliateEnabled?: boolean
+  affiliateProgram?: string | null
   active?: boolean
   deletedAt?: Date | string | null
   createdAt?: Date | string
@@ -639,6 +663,7 @@ export type StoreUpdateWithoutOffersInput = {
   isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   affiliateEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affiliateProgram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -658,6 +683,7 @@ export type StoreUncheckedUpdateWithoutOffersInput = {
   isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   affiliateEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affiliateProgram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -677,6 +703,7 @@ export type StoreCreateWithoutPriceHistoryInput = {
   isDemo?: boolean
   hasAffiliate?: boolean
   affiliateEnabled?: boolean
+  affiliateProgram?: string | null
   active?: boolean
   deletedAt?: Date | string | null
   createdAt?: Date | string
@@ -696,6 +723,7 @@ export type StoreUncheckedCreateWithoutPriceHistoryInput = {
   isDemo?: boolean
   hasAffiliate?: boolean
   affiliateEnabled?: boolean
+  affiliateProgram?: string | null
   active?: boolean
   deletedAt?: Date | string | null
   createdAt?: Date | string
@@ -731,6 +759,7 @@ export type StoreUpdateWithoutPriceHistoryInput = {
   isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   affiliateEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affiliateProgram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -750,6 +779,7 @@ export type StoreUncheckedUpdateWithoutPriceHistoryInput = {
   isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   affiliateEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affiliateProgram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -769,6 +799,7 @@ export type StoreCreateWithoutClickTrackingInput = {
   isDemo?: boolean
   hasAffiliate?: boolean
   affiliateEnabled?: boolean
+  affiliateProgram?: string | null
   active?: boolean
   deletedAt?: Date | string | null
   createdAt?: Date | string
@@ -788,6 +819,7 @@ export type StoreUncheckedCreateWithoutClickTrackingInput = {
   isDemo?: boolean
   hasAffiliate?: boolean
   affiliateEnabled?: boolean
+  affiliateProgram?: string | null
   active?: boolean
   deletedAt?: Date | string | null
   createdAt?: Date | string
@@ -823,6 +855,7 @@ export type StoreUpdateWithoutClickTrackingInput = {
   isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   affiliateEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affiliateProgram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -842,6 +875,7 @@ export type StoreUncheckedUpdateWithoutClickTrackingInput = {
   isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   affiliateEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affiliateProgram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -861,6 +895,7 @@ export type StoreCreateWithoutAffiliateLinksInput = {
   isDemo?: boolean
   hasAffiliate?: boolean
   affiliateEnabled?: boolean
+  affiliateProgram?: string | null
   active?: boolean
   deletedAt?: Date | string | null
   createdAt?: Date | string
@@ -880,6 +915,7 @@ export type StoreUncheckedCreateWithoutAffiliateLinksInput = {
   isDemo?: boolean
   hasAffiliate?: boolean
   affiliateEnabled?: boolean
+  affiliateProgram?: string | null
   active?: boolean
   deletedAt?: Date | string | null
   createdAt?: Date | string
@@ -915,6 +951,7 @@ export type StoreUpdateWithoutAffiliateLinksInput = {
   isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   affiliateEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affiliateProgram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -934,6 +971,7 @@ export type StoreUncheckedUpdateWithoutAffiliateLinksInput = {
   isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   affiliateEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affiliateProgram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -953,6 +991,7 @@ export type StoreCreateWithoutProviderLogsInput = {
   isDemo?: boolean
   hasAffiliate?: boolean
   affiliateEnabled?: boolean
+  affiliateProgram?: string | null
   active?: boolean
   deletedAt?: Date | string | null
   createdAt?: Date | string
@@ -972,6 +1011,7 @@ export type StoreUncheckedCreateWithoutProviderLogsInput = {
   isDemo?: boolean
   hasAffiliate?: boolean
   affiliateEnabled?: boolean
+  affiliateProgram?: string | null
   active?: boolean
   deletedAt?: Date | string | null
   createdAt?: Date | string
@@ -1007,6 +1047,7 @@ export type StoreUpdateWithoutProviderLogsInput = {
   isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   affiliateEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affiliateProgram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1026,6 +1067,7 @@ export type StoreUncheckedUpdateWithoutProviderLogsInput = {
   isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   affiliateEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affiliateProgram?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1112,6 +1154,7 @@ export type StoreSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   isDemo?: boolean
   hasAffiliate?: boolean
   affiliateEnabled?: boolean
+  affiliateProgram?: boolean
   active?: boolean
   deletedAt?: boolean
   createdAt?: boolean
@@ -1133,6 +1176,7 @@ export type StoreSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   isDemo?: boolean
   hasAffiliate?: boolean
   affiliateEnabled?: boolean
+  affiliateProgram?: boolean
   active?: boolean
   deletedAt?: boolean
   createdAt?: boolean
@@ -1148,6 +1192,7 @@ export type StoreSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   isDemo?: boolean
   hasAffiliate?: boolean
   affiliateEnabled?: boolean
+  affiliateProgram?: boolean
   active?: boolean
   deletedAt?: boolean
   createdAt?: boolean
@@ -1163,13 +1208,14 @@ export type StoreSelectScalar = {
   isDemo?: boolean
   hasAffiliate?: boolean
   affiliateEnabled?: boolean
+  affiliateProgram?: boolean
   active?: boolean
   deletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type StoreOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "baseUrl" | "logoUrl" | "isDemo" | "hasAffiliate" | "affiliateEnabled" | "active" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["store"]>
+export type StoreOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "baseUrl" | "logoUrl" | "isDemo" | "hasAffiliate" | "affiliateEnabled" | "affiliateProgram" | "active" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["store"]>
 export type StoreInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   affiliateLinks?: boolean | Prisma.Store$affiliateLinksArgs<ExtArgs>
   clickTracking?: boolean | Prisma.Store$clickTrackingArgs<ExtArgs>
@@ -1199,6 +1245,7 @@ export type $StorePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     isDemo: boolean
     hasAffiliate: boolean
     affiliateEnabled: boolean
+    affiliateProgram: string | null
     active: boolean
     deletedAt: Date | null
     createdAt: Date
@@ -1639,6 +1686,7 @@ export interface StoreFieldRefs {
   readonly isDemo: Prisma.FieldRef<"Store", 'Boolean'>
   readonly hasAffiliate: Prisma.FieldRef<"Store", 'Boolean'>
   readonly affiliateEnabled: Prisma.FieldRef<"Store", 'Boolean'>
+  readonly affiliateProgram: Prisma.FieldRef<"Store", 'String'>
   readonly active: Prisma.FieldRef<"Store", 'Boolean'>
   readonly deletedAt: Prisma.FieldRef<"Store", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Store", 'DateTime'>

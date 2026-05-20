@@ -77,6 +77,7 @@ model Store {
   isDemo           Boolean         @default(false)
   hasAffiliate     Boolean         @default(false)
   affiliateEnabled Boolean         @default(false)
+  affiliateProgram String?         @default("mercadolibre")
   active           Boolean         @default(true)
   deletedAt        DateTime?
   createdAt        DateTime        @default(now())
@@ -269,6 +270,7 @@ model ClickTracking {
   offerId     String?       @db.Uuid
   url         String
   isAffiliate Boolean       @default(false)
+  program     String?
   clickedAt   DateTime      @default(now())
 
   user        User?         @relation(fields: [userId], references: [id])
@@ -281,6 +283,7 @@ model ClickTracking {
   @@index([storeId])
   @@index([clickedAt])
   @@index([isAffiliate])
+  @@index([program])
 }
 
 model AffiliateLink {

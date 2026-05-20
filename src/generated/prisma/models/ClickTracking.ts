@@ -32,6 +32,7 @@ export type ClickTrackingMinAggregateOutputType = {
   offerId: string | null
   url: string | null
   isAffiliate: boolean | null
+  program: string | null
   clickedAt: Date | null
 }
 
@@ -43,6 +44,7 @@ export type ClickTrackingMaxAggregateOutputType = {
   offerId: string | null
   url: string | null
   isAffiliate: boolean | null
+  program: string | null
   clickedAt: Date | null
 }
 
@@ -54,6 +56,7 @@ export type ClickTrackingCountAggregateOutputType = {
   offerId: number
   url: number
   isAffiliate: number
+  program: number
   clickedAt: number
   _all: number
 }
@@ -67,6 +70,7 @@ export type ClickTrackingMinAggregateInputType = {
   offerId?: true
   url?: true
   isAffiliate?: true
+  program?: true
   clickedAt?: true
 }
 
@@ -78,6 +82,7 @@ export type ClickTrackingMaxAggregateInputType = {
   offerId?: true
   url?: true
   isAffiliate?: true
+  program?: true
   clickedAt?: true
 }
 
@@ -89,6 +94,7 @@ export type ClickTrackingCountAggregateInputType = {
   offerId?: true
   url?: true
   isAffiliate?: true
+  program?: true
   clickedAt?: true
   _all?: true
 }
@@ -173,6 +179,7 @@ export type ClickTrackingGroupByOutputType = {
   offerId: string | null
   url: string
   isAffiliate: boolean
+  program: string | null
   clickedAt: Date
   _count: ClickTrackingCountAggregateOutputType | null
   _min: ClickTrackingMinAggregateOutputType | null
@@ -205,6 +212,7 @@ export type ClickTrackingWhereInput = {
   offerId?: Prisma.UuidNullableFilter<"ClickTracking"> | string | null
   url?: Prisma.StringFilter<"ClickTracking"> | string
   isAffiliate?: Prisma.BoolFilter<"ClickTracking"> | boolean
+  program?: Prisma.StringNullableFilter<"ClickTracking"> | string | null
   clickedAt?: Prisma.DateTimeFilter<"ClickTracking"> | Date | string
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
@@ -220,6 +228,7 @@ export type ClickTrackingOrderByWithRelationInput = {
   offerId?: Prisma.SortOrderInput | Prisma.SortOrder
   url?: Prisma.SortOrder
   isAffiliate?: Prisma.SortOrder
+  program?: Prisma.SortOrderInput | Prisma.SortOrder
   clickedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   product?: Prisma.ProductOrderByWithRelationInput
@@ -238,6 +247,7 @@ export type ClickTrackingWhereUniqueInput = Prisma.AtLeast<{
   offerId?: Prisma.UuidNullableFilter<"ClickTracking"> | string | null
   url?: Prisma.StringFilter<"ClickTracking"> | string
   isAffiliate?: Prisma.BoolFilter<"ClickTracking"> | boolean
+  program?: Prisma.StringNullableFilter<"ClickTracking"> | string | null
   clickedAt?: Prisma.DateTimeFilter<"ClickTracking"> | Date | string
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
@@ -253,6 +263,7 @@ export type ClickTrackingOrderByWithAggregationInput = {
   offerId?: Prisma.SortOrderInput | Prisma.SortOrder
   url?: Prisma.SortOrder
   isAffiliate?: Prisma.SortOrder
+  program?: Prisma.SortOrderInput | Prisma.SortOrder
   clickedAt?: Prisma.SortOrder
   _count?: Prisma.ClickTrackingCountOrderByAggregateInput
   _max?: Prisma.ClickTrackingMaxOrderByAggregateInput
@@ -270,6 +281,7 @@ export type ClickTrackingScalarWhereWithAggregatesInput = {
   offerId?: Prisma.UuidNullableWithAggregatesFilter<"ClickTracking"> | string | null
   url?: Prisma.StringWithAggregatesFilter<"ClickTracking"> | string
   isAffiliate?: Prisma.BoolWithAggregatesFilter<"ClickTracking"> | boolean
+  program?: Prisma.StringNullableWithAggregatesFilter<"ClickTracking"> | string | null
   clickedAt?: Prisma.DateTimeWithAggregatesFilter<"ClickTracking"> | Date | string
 }
 
@@ -277,6 +289,7 @@ export type ClickTrackingCreateInput = {
   id?: string
   url: string
   isAffiliate?: boolean
+  program?: string | null
   clickedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutClickTrackingInput
   product: Prisma.ProductCreateNestedOneWithoutClickTrackingInput
@@ -292,6 +305,7 @@ export type ClickTrackingUncheckedCreateInput = {
   offerId?: string | null
   url: string
   isAffiliate?: boolean
+  program?: string | null
   clickedAt?: Date | string
 }
 
@@ -299,6 +313,7 @@ export type ClickTrackingUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   isAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  program?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutClickTrackingNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutClickTrackingNestedInput
@@ -314,6 +329,7 @@ export type ClickTrackingUncheckedUpdateInput = {
   offerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.StringFieldUpdateOperationsInput | string
   isAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  program?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -325,6 +341,7 @@ export type ClickTrackingCreateManyInput = {
   offerId?: string | null
   url: string
   isAffiliate?: boolean
+  program?: string | null
   clickedAt?: Date | string
 }
 
@@ -332,6 +349,7 @@ export type ClickTrackingUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   isAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  program?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -343,6 +361,7 @@ export type ClickTrackingUncheckedUpdateManyInput = {
   offerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.StringFieldUpdateOperationsInput | string
   isAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  program?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -364,6 +383,7 @@ export type ClickTrackingCountOrderByAggregateInput = {
   offerId?: Prisma.SortOrder
   url?: Prisma.SortOrder
   isAffiliate?: Prisma.SortOrder
+  program?: Prisma.SortOrder
   clickedAt?: Prisma.SortOrder
 }
 
@@ -375,6 +395,7 @@ export type ClickTrackingMaxOrderByAggregateInput = {
   offerId?: Prisma.SortOrder
   url?: Prisma.SortOrder
   isAffiliate?: Prisma.SortOrder
+  program?: Prisma.SortOrder
   clickedAt?: Prisma.SortOrder
 }
 
@@ -386,6 +407,7 @@ export type ClickTrackingMinOrderByAggregateInput = {
   offerId?: Prisma.SortOrder
   url?: Prisma.SortOrder
   isAffiliate?: Prisma.SortOrder
+  program?: Prisma.SortOrder
   clickedAt?: Prisma.SortOrder
 }
 
@@ -561,6 +583,7 @@ export type ClickTrackingCreateWithoutUserInput = {
   id?: string
   url: string
   isAffiliate?: boolean
+  program?: string | null
   clickedAt?: Date | string
   product: Prisma.ProductCreateNestedOneWithoutClickTrackingInput
   store: Prisma.StoreCreateNestedOneWithoutClickTrackingInput
@@ -574,6 +597,7 @@ export type ClickTrackingUncheckedCreateWithoutUserInput = {
   offerId?: string | null
   url: string
   isAffiliate?: boolean
+  program?: string | null
   clickedAt?: Date | string
 }
 
@@ -614,6 +638,7 @@ export type ClickTrackingScalarWhereInput = {
   offerId?: Prisma.UuidNullableFilter<"ClickTracking"> | string | null
   url?: Prisma.StringFilter<"ClickTracking"> | string
   isAffiliate?: Prisma.BoolFilter<"ClickTracking"> | boolean
+  program?: Prisma.StringNullableFilter<"ClickTracking"> | string | null
   clickedAt?: Prisma.DateTimeFilter<"ClickTracking"> | Date | string
 }
 
@@ -621,6 +646,7 @@ export type ClickTrackingCreateWithoutStoreInput = {
   id?: string
   url: string
   isAffiliate?: boolean
+  program?: string | null
   clickedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutClickTrackingInput
   product: Prisma.ProductCreateNestedOneWithoutClickTrackingInput
@@ -634,6 +660,7 @@ export type ClickTrackingUncheckedCreateWithoutStoreInput = {
   offerId?: string | null
   url: string
   isAffiliate?: boolean
+  program?: string | null
   clickedAt?: Date | string
 }
 
@@ -667,6 +694,7 @@ export type ClickTrackingCreateWithoutProductInput = {
   id?: string
   url: string
   isAffiliate?: boolean
+  program?: string | null
   clickedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutClickTrackingInput
   store: Prisma.StoreCreateNestedOneWithoutClickTrackingInput
@@ -680,6 +708,7 @@ export type ClickTrackingUncheckedCreateWithoutProductInput = {
   offerId?: string | null
   url: string
   isAffiliate?: boolean
+  program?: string | null
   clickedAt?: Date | string
 }
 
@@ -713,6 +742,7 @@ export type ClickTrackingCreateWithoutOfferInput = {
   id?: string
   url: string
   isAffiliate?: boolean
+  program?: string | null
   clickedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutClickTrackingInput
   product: Prisma.ProductCreateNestedOneWithoutClickTrackingInput
@@ -726,6 +756,7 @@ export type ClickTrackingUncheckedCreateWithoutOfferInput = {
   storeId: string
   url: string
   isAffiliate?: boolean
+  program?: string | null
   clickedAt?: Date | string
 }
 
@@ -762,6 +793,7 @@ export type ClickTrackingCreateManyUserInput = {
   offerId?: string | null
   url: string
   isAffiliate?: boolean
+  program?: string | null
   clickedAt?: Date | string
 }
 
@@ -769,6 +801,7 @@ export type ClickTrackingUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   isAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  program?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   product?: Prisma.ProductUpdateOneRequiredWithoutClickTrackingNestedInput
   store?: Prisma.StoreUpdateOneRequiredWithoutClickTrackingNestedInput
@@ -782,6 +815,7 @@ export type ClickTrackingUncheckedUpdateWithoutUserInput = {
   offerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.StringFieldUpdateOperationsInput | string
   isAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  program?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -792,6 +826,7 @@ export type ClickTrackingUncheckedUpdateManyWithoutUserInput = {
   offerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.StringFieldUpdateOperationsInput | string
   isAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  program?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -802,6 +837,7 @@ export type ClickTrackingCreateManyStoreInput = {
   offerId?: string | null
   url: string
   isAffiliate?: boolean
+  program?: string | null
   clickedAt?: Date | string
 }
 
@@ -809,6 +845,7 @@ export type ClickTrackingUpdateWithoutStoreInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   isAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  program?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutClickTrackingNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutClickTrackingNestedInput
@@ -822,6 +859,7 @@ export type ClickTrackingUncheckedUpdateWithoutStoreInput = {
   offerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.StringFieldUpdateOperationsInput | string
   isAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  program?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -832,6 +870,7 @@ export type ClickTrackingUncheckedUpdateManyWithoutStoreInput = {
   offerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.StringFieldUpdateOperationsInput | string
   isAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  program?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -842,6 +881,7 @@ export type ClickTrackingCreateManyProductInput = {
   offerId?: string | null
   url: string
   isAffiliate?: boolean
+  program?: string | null
   clickedAt?: Date | string
 }
 
@@ -849,6 +889,7 @@ export type ClickTrackingUpdateWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   isAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  program?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutClickTrackingNestedInput
   store?: Prisma.StoreUpdateOneRequiredWithoutClickTrackingNestedInput
@@ -862,6 +903,7 @@ export type ClickTrackingUncheckedUpdateWithoutProductInput = {
   offerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.StringFieldUpdateOperationsInput | string
   isAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  program?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -872,6 +914,7 @@ export type ClickTrackingUncheckedUpdateManyWithoutProductInput = {
   offerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   url?: Prisma.StringFieldUpdateOperationsInput | string
   isAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  program?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -882,6 +925,7 @@ export type ClickTrackingCreateManyOfferInput = {
   storeId: string
   url: string
   isAffiliate?: boolean
+  program?: string | null
   clickedAt?: Date | string
 }
 
@@ -889,6 +933,7 @@ export type ClickTrackingUpdateWithoutOfferInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   isAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  program?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutClickTrackingNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutClickTrackingNestedInput
@@ -902,6 +947,7 @@ export type ClickTrackingUncheckedUpdateWithoutOfferInput = {
   storeId?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   isAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  program?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -912,6 +958,7 @@ export type ClickTrackingUncheckedUpdateManyWithoutOfferInput = {
   storeId?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   isAffiliate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  program?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -925,6 +972,7 @@ export type ClickTrackingSelect<ExtArgs extends runtime.Types.Extensions.Interna
   offerId?: boolean
   url?: boolean
   isAffiliate?: boolean
+  program?: boolean
   clickedAt?: boolean
   user?: boolean | Prisma.ClickTracking$userArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
@@ -940,6 +988,7 @@ export type ClickTrackingSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   offerId?: boolean
   url?: boolean
   isAffiliate?: boolean
+  program?: boolean
   clickedAt?: boolean
   user?: boolean | Prisma.ClickTracking$userArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
@@ -955,6 +1004,7 @@ export type ClickTrackingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   offerId?: boolean
   url?: boolean
   isAffiliate?: boolean
+  program?: boolean
   clickedAt?: boolean
   user?: boolean | Prisma.ClickTracking$userArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
@@ -970,10 +1020,11 @@ export type ClickTrackingSelectScalar = {
   offerId?: boolean
   url?: boolean
   isAffiliate?: boolean
+  program?: boolean
   clickedAt?: boolean
 }
 
-export type ClickTrackingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "productId" | "storeId" | "offerId" | "url" | "isAffiliate" | "clickedAt", ExtArgs["result"]["clickTracking"]>
+export type ClickTrackingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "productId" | "storeId" | "offerId" | "url" | "isAffiliate" | "program" | "clickedAt", ExtArgs["result"]["clickTracking"]>
 export type ClickTrackingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.ClickTracking$userArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
@@ -1009,6 +1060,7 @@ export type $ClickTrackingPayload<ExtArgs extends runtime.Types.Extensions.Inter
     offerId: string | null
     url: string
     isAffiliate: boolean
+    program: string | null
     clickedAt: Date
   }, ExtArgs["result"]["clickTracking"]>
   composites: {}
@@ -1444,6 +1496,7 @@ export interface ClickTrackingFieldRefs {
   readonly offerId: Prisma.FieldRef<"ClickTracking", 'String'>
   readonly url: Prisma.FieldRef<"ClickTracking", 'String'>
   readonly isAffiliate: Prisma.FieldRef<"ClickTracking", 'Boolean'>
+  readonly program: Prisma.FieldRef<"ClickTracking", 'String'>
   readonly clickedAt: Prisma.FieldRef<"ClickTracking", 'DateTime'>
 }
     
