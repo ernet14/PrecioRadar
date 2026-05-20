@@ -1,6 +1,6 @@
 import { getPrismaClient } from "@/lib/prisma";
 import { logger } from "@/lib/logger";
-import { mercadoLibreProvider } from "@/providers/stores";
+import { providerByStoreSlug } from "@/providers/stores";
 import type { ProviderProduct } from "@/providers/stores/types";
 import { slugify } from "@/lib/utils";
 
@@ -19,6 +19,17 @@ function isOutlier(newPrice: number, lastPrice: number) {
   if (lastPrice <= 0) return false;
   return newPrice < lastPrice * OUTLIER_LOWER_RATIO || newPrice > lastPrice * OUTLIER_UPPER_RATIO;
 }
+
+function getStoreBaseUrl(productUrl: string): string {
+  try {
+    return new URL(productUrl).origin;
+  } catch {
+    return productUrl;
+  }
+}
+
+// Límite defensivo de ofertas a persistir por búsqueda (evita inflar la DB).
+const MAX_PERSIST_PER_SEARCH = 30;
 
 async function ensureStore(
   prisma: NonNullable<ReturnType<typeof getPrismaClient>>,
@@ -134,7 +145,8 @@ async function recordTodayPriceHistory(
   }
 }
 
-// Llamar fire-and-forget cuando el usuario ve un producto. Persiste en DB para que el cron tenga qué actualizar.
+// Llamar fire-and-forget cuando el usuario ve un producto o aparece en búsqueda.
+// Persiste en DB (cualquier provider real) para que el cron tenga qué actualizar.
 export async function persistProductOfferView(offer: ProviderProduct): Promise<void> {
   if (offer.isDemo || !offer.externalId) return;
 
@@ -143,7 +155,12 @@ export async function persistProductOfferView(offer: ProviderProduct): Promise<v
   if (!prisma) return;
 
   try {
-    const store = await ensureStore(prisma, offer.storeSlug, offer.storeName, "https://www.mercadolibre.com.ar");
+    const store = await ensureStore(
+      prisma,
+      offer.storeSlug,
+      offer.storeName,
+      getStoreBaseUrl(offer.productUrl),
+    );
 
     if (store.deletedAt) return;
 
@@ -158,9 +175,34 @@ export async function persistProductOfferView(offer: ProviderProduct): Promise<v
 
     const productOffer = await upsertOffer(prisma, offer, product.id, store.id);
 
-    await recordTodayPriceHistory(prisma, productOffer.id, product.id, store.id, offer, "mercadolibre-view");
+    await recordTodayPriceHistory(
+      prisma,
+      productOffer.id,
+      product.id,
+      store.id,
+      offer,
+      `${offer.provider}-view`,
+    );
   } catch {
     // fire-and-forget: no propagamos errores de persistencia
+  }
+}
+
+// Persiste un lote de ofertas reales de una búsqueda (demand-driven tracking):
+// solo se trackea lo que la gente busca. Fire-and-forget, deduplicado y acotado.
+export async function persistSearchResults(offers: ProviderProduct[]): Promise<void> {
+  const unique = new Map<string, ProviderProduct>();
+  for (const offer of offers) {
+    if (offer.isDemo || !offer.externalId) continue;
+    unique.set(`${offer.storeSlug}:${offer.externalId}`, offer);
+  }
+
+  // Secuencial a propósito: upserts paralelos de Store/Category/Product
+  // compartidos producen carreras (unique violation) porque el upsert de
+  // Prisma no es atómico. Es fire-and-forget, no bloquea la respuesta.
+  const capped = Array.from(unique.values()).slice(0, MAX_PERSIST_PER_SEARCH);
+  for (const offer of capped) {
+    await persistProductOfferView(offer);
   }
 }
 
@@ -178,7 +220,7 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
   try {
     job = await prisma.scrapeJob.create({
       data: {
-        provider: "mercadolibre",
+        provider: "all",
         action: "refreshPrices",
         status: "running",
       },
@@ -192,11 +234,15 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
   }
 
   try {
-    const store = await prisma.store.findFirst({
-      where: { slug: "mercadolibre", deletedAt: null },
+    // Tiendas con provider real (MercadoLibre + VTEX). Routeamos cada oferta
+    // a su provider para refrescar el precio.
+    const providerSlugs = Array.from(providerByStoreSlug.keys());
+    const stores = await prisma.store.findMany({
+      where: { slug: { in: providerSlugs }, deletedAt: null },
     });
+    const storeIdToSlug = new Map(stores.map((store) => [store.id, store.slug]));
 
-    if (!store) {
+    if (stores.length === 0) {
       await finalizeJob(prisma, job, jobStart, "no_offers", 0, 0, 0, 0);
       return { status: "no_offers", processed: 0, updated: 0, errors: 0, outliers: 0 };
     }
@@ -205,7 +251,7 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
       orderBy: [{ lastCheckedAt: "asc" }, { createdAt: "asc" }],
       take: 500,
       where: {
-        storeId: store.id,
+        storeId: { in: stores.map((store) => store.id) },
         isDemo: false,
         available: true,
         externalId: { not: null },
@@ -225,8 +271,17 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
 
     for (const offer of offers) {
       try {
-        const currentPrice = await mercadoLibreProvider.getCurrentPrice({
+        const storeSlug = storeIdToSlug.get(offer.storeId);
+        const provider = storeSlug ? providerByStoreSlug.get(storeSlug) : undefined;
+
+        if (!provider) {
+          errors += 1;
+          continue;
+        }
+
+        const currentPrice = await provider.getCurrentPrice({
           externalId: offer.externalId ?? undefined,
+          url: offer.productUrl,
         });
 
         if (!currentPrice) {
@@ -241,8 +296,8 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
           outliers += 1;
           await prisma.providerLog.create({
             data: {
-              storeId: store.id,
-              provider: "mercadolibre",
+              storeId: offer.storeId,
+              provider: storeSlug ?? "unknown",
               action: "cron.outlierDetected",
               status: "skipped",
               errorMessage: `Precio sospechoso ${currentPrice.price} vs último ${lastPriceNumber} (offer ${offer.id}).`,
@@ -268,11 +323,11 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
           await prisma.priceHistory.create({
             data: {
               productId: offer.productId,
-              storeId: store.id,
+              storeId: offer.storeId,
               offerId: offer.id,
               price: currentPrice.price,
               currency: currentPrice.currency,
-              source: "mercadolibre-cron",
+              source: `${storeSlug}-cron`,
               isDemo: false,
             },
           });
@@ -287,8 +342,7 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
     try {
       await prisma.providerLog.create({
         data: {
-          storeId: store.id,
-          provider: "mercadolibre",
+          provider: "all",
           action: "cron.refreshPrices",
           status: errors > 0 && updated === 0 ? "failed" : "success",
           errorMessage:

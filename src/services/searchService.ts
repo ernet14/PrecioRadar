@@ -3,6 +3,7 @@ import {
   mockProvider,
   vtexProviders,
 } from "@/providers/stores";
+import { persistSearchResults } from "@/services/priceSnapshotService";
 import type { ProviderProduct } from "@/providers/stores";
 import {
   detectInputType,
@@ -585,6 +586,17 @@ async function searchText(query: string, searchedAt: Date) {
     realMatches.exactMatches.length + realMatches.similarMatches.length;
 
   if (realTotal > 0) {
+    // Tracking demand-driven: persistimos fire-and-forget los productos que
+    // efectivamente matchearon, para que el cron acumule su historial real.
+    const matchedNames = new Set(
+      [...realMatches.exactMatches, ...realMatches.similarMatches].map(
+        (item) => item.product.normalizedName,
+      ),
+    );
+    void persistSearchResults(
+      realProducts.filter((product) => matchedNames.has(product.normalizedName)),
+    );
+
     const storeNames = Array.from(
       new Set(realProducts.map((product) => product.storeName)),
     );
