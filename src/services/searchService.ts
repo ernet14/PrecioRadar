@@ -391,6 +391,19 @@ function queryWantsAccessory(queryTokens: string[]) {
   return queryTokens.some((token) => ACCESSORY_TERMS.has(token));
 }
 
+// Tokens negados en el texto del producto: "sin perfume", "no incluye cable".
+// Sirve para no contar como match algo que el producto explícitamente NO tiene
+// (ej. "Toallitas sin perfume" no debe matchear el query "perfume").
+function getNegatedTokens(productWords: string[]) {
+  const negated = new Set<string>();
+  for (let index = 1; index < productWords.length; index += 1) {
+    if (productWords[index - 1] === "sin" || productWords[index - 1] === "no") {
+      negated.add(productWords[index]);
+    }
+  }
+  return negated;
+}
+
 function scoreProduct(
   product: ProviderProduct,
   normalizedQuery: string,
@@ -411,8 +424,10 @@ function scoreProduct(
     `${product.name} ${product.title} ${product.model ?? ""}`,
   );
   const searchableText = `${product.normalizedName} ${normalizedName} ${normalizedTitle}`;
-  const matchedTokens = queryTokens.filter((token) =>
-    searchableText.includes(token),
+  const productWords = getQueryTokens(searchableText);
+  const negatedTokens = getNegatedTokens(productWords);
+  const matchedTokens = queryTokens.filter(
+    (token) => searchableText.includes(token) && !negatedTokens.has(token),
   );
   const hasModelConflict = hasConflictingModelTokens({
     productText: productModelText,
@@ -445,10 +460,21 @@ function scoreProduct(
     (directNameMatch || allTokensMatch)
       ? "exact"
       : "similar";
-  const score =
+  const brandMatches =
+    !!product.brand &&
+    queryTokens.includes(normalizeProductName(product.brand).split(" ")[0]);
+  const brandBonus = brandMatches ? 15 : 0;
+  // Densidad: qué fracción del nombre del producto cubre el query. Premia
+  // matches ajustados ("Perfume X") sobre nombres largos donde el token es
+  // marginal ("LED decorativa ... perfume macroled").
+  const coverageBonus = Math.round(
+    (matchedTokens.length / Math.max(productWords.length, 1)) * 10,
+  );
+  const baseScore =
     matchType === "exact"
       ? 100 + matchedTokens.length * 10
       : Math.max(matchedTokens.length * 10, relatedModelScore);
+  const score = baseScore + brandBonus + coverageBonus;
 
   return {
     matchedTokenCount: matchedTokens.length,
