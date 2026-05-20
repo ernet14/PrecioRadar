@@ -50,6 +50,7 @@ export type NewsletterSubscriptionCountAggregateOutputType = {
   confirmed: number
   confirmToken: number
   source: number
+  segments: number
   createdAt: number
   confirmedAt: number
   _all: number
@@ -82,6 +83,7 @@ export type NewsletterSubscriptionCountAggregateInputType = {
   confirmed?: true
   confirmToken?: true
   source?: true
+  segments?: true
   createdAt?: true
   confirmedAt?: true
   _all?: true
@@ -165,6 +167,7 @@ export type NewsletterSubscriptionGroupByOutputType = {
   confirmed: boolean
   confirmToken: string | null
   source: string
+  segments: string[]
   createdAt: Date
   confirmedAt: Date | null
   _count: NewsletterSubscriptionCountAggregateOutputType | null
@@ -196,6 +199,7 @@ export type NewsletterSubscriptionWhereInput = {
   confirmed?: Prisma.BoolFilter<"NewsletterSubscription"> | boolean
   confirmToken?: Prisma.StringNullableFilter<"NewsletterSubscription"> | string | null
   source?: Prisma.StringFilter<"NewsletterSubscription"> | string
+  segments?: Prisma.StringNullableListFilter<"NewsletterSubscription">
   createdAt?: Prisma.DateTimeFilter<"NewsletterSubscription"> | Date | string
   confirmedAt?: Prisma.DateTimeNullableFilter<"NewsletterSubscription"> | Date | string | null
 }
@@ -206,6 +210,7 @@ export type NewsletterSubscriptionOrderByWithRelationInput = {
   confirmed?: Prisma.SortOrder
   confirmToken?: Prisma.SortOrderInput | Prisma.SortOrder
   source?: Prisma.SortOrder
+  segments?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   confirmedAt?: Prisma.SortOrderInput | Prisma.SortOrder
 }
@@ -219,6 +224,7 @@ export type NewsletterSubscriptionWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.NewsletterSubscriptionWhereInput | Prisma.NewsletterSubscriptionWhereInput[]
   confirmed?: Prisma.BoolFilter<"NewsletterSubscription"> | boolean
   source?: Prisma.StringFilter<"NewsletterSubscription"> | string
+  segments?: Prisma.StringNullableListFilter<"NewsletterSubscription">
   createdAt?: Prisma.DateTimeFilter<"NewsletterSubscription"> | Date | string
   confirmedAt?: Prisma.DateTimeNullableFilter<"NewsletterSubscription"> | Date | string | null
 }, "id" | "email" | "confirmToken">
@@ -229,6 +235,7 @@ export type NewsletterSubscriptionOrderByWithAggregationInput = {
   confirmed?: Prisma.SortOrder
   confirmToken?: Prisma.SortOrderInput | Prisma.SortOrder
   source?: Prisma.SortOrder
+  segments?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   confirmedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.NewsletterSubscriptionCountOrderByAggregateInput
@@ -245,6 +252,7 @@ export type NewsletterSubscriptionScalarWhereWithAggregatesInput = {
   confirmed?: Prisma.BoolWithAggregatesFilter<"NewsletterSubscription"> | boolean
   confirmToken?: Prisma.StringNullableWithAggregatesFilter<"NewsletterSubscription"> | string | null
   source?: Prisma.StringWithAggregatesFilter<"NewsletterSubscription"> | string
+  segments?: Prisma.StringNullableListFilter<"NewsletterSubscription">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"NewsletterSubscription"> | Date | string
   confirmedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"NewsletterSubscription"> | Date | string | null
 }
@@ -255,6 +263,7 @@ export type NewsletterSubscriptionCreateInput = {
   confirmed?: boolean
   confirmToken?: string | null
   source?: string
+  segments?: Prisma.NewsletterSubscriptionCreatesegmentsInput | string[]
   createdAt?: Date | string
   confirmedAt?: Date | string | null
 }
@@ -265,6 +274,7 @@ export type NewsletterSubscriptionUncheckedCreateInput = {
   confirmed?: boolean
   confirmToken?: string | null
   source?: string
+  segments?: Prisma.NewsletterSubscriptionCreatesegmentsInput | string[]
   createdAt?: Date | string
   confirmedAt?: Date | string | null
 }
@@ -275,6 +285,7 @@ export type NewsletterSubscriptionUpdateInput = {
   confirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   confirmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
+  segments?: Prisma.NewsletterSubscriptionUpdatesegmentsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   confirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -285,6 +296,7 @@ export type NewsletterSubscriptionUncheckedUpdateInput = {
   confirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   confirmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
+  segments?: Prisma.NewsletterSubscriptionUpdatesegmentsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   confirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -295,6 +307,7 @@ export type NewsletterSubscriptionCreateManyInput = {
   confirmed?: boolean
   confirmToken?: string | null
   source?: string
+  segments?: Prisma.NewsletterSubscriptionCreatesegmentsInput | string[]
   createdAt?: Date | string
   confirmedAt?: Date | string | null
 }
@@ -305,6 +318,7 @@ export type NewsletterSubscriptionUpdateManyMutationInput = {
   confirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   confirmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
+  segments?: Prisma.NewsletterSubscriptionUpdatesegmentsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   confirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -315,8 +329,17 @@ export type NewsletterSubscriptionUncheckedUpdateManyInput = {
   confirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   confirmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
+  segments?: Prisma.NewsletterSubscriptionUpdatesegmentsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   confirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type StringNullableListFilter<$PrismaModel = never> = {
+  equals?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null
+  has?: string | Prisma.StringFieldRefInput<$PrismaModel> | null
+  hasEvery?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  hasSome?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  isEmpty?: boolean
 }
 
 export type NewsletterSubscriptionCountOrderByAggregateInput = {
@@ -325,6 +348,7 @@ export type NewsletterSubscriptionCountOrderByAggregateInput = {
   confirmed?: Prisma.SortOrder
   confirmToken?: Prisma.SortOrder
   source?: Prisma.SortOrder
+  segments?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   confirmedAt?: Prisma.SortOrder
 }
@@ -349,6 +373,15 @@ export type NewsletterSubscriptionMinOrderByAggregateInput = {
   confirmedAt?: Prisma.SortOrder
 }
 
+export type NewsletterSubscriptionCreatesegmentsInput = {
+  set: string[]
+}
+
+export type NewsletterSubscriptionUpdatesegmentsInput = {
+  set?: string[]
+  push?: string | string[]
+}
+
 
 
 export type NewsletterSubscriptionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -357,6 +390,7 @@ export type NewsletterSubscriptionSelect<ExtArgs extends runtime.Types.Extension
   confirmed?: boolean
   confirmToken?: boolean
   source?: boolean
+  segments?: boolean
   createdAt?: boolean
   confirmedAt?: boolean
 }, ExtArgs["result"]["newsletterSubscription"]>
@@ -367,6 +401,7 @@ export type NewsletterSubscriptionSelectCreateManyAndReturn<ExtArgs extends runt
   confirmed?: boolean
   confirmToken?: boolean
   source?: boolean
+  segments?: boolean
   createdAt?: boolean
   confirmedAt?: boolean
 }, ExtArgs["result"]["newsletterSubscription"]>
@@ -377,6 +412,7 @@ export type NewsletterSubscriptionSelectUpdateManyAndReturn<ExtArgs extends runt
   confirmed?: boolean
   confirmToken?: boolean
   source?: boolean
+  segments?: boolean
   createdAt?: boolean
   confirmedAt?: boolean
 }, ExtArgs["result"]["newsletterSubscription"]>
@@ -387,11 +423,12 @@ export type NewsletterSubscriptionSelectScalar = {
   confirmed?: boolean
   confirmToken?: boolean
   source?: boolean
+  segments?: boolean
   createdAt?: boolean
   confirmedAt?: boolean
 }
 
-export type NewsletterSubscriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "confirmed" | "confirmToken" | "source" | "createdAt" | "confirmedAt", ExtArgs["result"]["newsletterSubscription"]>
+export type NewsletterSubscriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "confirmed" | "confirmToken" | "source" | "segments" | "createdAt" | "confirmedAt", ExtArgs["result"]["newsletterSubscription"]>
 
 export type $NewsletterSubscriptionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "NewsletterSubscription"
@@ -402,6 +439,7 @@ export type $NewsletterSubscriptionPayload<ExtArgs extends runtime.Types.Extensi
     confirmed: boolean
     confirmToken: string | null
     source: string
+    segments: string[]
     createdAt: Date
     confirmedAt: Date | null
   }, ExtArgs["result"]["newsletterSubscription"]>
@@ -832,6 +870,7 @@ export interface NewsletterSubscriptionFieldRefs {
   readonly confirmed: Prisma.FieldRef<"NewsletterSubscription", 'Boolean'>
   readonly confirmToken: Prisma.FieldRef<"NewsletterSubscription", 'String'>
   readonly source: Prisma.FieldRef<"NewsletterSubscription", 'String'>
+  readonly segments: Prisma.FieldRef<"NewsletterSubscription", 'String[]'>
   readonly createdAt: Prisma.FieldRef<"NewsletterSubscription", 'DateTime'>
   readonly confirmedAt: Prisma.FieldRef<"NewsletterSubscription", 'DateTime'>
 }

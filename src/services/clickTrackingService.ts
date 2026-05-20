@@ -7,6 +7,7 @@ import {
   normalizeAffiliateProgram,
   type AffiliateProgram,
 } from "@/services/affiliateService";
+import { track } from "@/services/analyticsService";
 import {
   ensureProductForSlug,
   ensureProductOffer,
@@ -251,6 +252,16 @@ export async function recordOfferClick({
         url: destination.url,
         userId: userId ?? null,
       },
+    });
+
+    void track({
+      name: "outbound_click",
+      props: {
+        isAffiliate: destination.isAffiliate,
+        program: destination.program,
+        storeId: storedOffer.storeId,
+      },
+      userId: userId ?? null,
     });
 
     return {

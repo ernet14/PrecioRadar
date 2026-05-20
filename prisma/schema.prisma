@@ -430,10 +430,23 @@ model NewsletterSubscription {
   confirmed   Boolean   @default(false)
   confirmToken String?  @unique
   source      String    @default("web")
+  segments    String[]  @default([])
   createdAt   DateTime  @default(now())
   confirmedAt DateTime?
 
   @@index([confirmed])
+  @@index([createdAt])
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  path      String?
+  props     Json?
+  userId    String?  @db.Uuid
+  createdAt DateTime @default(now())
+
+  @@index([name, createdAt])
   @@index([createdAt])
 }
 

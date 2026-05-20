@@ -118,6 +118,11 @@ export type ProductReport = Prisma.ProductReportModel
  */
 export type NewsletterSubscription = Prisma.NewsletterSubscriptionModel
 /**
+ * Model AnalyticsEvent
+ * 
+ */
+export type AnalyticsEvent = Prisma.AnalyticsEventModel
+/**
  * Model MercadoLibreAuth
  * 
  */

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { getPrismaClient, isDatabaseConfigured } from "@/lib/prisma";
 import { getSiteUrl } from "@/lib/seo/site";
+import { getTodayEventCounts } from "@/services/analyticsService";
 import { requireAdmin } from "@/lib/supabase/auth";
 import vercelConfig from "../../../../vercel.json";
 import { RefreshControls } from "./RefreshControls";
@@ -969,6 +970,7 @@ export default async function AdminStatusPage({
     recentErrors,
     lastSuccessfulJob,
     affiliateBreakdown,
+    todayEvents,
   ] = await Promise.all([
     checkDatabase(),
     checkSitemap(),
@@ -979,6 +981,7 @@ export default async function AdminStatusPage({
     countRecentErrors(),
     getLastSuccessfulJob(),
     loadAffiliateBreakdown(),
+    getTodayEventCounts(),
   ]);
 
   const cronJobs = (vercelConfig.crons ?? []) as Array<{
@@ -1443,6 +1446,33 @@ export default async function AdminStatusPage({
                   </li>
                 );
               })}
+            </ul>
+          )}
+        </SectionCard>
+
+        <SectionCard
+          description="Eventos de producto registrados hoy (track())."
+          title="Eventos de hoy"
+        >
+          {todayEvents === null ? (
+            <p className="rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+              No pudimos leer los eventos (base no disponible o error).
+            </p>
+          ) : todayEvents.length === 0 ? (
+            <p className="rounded-md border border-dashed border-slate-200 bg-slate-50 p-3 text-xs text-slate-500">
+              Todavía no hay eventos registrados hoy.
+            </p>
+          ) : (
+            <ul className="divide-y divide-slate-100">
+              {todayEvents.map((event) => (
+                <li
+                  key={event.name}
+                  className="flex items-center justify-between py-2 text-sm"
+                >
+                  <span className="font-mono text-xs text-slate-700">{event.name}</span>
+                  <span className="font-semibold text-slate-950">{event.count}</span>
+                </li>
+              ))}
             </ul>
           )}
         </SectionCard>

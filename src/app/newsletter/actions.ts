@@ -7,6 +7,8 @@ import { getPrismaClient } from "@/lib/prisma";
 import { getSiteUrl } from "@/lib/seo/site";
 import { recordAuditEvent } from "@/services/auditLogService";
 import { sendNewsletterConfirmEmail } from "@/services/emailService";
+import { track } from "@/services/analyticsService";
+import { normalizeSegments } from "@/data/newsletterSegments";
 
 const schema = z.object({
   email: z.string().email("Ingresá un email válido."),
@@ -36,6 +38,8 @@ export async function subscribeToNewsletter(
   }
 
   const email = parsed.data.email.toLowerCase();
+  const segments = normalizeSegments(formData.getAll("segments").map(String));
+  const source = (formData.get("source") as string | null)?.trim() || "web";
   const prisma = getPrismaClient();
 
   if (!prisma) {
@@ -61,13 +65,15 @@ export async function subscribeToNewsletter(
     if (existing) {
       await prisma.newsletterSubscription.update({
         where: { email },
-        data: { confirmToken: token, source: "web" },
+        data: { confirmToken: token, source, segments },
       });
     } else {
       await prisma.newsletterSubscription.create({
-        data: { email, source: "web", confirmToken: token },
+        data: { email, source, confirmToken: token, segments },
       });
     }
+
+    void track({ name: "newsletter_subscribe", props: { source, segments } });
 
     const hdrs = await headers();
     const ip = hdrs.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;

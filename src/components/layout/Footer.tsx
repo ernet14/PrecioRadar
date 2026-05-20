@@ -11,6 +11,7 @@ const productLinks = [
 ];
 
 const companyLinks = [
+  { href: "/quienes-somos", label: "Quiénes somos" },
   { href: "/como-funcionamos", label: "Cómo funcionamos" },
   { href: "/privacidad", label: "Privacidad" },
   { href: "/terminos", label: "Términos" },

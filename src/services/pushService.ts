@@ -1,6 +1,7 @@
 import webpush from "web-push";
 import { getPrismaClient } from "@/lib/prisma";
 import { logger } from "@/lib/logger";
+import { track } from "@/services/analyticsService";
 
 // Etapa 15 — Web Push. Envío y persistencia de suscripciones push.
 // Todo es defensivo: sin claves VAPID configuradas, el envío es un no-op.
@@ -64,6 +65,8 @@ export async function savePushSubscription({
         userAgent: userAgent ?? null,
       },
     });
+
+    void track({ name: "push_subscribe", userId: userId ?? null });
 
     return "saved";
   } catch (error) {
