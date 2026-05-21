@@ -551,6 +551,50 @@ async function loadAffiliateBreakdown(): Promise<AffiliateProgramClicks[] | null
   }
 }
 
+type FlaggedProduct = { id: string; name: string; slug: string; reports: number };
+
+async function loadFlaggedProducts(): Promise<FlaggedProduct[] | null> {
+  const prisma = getPrismaClient();
+
+  if (!prisma) {
+    return null;
+  }
+
+  try {
+    const groups = await prisma.productReport.groupBy({
+      by: ["productId"],
+      where: { status: "OPEN" },
+      _count: { _all: true },
+    });
+
+    const flagged = groups.filter((group) => group._count._all >= 3);
+
+    if (flagged.length === 0) {
+      return [];
+    }
+
+    const flaggedIds = flagged
+      .map((group) => group.productId)
+      .filter((id): id is string => Boolean(id));
+    const products = await prisma.product.findMany({
+      where: { id: { in: flaggedIds } },
+      select: { id: true, name: true, slug: true },
+    });
+    const countById = new Map(flagged.map((group) => [group.productId, group._count._all]));
+
+    return products
+      .map((product) => ({
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        reports: countById.get(product.id) ?? 0,
+      }))
+      .sort((left, right) => right.reports - left.reports);
+  } catch {
+    return null;
+  }
+}
+
 function computeAgeHours(date: Date | null) {
   if (!date) {
     return null;
@@ -971,6 +1015,7 @@ export default async function AdminStatusPage({
     lastSuccessfulJob,
     affiliateBreakdown,
     todayEvents,
+    flaggedProducts,
   ] = await Promise.all([
     checkDatabase(),
     checkSitemap(),
@@ -982,6 +1027,7 @@ export default async function AdminStatusPage({
     getLastSuccessfulJob(),
     loadAffiliateBreakdown(),
     getTodayEventCounts(),
+    loadFlaggedProducts(),
   ]);
 
   const cronJobs = (vercelConfig.crons ?? []) as Array<{
@@ -1471,6 +1517,40 @@ export default async function AdminStatusPage({
                 >
                   <span className="font-mono text-xs text-slate-700">{event.name}</span>
                   <span className="font-semibold text-slate-950">{event.count}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </SectionCard>
+
+        <SectionCard
+          description="Productos con 3 o más reportes abiertos: revisar precio/datos."
+          title="Productos a revisar (flag comunitario)"
+        >
+          {flaggedProducts === null ? (
+            <p className="rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+              No pudimos leer los reportes (base no disponible o error).
+            </p>
+          ) : flaggedProducts.length === 0 ? (
+            <p className="rounded-md border border-dashed border-slate-200 bg-slate-50 p-3 text-xs text-slate-500">
+              Ningún producto superó el umbral de reportes.
+            </p>
+          ) : (
+            <ul className="divide-y divide-slate-100">
+              {flaggedProducts.map((product) => (
+                <li
+                  key={product.id}
+                  className="flex items-center justify-between gap-3 py-2 text-sm"
+                >
+                  <Link
+                    className="truncate font-medium text-blue-700 hover:underline"
+                    href={`/producto/${product.slug}`}
+                  >
+                    {product.name}
+                  </Link>
+                  <span className="shrink-0 rounded-full bg-red-50 px-2 py-0.5 text-xs font-semibold text-red-700">
+                    {product.reports} reportes
+                  </span>
                 </li>
               ))}
             </ul>
