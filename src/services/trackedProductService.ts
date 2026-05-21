@@ -489,59 +489,86 @@ export async function listTrackedProducts(
     return [];
   }
 
-  const trackedProducts = await prisma.trackedProduct.findMany({
-    where: { userId },
-    include: {
-      product: true,
-      offer: {
-        include: {
-          store: true,
-        },
+  let trackedProducts;
+  try {
+    trackedProducts = await prisma.trackedProduct.findMany({
+      where: { userId },
+      include: {
+        product: true,
+        offer: { include: { store: true } },
       },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (error) {
+    logger.error("Unable to list tracked products.", { error });
+    return [];
+  }
 
+  // Resuelve el detalle real para mostrar precio/recomendación frescos, pero
+  // si algo falla cae a los datos persistidos: nunca rompe la lista ni dropea
+  // un seguimiento.
   const items = await Promise.all(
     trackedProducts.map(async (trackedProduct) => {
-      const product = await getProductDetailBySlug(trackedProduct.product.slug);
+      const offerRow = trackedProduct.offer;
+      const hasOfferRow = Boolean(offerRow?.externalId && offerRow.store);
+      const trackingScope: "offer" | "product" = hasOfferRow ? "offer" : "product";
 
-      if (!product) {
-        return null;
-      }
-
-      const offer =
-        trackedProduct.offer?.externalId && trackedProduct.offer.store
-          ? findProductOffer(
-              product,
-              getOfferKey(
-                trackedProduct.offer.store.slug,
-                trackedProduct.offer.externalId,
-              ),
-            )
-          : product.bestOffer;
-      const trackingScope =
-        trackedProduct.offer?.externalId && trackedProduct.offer.store
-          ? "offer"
-          : "product";
-
-      if (!offer) {
-        return null;
-      }
-
-      return createTrackedProductListItem(
-        trackedProduct.id,
-        product,
-        offer,
-        trackedProduct.createdAt,
+      const fallback: TrackedProductListItem = {
+        id: trackedProduct.id,
+        slug: trackedProduct.product.slug,
+        name: trackedProduct.product.name,
+        offerKey:
+          hasOfferRow && offerRow
+            ? getOfferKey(offerRow.store.slug, offerRow.externalId as string)
+            : null,
+        imageUrl: trackedProduct.product.imageUrl ?? offerRow?.imageUrl ?? null,
+        priceLabel: offerRow ? formatCurrencyARS(Number(offerRow.price)) : "Sin precio",
+        storeName: offerRow?.store?.name ?? "Tienda",
+        trackingLabel:
+          trackingScope === "offer"
+            ? "Oferta seguida"
+            : "Producto seguido (mejor oferta actual)",
         trackingScope,
-      );
+        productUrl: offerRow?.productUrl ?? "",
+        recommendationLabel: "Seguimiento activo",
+        recommendationReason: "Te avisamos cuando el precio baje.",
+        trackedAt: trackedProduct.createdAt,
+      };
+
+      try {
+        const product = await getProductDetailBySlug(trackedProduct.product.slug);
+
+        if (!product) {
+          return fallback;
+        }
+
+        const offer =
+          hasOfferRow && offerRow
+            ? findProductOffer(
+                product,
+                getOfferKey(offerRow.store.slug, offerRow.externalId as string),
+              )
+            : product.bestOffer;
+
+        if (!offer) {
+          return fallback;
+        }
+
+        return createTrackedProductListItem(
+          trackedProduct.id,
+          product,
+          offer,
+          trackedProduct.createdAt,
+          trackingScope,
+        );
+      } catch (error) {
+        logger.error("Unable to resolve tracked product detail; using stored data.", {
+          error,
+        });
+        return fallback;
+      }
     }),
   );
 
-  return items.filter(
-    (product): product is TrackedProductListItem => Boolean(product),
-  );
+  return items;
 }

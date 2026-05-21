@@ -16,38 +16,52 @@ function urlBase64ToUint8Array(base64String: string) {
   return output;
 }
 
-type PushState = "idle" | "subscribing" | "subscribed" | "denied" | "error";
+type PushState =
+  | "loading"
+  | "unsupported"
+  | "idle"
+  | "subscribing"
+  | "subscribed"
+  | "denied"
+  | "error";
 
 export function PushToggle({ className }: { className?: string }) {
-  const [supported, setSupported] = useState(false);
-  const [state, setState] = useState<PushState>("idle");
+  const [state, setState] = useState<PushState>("loading");
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      const ok =
+    const timer = window.setTimeout(async () => {
+      const supported =
         "serviceWorker" in navigator &&
         "PushManager" in window &&
         "Notification" in window &&
         Boolean(VAPID_PUBLIC_KEY);
 
-      if (!ok) return;
+      if (!supported) {
+        setState("unsupported");
+        return;
+      }
 
-      setSupported(true);
+      if (Notification.permission === "denied") {
+        setState("denied");
+        return;
+      }
 
       if (Notification.permission === "granted") {
-        navigator.serviceWorker.ready
-          .then((registration) => registration.pushManager.getSubscription())
-          .then((subscription) => {
-            if (subscription) setState("subscribed");
-          })
-          .catch(() => {});
+        try {
+          const registration = await navigator.serviceWorker.ready;
+          const subscription = await registration.pushManager.getSubscription();
+          setState(subscription ? "subscribed" : "idle");
+        } catch {
+          setState("idle");
+        }
+        return;
       }
+
+      setState("idle");
     }, 0);
 
     return () => window.clearTimeout(timer);
   }, []);
-
-  if (!supported) return null;
 
   async function subscribe() {
     setState("subscribing");
@@ -56,7 +70,7 @@ export function PushToggle({ className }: { className?: string }) {
       const permission = await Notification.requestPermission();
 
       if (permission !== "granted") {
-        setState("denied");
+        setState(permission === "denied" ? "denied" : "idle");
         return;
       }
 
@@ -78,10 +92,24 @@ export function PushToggle({ className }: { className?: string }) {
     }
   }
 
+  // Mientras detecta soporte/permiso no mostramos nada para evitar parpadeo.
+  if (state === "loading" || state === "unsupported") {
+    return null;
+  }
+
   if (state === "subscribed") {
     return (
-      <p className="rounded-lg bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
-        Avisos push activados ✓
+      <p className="flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700">
+        <span aria-hidden>🔔</span> Avisos activados
+      </p>
+    );
+  }
+
+  if (state === "denied") {
+    return (
+      <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs leading-5 text-slate-500">
+        Tenés las notificaciones bloqueadas. Habilitalas para este sitio desde la
+        configuración del navegador (ícono del candado en la barra de direcciones).
       </p>
     );
   }
@@ -92,17 +120,12 @@ export function PushToggle({ className }: { className?: string }) {
         type="button"
         onClick={subscribe}
         disabled={state === "subscribing"}
-        size="lg"
-        variant="ghost"
-        className={className}
+        size="md"
+        variant="secondary"
+        className={`w-full ${className ?? ""}`}
       >
-        {state === "subscribing" ? "Activando…" : "Activar avisos push"}
+        {state === "subscribing" ? "Activando…" : "Activar avisos"}
       </Button>
-      {state === "denied" ? (
-        <p className="text-xs text-slate-500">
-          Bloqueaste las notificaciones. Habilitalas desde el navegador.
-        </p>
-      ) : null}
       {state === "error" ? (
         <p className="text-xs text-red-600">No pudimos activar los avisos. Reintentá.</p>
       ) : null}

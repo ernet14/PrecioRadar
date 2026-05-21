@@ -31,7 +31,7 @@ type ScoredProviderProduct = {
   score: number;
 };
 
-const MIN_SIMILAR_SCORE = 30;
+const MIN_SIMILAR_SCORE = 40;
 
 const relatedCategorySlugs: Record<string, string[]> = {
   celulares: ["celulares"],
@@ -451,6 +451,22 @@ function scoreProduct(
     return null;
   }
 
+  // Match demasiado débil: si el query tiene 2+ palabras y el producto solo
+  // coincide en la marca (ej. "Samsung microondas" para "samsung galaxy a55"),
+  // lo descartamos para no ensuciar los similares.
+  const brandTokens = product.brand
+    ? new Set(getQueryTokens(normalizeProductName(product.brand)))
+    : new Set<string>();
+  const nonBrandMatched = matchedTokens.filter((token) => !brandTokens.has(token));
+
+  if (
+    queryTokens.length >= 2 &&
+    nonBrandMatched.length === 0 &&
+    relatedModelScore === 0
+  ) {
+    return null;
+  }
+
   const allTokensMatch = matchedTokens.length === queryTokens.length;
   const directNameMatch =
     normalizedName === normalizedQuery ||
@@ -522,7 +538,7 @@ function isRelevantSimilarMatch({
   }
 
   if (relevantCategories.size === 0) {
-    return item.score >= MIN_SIMILAR_SCORE + 10;
+    return item.score >= MIN_SIMILAR_SCORE + 15;
   }
 
   return isRelatedCategory(item.product.categoryId, relevantCategories);

@@ -1,6 +1,6 @@
 import { getPrismaClient } from "@/lib/prisma";
 import { logger } from "@/lib/logger";
-import { getMockProductDetailBySlug } from "@/services/productService";
+import { getProductDetailBySlug } from "@/services/productService";
 import {
   buildProgramAffiliateUrl,
   getProgramAffiliateTag,
@@ -54,14 +54,16 @@ export function buildOfferClickHref({
   return `/api/out?${params.toString()}`;
 }
 
-export function getOfferClickTarget({
+export async function getOfferClickTarget({
   offerKey,
   productSlug,
 }: {
   offerKey: string;
   productSlug: string;
-}): OfferClickTarget | null {
-  const product = getMockProductDetailBySlug(productSlug);
+}): Promise<OfferClickTarget | null> {
+  // Resuelve productos reales (DB) además del catálogo demo; antes era mock-only
+  // y /api/out devolvía 404 para cualquier oferta de una tienda real.
+  const product = await getProductDetailBySlug(productSlug);
 
   if (!product) {
     return null;
@@ -152,7 +154,7 @@ export async function recordOfferClick({
   productSlug: string;
   userId?: string | null;
 }): Promise<RecordOfferClickResult> {
-  const target = getOfferClickTarget({ offerKey, productSlug });
+  const target = await getOfferClickTarget({ offerKey, productSlug });
 
   if (!target) {
     return { status: "not_found" };

@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { TrackingFeedback } from "@/components/product/TrackingFeedback";
+import { PushToggle } from "@/components/pwa/PushToggle";
 import { requireUser } from "@/lib/supabase/auth";
 import { formatDate } from "@/lib/utils";
 import { buildOfferClickHref } from "@/services/clickTrackingService";
@@ -164,6 +165,7 @@ function TrackedProductCard({
   product: TrackedProductListItem;
 }) {
   const isLegacyTracking = product.trackingScope === "product";
+  const hasOfferUrl = /^https?:\/\//.test(product.productUrl);
   const offerHref = product.offerKey
     ? buildOfferClickHref({
         offerKey: product.offerKey,
@@ -223,14 +225,24 @@ function TrackedProductCard({
             </p>
           </div>
           <div className="mt-5 grid gap-2">
-            <Link
-              className="inline-flex h-10 items-center justify-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
-              href={offerHref}
-              rel="noreferrer"
-              target="_blank"
-            >
-              Ver oferta
-            </Link>
+            {hasOfferUrl ? (
+              <Link
+                className="inline-flex h-10 items-center justify-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                href={offerHref}
+                rel="noreferrer"
+                target="_blank"
+              >
+                Ver oferta
+              </Link>
+            ) : (
+              <span
+                aria-disabled
+                className="inline-flex h-10 cursor-not-allowed items-center justify-center rounded-lg bg-slate-100 px-4 text-sm font-semibold text-slate-400"
+                title="Esta oferta no tiene enlace disponible"
+              >
+                Sin enlace disponible
+              </span>
+            )}
             <Link
               className="inline-flex h-10 items-center justify-center rounded-lg border border-blue-200 bg-white px-4 text-sm font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50"
               href={`/producto/${product.slug}`}
@@ -558,7 +570,17 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                   </Button>
                 </form>
               </div>
-              <div className="mt-5">
+              <div className="mt-5 space-y-4">
+                <div className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4">
+                  <p className="text-sm font-semibold text-slate-950">
+                    Notificaciones push
+                  </p>
+                  <p className="mt-1 mb-3 text-xs leading-5 text-slate-500">
+                    Recibí un aviso en este dispositivo cuando baje el precio de
+                    una oferta que seguís.
+                  </p>
+                  <PushToggle />
+                </div>
                 <NotificationList
                   notifications={notifications}
                   returnTo="/dashboard"

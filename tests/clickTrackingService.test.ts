@@ -36,8 +36,8 @@ test("builds internal offer click URLs from slug and offer key", () => {
   );
 });
 
-test("resolves known demo offers for outbound redirects", () => {
-  const target = getOfferClickTarget({
+test("resolves known demo offers for outbound redirects", async () => {
+  const target = await getOfferClickTarget({
     offerKey: "mercadolibre:mock-ml-a55-256",
     productSlug: "samsung-galaxy-a55-5g-256gb",
   });
