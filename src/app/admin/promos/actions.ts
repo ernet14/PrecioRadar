@@ -6,6 +6,10 @@ import {
   deleteBankPromo,
   toggleBankPromoActive,
 } from "@/services/bankPromoService";
+import {
+  parseBankPromoText,
+  type ParsedBankPromoDraft,
+} from "@/services/bankPromoParser";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -118,6 +122,26 @@ export async function createPromoAction(
   revalidatePath("/admin/promos");
   revalidatePath("/promos-hoy");
   return { success: true };
+}
+
+export type ParsePromoState = {
+  draft: ParsedBankPromoDraft | null;
+  key?: string;
+  error?: string;
+};
+
+export async function parsePromoTextAction(
+  _prev: ParsePromoState,
+  formData: FormData,
+): Promise<ParsePromoState> {
+  await requireAdmin();
+
+  const text = String(formData.get("text") ?? "").trim();
+  if (!text) {
+    return { draft: null, error: "Pega el texto de la promo para analizarlo." };
+  }
+
+  return { draft: parseBankPromoText(text), key: Date.now().toString() };
 }
 
 export async function togglePromoAction(

@@ -2,6 +2,7 @@ import { getPrismaClient } from "@/lib/prisma";
 import { logger } from "@/lib/logger";
 import { getSiteUrl } from "@/lib/seo/site";
 import { sendSystemEmail } from "@/services/emailService";
+import { getActivePromosForDate } from "@/services/bankPromoService";
 
 // Bot de monitoreo de PrecioRadar.
 //  - runDailyReport(): Nivel 1, resumen diario por email.
@@ -293,6 +294,7 @@ export type DailyMetrics = {
   affiliateClicksLast24h: number;
   productsWithoutImage: number;
   stalePricedOffers: number;
+  activePromosToday: number;
   recentProviderErrors: { provider: string; action: string; errorMessage: string | null; createdAt: Date }[];
   lastScrapeJobs: { provider: string; action: string; status: string; processed: number; errors: number; startedAt: Date }[];
   topErrorProviders: { provider: string; errors: number }[];
@@ -313,6 +315,7 @@ async function collectDailyMetrics(prisma: Prisma): Promise<DailyMetrics> {
     affiliateClicksLast24h,
     productsWithoutImage,
     stalePricedOffers,
+    activePromosToday,
     recentProviderErrors,
     lastScrapeJobs,
     errorGroups,
@@ -331,6 +334,7 @@ async function collectDailyMetrics(prisma: Prisma): Promise<DailyMetrics> {
     prisma.productOffer.count({
       where: { isDemo: false, OR: [{ lastCheckedAt: null }, { lastCheckedAt: { lt: offerStaleBefore } }] },
     }),
+    getActivePromosForDate({}).then((promos) => promos.length),
     prisma.providerLog.findMany({
       where: { createdAt: { gte: since }, status: { notIn: Array.from(SUCCESS_STATUSES) } },
       orderBy: { createdAt: "desc" },
@@ -366,6 +370,7 @@ async function collectDailyMetrics(prisma: Prisma): Promise<DailyMetrics> {
     affiliateClicksLast24h,
     productsWithoutImage,
     stalePricedOffers,
+    activePromosToday,
     recentProviderErrors,
     lastScrapeJobs,
     topErrorProviders,
@@ -492,6 +497,7 @@ function metricsRows(m: DailyMetrics): [string, string][] {
     ["Clicks afiliados (24h)", String(m.affiliateClicksLast24h)],
     ["Productos sin imagen", String(m.productsWithoutImage)],
     [`Ofertas sin actualizar (+${OFFER_STALE_HOURS}h)`, String(m.stalePricedOffers)],
+    ["Promos bancarias activas hoy", String(m.activePromosToday)],
   ];
 }
 
@@ -656,6 +662,9 @@ function buildRecommendations(issues: Issue[]): string[] {
       case "scrapejob_stuck":
         recs.add("Revisar el ScrapeJob trabado; puede haber timeout de provider o DB.");
         break;
+      case "no_bank_promos":
+        recs.add("Cargá o activá promos bancarias en /admin/promos para que /promos-hoy no quede vacía.");
+        break;
       default:
         if (issue.key.startsWith("provider_403:")) {
           recs.add(`Verificar la API del proveedor ${issue.providerSlug}; el monitor lo bloqueó temporalmente.`);
@@ -690,6 +699,17 @@ export async function runDailyReport(): Promise<MonitoringResult> {
       runChecks(prisma),
       collectDailyMetrics(prisma),
     ]);
+
+    // Aviso (solo en el reporte diario, no es crítico): no hay promos para hoy.
+    if (metrics.activePromosToday === 0) {
+      issues.push({
+        key: "no_bank_promos",
+        area: "promos",
+        severity: "warn",
+        title: "Sin promos bancarias activas hoy",
+        detail: "La página /promos-hoy no muestra ninguna promo para la fecha de hoy.",
+      });
+    }
 
     const actions = await applySafeActions(prisma, issues);
     const status = maxSeverity(issues.map((i) => i.severity));

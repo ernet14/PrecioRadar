@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { createPromoAction, type CreatePromoState } from "./actions";
+import type { ParsedBankPromoDraft } from "@/services/bankPromoParser";
 
 const DAY_OPTIONS = [
   { label: "Dom", value: 0 },
@@ -37,8 +38,10 @@ function Field({
   );
 }
 
-export function CreatePromoForm() {
+export function CreatePromoForm({ defaults }: { defaults?: ParsedBankPromoDraft }) {
   const [state, action, pending] = useActionState(createPromoAction, initialState);
+  const numberOrEmpty = (value: number | null | undefined) =>
+    value === null || value === undefined ? undefined : String(value);
 
   return (
     <form action={action} className="mt-5 space-y-4">
@@ -54,16 +57,16 @@ export function CreatePromoForm() {
       ) : null}
 
       <Field label="Banco / billetera" required>
-        <input className={inputClass} name="entity" placeholder="Banco Nacion" required type="text" />
+        <input className={inputClass} defaultValue={defaults?.entity} name="entity" placeholder="Banco Nacion" required type="text" />
       </Field>
 
       <Field label="Slug" required>
-        <input className={inputClass} name="entitySlug" placeholder="banco-nacion" required type="text" />
+        <input className={inputClass} defaultValue={defaults?.entitySlug} name="entitySlug" placeholder="banco-nacion" required type="text" />
       </Field>
 
       <div className="grid gap-3 sm:grid-cols-2">
         <Field label="Tipo de beneficio">
-          <select className={inputClass} name="promoType">
+          <select className={inputClass} defaultValue={defaults?.promoType ?? "percentage"} name="promoType">
             <option value="percentage">Descuento</option>
             <option value="refund">Reintegro</option>
             <option value="installments">Cuotas sin interes</option>
@@ -71,17 +74,17 @@ export function CreatePromoForm() {
         </Field>
 
         <Field label="Descuento / reintegro (%)">
-          <input className={inputClass} max={100} min={0} name="discountPct" placeholder="25" type="number" />
+          <input className={inputClass} defaultValue={numberOrEmpty(defaults?.discountPct)} max={100} min={0} name="discountPct" placeholder="25" type="number" />
         </Field>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
         <Field label="Tope reintegro (ARS)">
-          <input className={inputClass} min={1} name="maxAmount" placeholder="Sin tope" type="number" />
+          <input className={inputClass} defaultValue={numberOrEmpty(defaults?.maxAmount)} min={1} name="maxAmount" placeholder="Sin tope" type="number" />
         </Field>
 
         <Field label="Cuotas sin interes">
-          <input className={inputClass} min={1} name="installments" placeholder="Ej: 6" type="number" />
+          <input className={inputClass} defaultValue={numberOrEmpty(defaults?.installments)} min={1} name="installments" placeholder="Ej: 6" type="number" />
         </Field>
       </div>
 
@@ -92,7 +95,13 @@ export function CreatePromoForm() {
               className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 has-[:checked]:border-blue-400 has-[:checked]:bg-blue-50 has-[:checked]:text-blue-700"
               key={day.value}
             >
-              <input className="sr-only" name={`day_${day.value}`} type="checkbox" value="on" />
+              <input
+                className="sr-only"
+                defaultChecked={defaults?.dayOfWeek.includes(day.value)}
+                name={`day_${day.value}`}
+                type="checkbox"
+                value="on"
+              />
               {day.label}
             </label>
           ))}
@@ -101,7 +110,7 @@ export function CreatePromoForm() {
 
       <div className="grid gap-3 sm:grid-cols-2">
         <Field label="Medio de pago">
-          <select className={inputClass} name="paymentType">
+          <select className={inputClass} defaultValue={defaults?.paymentType ?? "cualquiera"} name="paymentType">
             <option value="cualquiera">Cualquiera</option>
             <option value="debito">Debito</option>
             <option value="credito">Credito</option>
@@ -144,7 +153,7 @@ export function CreatePromoForm() {
       </Field>
 
       <Field label="Notas internas">
-        <textarea className={inputClass} name="notes" placeholder="Ej: validar fuente oficial antes de publicar" rows={2} />
+        <textarea className={inputClass} defaultValue={defaults?.notes} name="notes" placeholder="Ej: validar fuente oficial antes de publicar" rows={2} />
       </Field>
 
       <button

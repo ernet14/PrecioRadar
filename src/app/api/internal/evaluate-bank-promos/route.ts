@@ -3,7 +3,10 @@ import {
   cronUnauthorizedResponse,
   noStoreHeaders,
 } from "@/lib/cronAuth";
-import { evaluateBankPromoNotifications } from "@/services/bankPromoService";
+import {
+  deactivateExpiredBankPromos,
+  evaluateBankPromoNotifications,
+} from "@/services/bankPromoService";
 
 export const dynamic = "force-dynamic";
 
@@ -14,10 +17,12 @@ async function handleEvaluateBankPromos(request: Request) {
     return cronUnauthorizedResponse(authorization);
   }
 
+  // Mantenimiento: dar de baja las promos vencidas antes de evaluar.
+  const deactivated = await deactivateExpiredBankPromos();
   const result = await evaluateBankPromoNotifications();
 
   if (result.status === "evaluated") {
-    return Response.json(result, { headers: noStoreHeaders });
+    return Response.json({ ...result, deactivated }, { headers: noStoreHeaders });
   }
 
   if (result.status === "database_unavailable") {

@@ -235,6 +235,24 @@ export async function deleteBankPromo(id: string): Promise<void> {
   await db().bankPromo.delete({ where: { id } });
 }
 
+// Mantenimiento automático: desactiva promos cuya validUntil ya pasó. Idempotente
+// y no destructivo (solo marca active=false). Devuelve cuántas desactivó.
+export async function deactivateExpiredBankPromos(now = new Date()): Promise<number> {
+  const prisma = getPrismaClient();
+  if (!prisma) return 0;
+
+  try {
+    const result = await prisma.bankPromo.updateMany({
+      where: { active: true, validUntil: { not: null, lt: now } },
+      data: { active: false },
+    });
+    return result.count;
+  } catch (error) {
+    logger.error("Unable to deactivate expired bank promos.", { error });
+    return 0;
+  }
+}
+
 export async function evaluateBankPromoNotifications(): Promise<EvaluateBankPromoNotificationsResult> {
   const prisma = getPrismaClient();
 

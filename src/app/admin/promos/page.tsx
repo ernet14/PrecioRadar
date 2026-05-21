@@ -9,7 +9,7 @@ import {
   listAllBankPromos,
 } from "@/services/bankPromoService";
 import type { BankPromo } from "@/services/bankPromoService";
-import { CreatePromoForm } from "./CreatePromoForm";
+import { PromoComposer } from "./PromoComposer";
 import { deletePromoAction, togglePromoAction } from "./actions";
 
 function PromoRow({ promo }: { promo: BankPromo }) {
@@ -121,9 +121,10 @@ export default async function PromosPage() {
           <Card className="border-slate-200 p-5 shadow-[0_14px_34px_rgba(15,23,42,0.05)]">
             <h2 className="text-lg font-semibold text-slate-950">Nueva promo</h2>
             <p className="mt-1 text-sm text-slate-500">
-              Los campos marcados con * son requeridos.
+              Pega el texto del banco para precompletar, o carga manual. Los
+              campos con * son requeridos.
             </p>
-            <CreatePromoForm />
+            <PromoComposer />
           </Card>
         </section>
       </Container>
