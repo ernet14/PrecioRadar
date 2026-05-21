@@ -27,14 +27,14 @@ type PushState =
 
 export function PushToggle({ className }: { className?: string }) {
   const [state, setState] = useState<PushState>("loading");
+  const [errorMsg, setErrorMsg] = useState<string>("");
 
   useEffect(() => {
     const timer = window.setTimeout(async () => {
       const supported =
         "serviceWorker" in navigator &&
         "PushManager" in window &&
-        "Notification" in window &&
-        Boolean(VAPID_PUBLIC_KEY);
+        "Notification" in window;
 
       if (!supported) {
         setState("unsupported");
@@ -48,8 +48,12 @@ export function PushToggle({ className }: { className?: string }) {
 
       if (Notification.permission === "granted") {
         try {
-          const registration = await navigator.serviceWorker.ready;
-          const subscription = await registration.pushManager.getSubscription();
+          // getRegistration() resuelve al toque (no espera SW activo como .ready,
+          // que podía colgar el estado en "loading").
+          const registration = await navigator.serviceWorker.getRegistration();
+          const subscription = registration
+            ? await registration.pushManager.getSubscription()
+            : null;
           setState(subscription ? "subscribed" : "idle");
         } catch {
           setState("idle");
@@ -64,6 +68,14 @@ export function PushToggle({ className }: { className?: string }) {
   }, []);
 
   async function subscribe() {
+    setErrorMsg("");
+
+    if (!VAPID_PUBLIC_KEY) {
+      setState("error");
+      setErrorMsg("Falta configurar NEXT_PUBLIC_VAPID_PUBLIC_KEY.");
+      return;
+    }
+
     setState("subscribing");
 
     try {
@@ -74,10 +86,14 @@ export function PushToggle({ className }: { className?: string }) {
         return;
       }
 
-      const registration = await navigator.serviceWorker.ready;
+      const registration =
+        (await navigator.serviceWorker.getRegistration()) ??
+        (await navigator.serviceWorker.register("/sw.js"));
+      await navigator.serviceWorker.ready;
+
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY as string),
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
       });
 
       const response = await fetch("/api/push/subscribe", {
@@ -86,15 +102,29 @@ export function PushToggle({ className }: { className?: string }) {
         body: JSON.stringify(subscription.toJSON()),
       });
 
-      setState(response.ok ? "subscribed" : "error");
+      if (!response.ok) {
+        setState("error");
+        setErrorMsg("No pudimos guardar la suscripción. Reintentá.");
+        return;
+      }
+
+      setState("subscribed");
     } catch {
       setState("error");
+      setErrorMsg("No pudimos activar los avisos. Reintentá.");
     }
   }
 
-  // Mientras detecta soporte/permiso no mostramos nada para evitar parpadeo.
-  if (state === "loading" || state === "unsupported") {
+  if (state === "loading") {
     return null;
+  }
+
+  if (state === "unsupported") {
+    return (
+      <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs leading-5 text-slate-500">
+        Tu navegador no soporta notificaciones push.
+      </p>
+    );
   }
 
   if (state === "subscribed") {
@@ -126,8 +156,8 @@ export function PushToggle({ className }: { className?: string }) {
       >
         {state === "subscribing" ? "Activando…" : "Activar avisos"}
       </Button>
-      {state === "error" ? (
-        <p className="text-xs text-red-600">No pudimos activar los avisos. Reintentá.</p>
+      {state === "error" && errorMsg ? (
+        <p className="text-xs text-red-600">{errorMsg}</p>
       ) : null}
     </div>
   );
