@@ -497,6 +497,23 @@ export type EnumReportStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumReportStatusFilter<$PrismaModel>
 }
 
+export type EnumApiTierFilter<$PrismaModel = never> = {
+  equals?: $Enums.ApiTier | Prisma.EnumApiTierFieldRefInput<$PrismaModel>
+  in?: $Enums.ApiTier[] | Prisma.ListEnumApiTierFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ApiTier[] | Prisma.ListEnumApiTierFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumApiTierFilter<$PrismaModel> | $Enums.ApiTier
+}
+
+export type EnumApiTierWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ApiTier | Prisma.EnumApiTierFieldRefInput<$PrismaModel>
+  in?: $Enums.ApiTier[] | Prisma.ListEnumApiTierFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ApiTier[] | Prisma.ListEnumApiTierFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumApiTierWithAggregatesFilter<$PrismaModel> | $Enums.ApiTier
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumApiTierFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumApiTierFilter<$PrismaModel>
+}
+
 export type NestedUuidFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -933,6 +950,23 @@ export type NestedEnumReportStatusWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumReportStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumReportStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumApiTierFilter<$PrismaModel = never> = {
+  equals?: $Enums.ApiTier | Prisma.EnumApiTierFieldRefInput<$PrismaModel>
+  in?: $Enums.ApiTier[] | Prisma.ListEnumApiTierFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ApiTier[] | Prisma.ListEnumApiTierFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumApiTierFilter<$PrismaModel> | $Enums.ApiTier
+}
+
+export type NestedEnumApiTierWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ApiTier | Prisma.EnumApiTierFieldRefInput<$PrismaModel>
+  in?: $Enums.ApiTier[] | Prisma.ListEnumApiTierFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ApiTier[] | Prisma.ListEnumApiTierFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumApiTierWithAggregatesFilter<$PrismaModel> | $Enums.ApiTier
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumApiTierFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumApiTierFilter<$PrismaModel>
 }
 
 

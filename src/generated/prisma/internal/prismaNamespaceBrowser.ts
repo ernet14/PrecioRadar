@@ -76,7 +76,8 @@ export const ModelName = {
   AnalyticsEvent: 'AnalyticsEvent',
   MercadoLibreAuth: 'MercadoLibreAuth',
   SystemHealthLog: 'SystemHealthLog',
-  BankPromo: 'BankPromo'
+  BankPromo: 'BankPromo',
+  ApiKey: 'ApiKey'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -515,6 +516,23 @@ export const BankPromoScalarFieldEnum = {
 } as const
 
 export type BankPromoScalarFieldEnum = (typeof BankPromoScalarFieldEnum)[keyof typeof BankPromoScalarFieldEnum]
+
+
+export const ApiKeyScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  keyHash: 'keyHash',
+  prefix: 'prefix',
+  tier: 'tier',
+  ownerEmail: 'ownerEmail',
+  active: 'active',
+  lastUsedAt: 'lastUsedAt',
+  revokedAt: 'revokedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ApiKeyScalarFieldEnum = (typeof ApiKeyScalarFieldEnum)[keyof typeof ApiKeyScalarFieldEnum]
 
 
 export const SortOrder = {

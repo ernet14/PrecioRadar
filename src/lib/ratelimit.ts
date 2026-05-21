@@ -1,5 +1,6 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { API_TIERS, type ApiTier } from "@/lib/apiTiers";
 
 type RateLimitResult = { success: boolean; remaining?: number };
 
@@ -32,6 +33,26 @@ export async function rateLimit(
   if (!limiter) return { success: true };
 
   const result = await limiter.limit(identifier);
+
+  return { success: result.success, remaining: result.remaining };
+}
+
+// Límite diario por tier de la API pública (Etapa 18). Se crea un limiter por
+// tier de forma perezosa; sin Upstash configurado degrada a "success".
+const apiTierLimiters = new Map<ApiTier, ReturnType<typeof createLimiter>>();
+
+export async function rateLimitApi(
+  tier: ApiTier,
+  identifier: string,
+): Promise<RateLimitResult> {
+  if (!apiTierLimiters.has(tier)) {
+    apiTierLimiters.set(tier, createLimiter(API_TIERS[tier].dailyLimit, "1 d"));
+  }
+
+  const limiter = apiTierLimiters.get(tier);
+  if (!limiter) return { success: true };
+
+  const result = await limiter.limit(`api:${tier}:${identifier}`);
 
   return { success: result.success, remaining: result.remaining };
 }

@@ -51,3 +51,12 @@ export const ReportStatus = {
 } as const
 
 export type ReportStatus = (typeof ReportStatus)[keyof typeof ReportStatus]
+
+
+export const ApiTier = {
+  FREE: 'FREE',
+  PRO: 'PRO',
+  BUSINESS: 'BUSINESS'
+} as const
+
+export type ApiTier = (typeof ApiTier)[keyof typeof ApiTier]

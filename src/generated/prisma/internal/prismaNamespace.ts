@@ -409,7 +409,8 @@ export const ModelName = {
   AnalyticsEvent: 'AnalyticsEvent',
   MercadoLibreAuth: 'MercadoLibreAuth',
   SystemHealthLog: 'SystemHealthLog',
-  BankPromo: 'BankPromo'
+  BankPromo: 'BankPromo',
+  ApiKey: 'ApiKey'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -425,7 +426,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "productImportDraft" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "productReview" | "productVote" | "pushSubscription" | "affiliateLink" | "searchLog" | "providerLog" | "scrapeJob" | "auditLog" | "mercadoLibreCache" | "productReport" | "newsletterSubscription" | "analyticsEvent" | "mercadoLibreAuth" | "systemHealthLog" | "bankPromo"
+    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "productImportDraft" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "productReview" | "productVote" | "pushSubscription" | "affiliateLink" | "searchLog" | "providerLog" | "scrapeJob" | "auditLog" | "mercadoLibreCache" | "productReport" | "newsletterSubscription" | "analyticsEvent" | "mercadoLibreAuth" | "systemHealthLog" | "bankPromo" | "apiKey"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2353,6 +2354,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ApiKey: {
+      payload: Prisma.$ApiKeyPayload<ExtArgs>
+      fields: Prisma.ApiKeyFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ApiKeyFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiKeyPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ApiKeyFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiKeyPayload>
+        }
+        findFirst: {
+          args: Prisma.ApiKeyFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiKeyPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ApiKeyFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiKeyPayload>
+        }
+        findMany: {
+          args: Prisma.ApiKeyFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiKeyPayload>[]
+        }
+        create: {
+          args: Prisma.ApiKeyCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiKeyPayload>
+        }
+        createMany: {
+          args: Prisma.ApiKeyCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ApiKeyCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiKeyPayload>[]
+        }
+        delete: {
+          args: Prisma.ApiKeyDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiKeyPayload>
+        }
+        update: {
+          args: Prisma.ApiKeyUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiKeyPayload>
+        }
+        deleteMany: {
+          args: Prisma.ApiKeyDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ApiKeyUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ApiKeyUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiKeyPayload>[]
+        }
+        upsert: {
+          args: Prisma.ApiKeyUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiKeyPayload>
+        }
+        aggregate: {
+          args: Prisma.ApiKeyAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateApiKey>
+        }
+        groupBy: {
+          args: Prisma.ApiKeyGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ApiKeyGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ApiKeyCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ApiKeyCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2814,6 +2889,23 @@ export const BankPromoScalarFieldEnum = {
 export type BankPromoScalarFieldEnum = (typeof BankPromoScalarFieldEnum)[keyof typeof BankPromoScalarFieldEnum]
 
 
+export const ApiKeyScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  keyHash: 'keyHash',
+  prefix: 'prefix',
+  tier: 'tier',
+  ownerEmail: 'ownerEmail',
+  active: 'active',
+  lastUsedAt: 'lastUsedAt',
+  revokedAt: 'revokedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ApiKeyScalarFieldEnum = (typeof ApiKeyScalarFieldEnum)[keyof typeof ApiKeyScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3016,6 +3108,20 @@ export type ListEnumReportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
 
 
 /**
+ * Reference to a field of type 'ApiTier'
+ */
+export type EnumApiTierFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApiTier'>
+    
+
+
+/**
+ * Reference to a field of type 'ApiTier[]'
+ */
+export type ListEnumApiTierFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApiTier[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -3164,6 +3270,7 @@ export type GlobalOmitConfig = {
   mercadoLibreAuth?: Prisma.MercadoLibreAuthOmit
   systemHealthLog?: Prisma.SystemHealthLogOmit
   bankPromo?: Prisma.BankPromoOmit
+  apiKey?: Prisma.ApiKeyOmit
 }
 
 /* Types for Logging */

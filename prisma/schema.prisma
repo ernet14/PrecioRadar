@@ -36,6 +36,12 @@ enum ReportStatus {
   DISMISSED
 }
 
+enum ApiTier {
+  FREE
+  PRO
+  BUSINESS
+}
+
 model User {
   id              String           @id @default(uuid()) @db.Uuid
   email           String           @unique
@@ -550,5 +556,25 @@ model BankPromo {
   @@index([entitySlug, active])
   @@index([storeSlug, active])
   @@index([categorySlug, active])
+  @@index([active])
+}
+
+// API pública pagada (Etapa 18, modelo Keepa-light). Cada clave tiene un tier
+// que define rate limit diario y profundidad de historial accesible. Se guarda
+// solo el hash SHA-256 de la clave (la clave en claro se muestra una vez al
+// crearla). RLS deny-all: solo service_role la lee (la app usa service role).
+model ApiKey {
+  id         String    @id @default(uuid()) @db.Uuid
+  name       String
+  keyHash    String    @unique
+  prefix     String
+  tier       ApiTier   @default(FREE)
+  ownerEmail String?
+  active     Boolean   @default(true)
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
   @@index([active])
 }
