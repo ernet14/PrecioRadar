@@ -72,3 +72,12 @@ export const pushSubscribeSchema = z.object({
 export const pushUnsubscribeSchema = z.object({
   endpoint: z.string().url().max(2000),
 });
+
+export const voteProductSchema = z.object({
+  slug,
+  value: z.coerce
+    .number()
+    .int()
+    .refine((value) => value === 1 || value === -1, "Voto inválido"),
+  returnTo: safeReturnTo.optional(),
+});

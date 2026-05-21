@@ -14,6 +14,8 @@ import {
   DealQualityBadge,
   DealQualityPanel,
 } from "@/components/product/DealQualityBadge";
+import { OfferVotePanel } from "@/components/product/OfferVotePanel";
+import { getVoteSummary } from "@/services/voteService";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { ShareButton } from "@/components/product/ShareButton";
@@ -424,10 +426,11 @@ export default async function ProductoPage({
   }
 
   const user = await getCurrentUser();
-  const [trackingOverview, alertOverview, allPromos] = await Promise.all([
+  const [trackingOverview, alertOverview, allPromos, voteSummary] = await Promise.all([
     getTrackingOverviewForUser(user?.id),
     getAlertOverviewForUser(user?.id),
     getActivePromosForToday(undefined, { categorySlug: product.categorySlug }),
+    getVoteSummary({ slug: product.slug, userId: user?.id }),
   ]);
   const promoOptions = getTopBankPromoOptionsForOffers({
     offers: product.offers,
@@ -540,8 +543,14 @@ export default async function ProductoPage({
                     {product.recommendation.reason}
                   </span>
                 </p>
-                <div className="mt-4">
+                <div className="mt-4 space-y-3">
                   <DealQualityPanel dealQuality={product.dealQuality} />
+                  <OfferVotePanel
+                    summary={voteSummary}
+                    slug={product.slug}
+                    returnTo={`/producto/${product.slug}`}
+                    isLoggedIn={Boolean(user)}
+                  />
                 </div>
               </div>
             </Card>

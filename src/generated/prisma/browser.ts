@@ -73,6 +73,11 @@ export type Notification = Prisma.NotificationModel
  */
 export type ClickTracking = Prisma.ClickTrackingModel
 /**
+ * Model ProductVote
+ * 
+ */
+export type ProductVote = Prisma.ProductVoteModel
+/**
  * Model PushSubscription
  * 
  */

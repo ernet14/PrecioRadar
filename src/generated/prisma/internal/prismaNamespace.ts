@@ -395,6 +395,7 @@ export const ModelName = {
   Alert: 'Alert',
   Notification: 'Notification',
   ClickTracking: 'ClickTracking',
+  ProductVote: 'ProductVote',
   PushSubscription: 'PushSubscription',
   AffiliateLink: 'AffiliateLink',
   SearchLog: 'SearchLog',
@@ -422,7 +423,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "productImportDraft" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "pushSubscription" | "affiliateLink" | "searchLog" | "providerLog" | "scrapeJob" | "auditLog" | "mercadoLibreCache" | "productReport" | "newsletterSubscription" | "analyticsEvent" | "mercadoLibreAuth" | "bankPromo"
+    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "productImportDraft" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "productVote" | "pushSubscription" | "affiliateLink" | "searchLog" | "providerLog" | "scrapeJob" | "auditLog" | "mercadoLibreCache" | "productReport" | "newsletterSubscription" | "analyticsEvent" | "mercadoLibreAuth" | "bankPromo"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1237,6 +1238,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.ClickTrackingCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.ClickTrackingCountAggregateOutputType> | number
+        }
+      }
+    }
+    ProductVote: {
+      payload: Prisma.$ProductVotePayload<ExtArgs>
+      fields: Prisma.ProductVoteFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProductVoteFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductVotePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProductVoteFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductVotePayload>
+        }
+        findFirst: {
+          args: Prisma.ProductVoteFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductVotePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProductVoteFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductVotePayload>
+        }
+        findMany: {
+          args: Prisma.ProductVoteFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductVotePayload>[]
+        }
+        create: {
+          args: Prisma.ProductVoteCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductVotePayload>
+        }
+        createMany: {
+          args: Prisma.ProductVoteCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProductVoteCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductVotePayload>[]
+        }
+        delete: {
+          args: Prisma.ProductVoteDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductVotePayload>
+        }
+        update: {
+          args: Prisma.ProductVoteUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductVotePayload>
+        }
+        deleteMany: {
+          args: Prisma.ProductVoteDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProductVoteUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProductVoteUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductVotePayload>[]
+        }
+        upsert: {
+          args: Prisma.ProductVoteUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductVotePayload>
+        }
+        aggregate: {
+          args: Prisma.ProductVoteAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProductVote>
+        }
+        groupBy: {
+          args: Prisma.ProductVoteGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductVoteGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProductVoteCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductVoteCountAggregateOutputType> | number
         }
       }
     }
@@ -2360,6 +2435,18 @@ export const ClickTrackingScalarFieldEnum = {
 export type ClickTrackingScalarFieldEnum = (typeof ClickTrackingScalarFieldEnum)[keyof typeof ClickTrackingScalarFieldEnum]
 
 
+export const ProductVoteScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  userId: 'userId',
+  value: 'value',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductVoteScalarFieldEnum = (typeof ProductVoteScalarFieldEnum)[keyof typeof ProductVoteScalarFieldEnum]
+
+
 export const PushSubscriptionScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -2877,6 +2964,7 @@ export type GlobalOmitConfig = {
   alert?: Prisma.AlertOmit
   notification?: Prisma.NotificationOmit
   clickTracking?: Prisma.ClickTrackingOmit
+  productVote?: Prisma.ProductVoteOmit
   pushSubscription?: Prisma.PushSubscriptionOmit
   affiliateLink?: Prisma.AffiliateLinkOmit
   searchLog?: Prisma.SearchLogOmit
