@@ -13,6 +13,7 @@ import {
   type AdminProductPreview,
   type AdminStorePreview,
 } from "@/services/adminService";
+import { getCatalogScorecard } from "@/services/monitorService";
 
 type SummaryCardProps = {
   description: string;
@@ -311,10 +312,38 @@ function ReportStatusCard({
   );
 }
 
+function ScoreItem({
+  label,
+  value,
+  hint,
+  tone,
+}: {
+  label: string;
+  value: number;
+  hint?: string;
+  tone: "good" | "bad";
+}) {
+  const accent = tone === "good" ? "text-emerald-700" : "text-amber-700";
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
+      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
+      <p className={`mt-2 text-2xl font-bold tracking-tight ${accent}`}>{formatCount(value)}</p>
+      {hint ? <p className="mt-1 text-xs text-slate-500">{hint}</p> : null}
+    </div>
+  );
+}
+
 export default async function AdminPage() {
   const user = await requireAdmin();
-  const overview = await getAdminOverview();
+  const [overview, scorecard] = await Promise.all([
+    getAdminOverview(),
+    getCatalogScorecard(),
+  ]);
   const counts = overview.counts;
+  const comparableRate =
+    scorecard && scorecard.productsWithOffers > 0
+      ? Math.round((scorecard.comparableProducts / scorecard.productsWithOffers) * 100)
+      : 0;
 
   return (
     <main className="bg-[#f4f7fb] py-10 text-slate-950">
@@ -353,6 +382,53 @@ export default async function AdminPage() {
             <span className="font-semibold">Panel con datos no disponibles.</span>{" "}
             {overview.reason}
           </Card>
+        ) : null}
+
+        {scorecard ? (
+          <section className="space-y-4">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_14px_34px_rgba(15,23,42,0.05)]">
+              <div className="flex flex-wrap items-end justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-slate-950">Scorecard del comparador</h2>
+                  <p className="mt-1 text-sm text-slate-600">
+                    Qué está logrando y qué falta. La métrica clave es cuántos
+                    productos se pueden <strong>comparar de verdad</strong> (ofertas
+                    de 2+ tiendas).
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-3xl font-bold tracking-tight text-slate-950">{comparableRate}%</p>
+                  <p className="text-xs font-semibold text-slate-500">de los productos con oferta son comparables</p>
+                </div>
+              </div>
+              <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                <div className="h-2 rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600" style={{ width: `${comparableRate}%` }} />
+              </div>
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-emerald-700">Logros</p>
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                <ScoreItem label="Productos reales" value={scorecard.realProducts} tone="good" />
+                <ScoreItem label="Comparables (2+ tiendas)" value={scorecard.comparableProducts} hint="el corazón de un comparador" tone="good" />
+                <ScoreItem label="Ofertas activas" value={scorecard.activeOffers} tone="good" />
+                <ScoreItem label="Clicks afiliado (7d)" value={scorecard.affiliateClicks7d} tone="good" />
+                <ScoreItem label="Búsquedas (7d)" value={scorecard.searches7d} tone="good" />
+                <ScoreItem label="Clicks totales (7d)" value={scorecard.clicks7d} tone="good" />
+              </div>
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-amber-700">A mejorar</p>
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                <ScoreItem label="Solo 1 tienda (no comparables)" value={scorecard.singleStoreProducts} hint="suben con matching EAN" tone="bad" />
+                <ScoreItem label="Productos sin oferta" value={scorecard.productsWithoutOffers} tone="bad" />
+                <ScoreItem label="Ofertas sin actualizar (+48h)" value={scorecard.staleOffers} tone="bad" />
+                <ScoreItem label="Productos sin imagen" value={scorecard.productsWithoutImage} tone="bad" />
+                <ScoreItem label="Errores de provider (24h)" value={scorecard.providerErrors24h} tone="bad" />
+              </div>
+            </div>
+          </section>
         ) : null}
 
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">

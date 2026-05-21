@@ -69,14 +69,20 @@ function getAdminEmailAllowlist(): string[] {
     .filter(Boolean);
 }
 
-export async function requireAdmin() {
-  const user = await requireUser("/admin");
+export function isAdmin(user: SupabaseUser | null): boolean {
+  if (!user) return false;
 
   const allowlist = getAdminEmailAllowlist();
   const email = user.email?.toLowerCase() ?? "";
   const passesAllowlist = allowlist.length === 0 || allowlist.includes(email);
 
-  if (getUserRole(user) !== "ADMIN" || !passesAllowlist) {
+  return getUserRole(user) === "ADMIN" && passesAllowlist;
+}
+
+export async function requireAdmin() {
+  const user = await requireUser("/admin");
+
+  if (!isAdmin(user)) {
     redirect("/dashboard?error=admin");
   }
 

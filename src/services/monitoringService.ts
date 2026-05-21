@@ -511,11 +511,13 @@ function buildDailyEmail(args: {
 }) {
   const { status, snapshots, metrics, issues, actions, recommendations } = args;
   const rows = metricsRows(metrics);
+  const monitorUrl = `${getSiteUrl()}/admin/monitor`;
 
   const html = `
   <div style="font-family: Arial, sans-serif; color:#0f172a; line-height:1.5; max-width:640px;">
     <h1 style="font-size:20px; margin:0 0 4px;">PrecioRadar · Reporte diario</h1>
-    <p style="margin:0 0 16px; color:#64748b;">${esc(new Date().toLocaleString("es-AR"))}</p>
+    <p style="margin:0 0 4px; color:#64748b;">${esc(new Date().toLocaleString("es-AR"))}</p>
+    <p style="margin:0 0 16px;"><a href="${monitorUrl}" style="color:#4f46e5; font-weight:600;">Ver el monitor del bot online →</a></p>
 
     <h2 style="font-size:15px; margin:16px 0 8px;">Resumen general</h2>
     <p style="margin:0 0 8px;">Estado: <strong>${SEVERITY_LABEL[status]}</strong></p>
@@ -571,6 +573,7 @@ function buildDailyEmail(args: {
   const text = [
     "PrecioRadar · Reporte diario",
     new Date().toISOString(),
+    `Monitor online: ${monitorUrl}`,
     "",
     `Estado general: ${SEVERITY_LABEL[status]}`,
     `Web: ${snapshots.web.ok ? "OK" : "CAÍDA"} | DB: ${snapshots.db.ok ? "OK" : "SIN CONEXIÓN"} | Sitemap: ${snapshots.sitemap.ok ? "OK" : "CAÍDO"}`,

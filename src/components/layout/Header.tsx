@@ -55,6 +55,9 @@ export async function Header() {
 
         {user ? (
           <div className="flex items-center gap-2">
+            <Link className={secondaryLinkClass} href="/sellers">
+              Precios PRO
+            </Link>
             <Link className={secondaryLinkClass} href="/dashboard">
               Dashboard
             </Link>
