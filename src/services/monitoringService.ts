@@ -675,6 +675,7 @@ function buildRecommendations(issues: Issue[]): string[] {
 export type MonitoringResult = {
   status: Severity | "database_unavailable" | "error";
   emailStatus?: string;
+  emailError?: string;
   issues?: number;
   actions?: number;
   suppressed?: boolean;
@@ -717,7 +718,13 @@ export async function runDailyReport(): Promise<MonitoringResult> {
       logger.error("Daily report email failed.", { error: email.error, route: "monitoringService.runDailyReport" });
     }
 
-    return { status, emailStatus: email.status, issues: issues.length, actions: actions.length };
+    return {
+      status,
+      emailStatus: email.status,
+      emailError: email.status === "failed" ? email.error : undefined,
+      issues: issues.length,
+      actions: actions.length,
+    };
   } catch (error) {
     logger.error("Daily report failed.", { error, route: "monitoringService.runDailyReport" });
     return { status: "error" };
@@ -765,6 +772,7 @@ export async function runHealthWatch(): Promise<MonitoringResult> {
     const alreadyAlerted = await wasRecentlyAlerted(prisma, dedupeKey);
 
     let emailStatus = "suppressed";
+    let emailError: string | undefined;
     if (!alreadyAlerted) {
       const { html, text } = buildAlertEmail({ status, issues: critical, actions, when: new Date() });
       const email = await sendSystemEmail({
@@ -774,6 +782,7 @@ export async function runHealthWatch(): Promise<MonitoringResult> {
       });
       emailStatus = email.status;
       if (email.status === "failed") {
+        emailError = email.error;
         logger.error("Critical alert email failed.", { error: email.error, route: "monitoringService.runHealthWatch" });
       }
     }
@@ -789,7 +798,7 @@ export async function runHealthWatch(): Promise<MonitoringResult> {
       emailSent: emailStatus === "sent",
     });
 
-    return { status, emailStatus, issues: critical.length, actions: actions.length, suppressed: alreadyAlerted };
+    return { status, emailStatus, emailError, issues: critical.length, actions: actions.length, suppressed: alreadyAlerted };
   } catch (error) {
     logger.error("Health watch failed.", { error, route: "monitoringService.runHealthWatch" });
     return { status: "error" };
