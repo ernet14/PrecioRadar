@@ -696,11 +696,13 @@ export async function runDailyReport(): Promise<MonitoringResult> {
     const recommendations = issues.length ? buildRecommendations(issues) : [];
 
     const { html, text } = buildDailyEmail({ status, snapshots, metrics, issues, actions, recommendations });
+    // Sin idempotencyKey: el contenido del reporte cambia cada corrida y el cron
+    // dispara 1x/día. Una key por-fecha colisiona si el body cambia (Resend la
+    // rechaza). La dedup de alertas críticas se maneja aparte (SystemHealthLog).
     const email = await sendSystemEmail({
       subject: `PrecioRadar · Reporte diario [${SEVERITY_LABEL[status]}]`,
       html,
       text,
-      idempotencyKey: `daily-${new Date().toISOString().slice(0, 10)}`,
     });
 
     await logHealth(prisma, {
