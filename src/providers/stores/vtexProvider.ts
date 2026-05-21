@@ -66,10 +66,13 @@ function getBestOffer(product: VtexProduct): { price: number; available: boolean
   if (!offer || typeof offer.Price !== "number" || !Number.isFinite(offer.Price) || offer.Price <= 0) {
     return null;
   }
-  const available =
-    offer.IsAvailable === true ||
-    (typeof offer.AvailableQuantity === "number" && offer.AvailableQuantity > 0);
-  return { price: offer.Price, available };
+  // VTEX solo devuelve en la búsqueda productos listados y con precio, así que
+  // un Price > 0 ya implica que el producto se puede comprar. NO usamos
+  // IsAvailable/AvailableQuantity como condición de stock porque VTEX los
+  // calcula según la región del que consulta: desde un datacenter fuera de
+  // Argentina (p. ej. el server de Vercel en US) devuelven false/0 aunque el
+  // producto esté disponible en AR, lo que marcaba todo como "sin stock".
+  return { price: offer.Price, available: true };
 }
 
 function getImageUrl(product: VtexProduct): string | null {
