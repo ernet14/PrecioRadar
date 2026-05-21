@@ -237,6 +237,68 @@ function createNewsletterConfirmText(confirmUrl: string) {
   ].join("\n");
 }
 
+export type SendSystemEmailInput = {
+  subject: string;
+  html: string;
+  text: string;
+  // Destinatario explícito; si falta, usa DAILY_REPORT_EMAIL.
+  to?: string | null;
+  idempotencyKey?: string;
+};
+
+// Email del bot de monitoreo (reporte diario / alerta crítica). Recipiente por
+// defecto: DAILY_REPORT_EMAIL. Devuelve "skipped" si falta config (no rompe).
+export async function sendSystemEmail({
+  subject,
+  html,
+  text,
+  to,
+  idempotencyKey,
+}: SendSystemEmailInput): Promise<SendEmailResult> {
+  const apiKey = getEnvValue("RESEND_API_KEY");
+  const fromEmail = getEnvValue("RESEND_FROM_EMAIL");
+  const recipient = (to ?? getEnvValue("DAILY_REPORT_EMAIL"))?.trim() || null;
+
+  if (!recipient) {
+    return { status: "skipped", reason: "missing DAILY_REPORT_EMAIL" };
+  }
+  if (!apiKey) {
+    return { status: "skipped", reason: "missing RESEND_API_KEY" };
+  }
+  if (!fromEmail) {
+    return { status: "skipped", reason: "missing RESEND_FROM_EMAIL" };
+  }
+
+  try {
+    const response = await fetch(RESEND_EMAIL_ENDPOINT, {
+      body: JSON.stringify({ from: fromEmail, html, subject, text, to: [recipient] }),
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+        ...(idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {}),
+      },
+      method: "POST",
+    });
+
+    const payload: unknown = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      const errorMessage =
+        payload && typeof payload === "object" && "message" in payload
+          ? String(payload.message)
+          : `Resend API returned ${response.status}.`;
+      return { status: "failed", error: errorMessage };
+    }
+
+    return { status: "sent", emailId: getResendEmailId(payload) };
+  } catch (error) {
+    return {
+      status: "failed",
+      error: error instanceof Error ? error.message : "Unknown email sending error.",
+    };
+  }
+}
+
 export async function sendNewsletterConfirmEmail({
   confirmUrl,
   recipientEmail,

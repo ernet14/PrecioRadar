@@ -1,7 +1,17 @@
 import assert from "node:assert/strict";
 import test, { afterEach } from "node:test";
-import { fravegaProvider } from "../src/providers/stores/fravegaProvider";
+import { createVtexProvider } from "../src/providers/stores/vtexProvider";
+import { fravegaProvider as realFravegaProvider } from "../src/providers/stores/fravegaProvider";
 import { vtexProviders } from "../src/providers/stores/vtexStores";
+
+// El provider real de Frávega está `blocked` (403 persistente), así que para
+// cubrir la normalización VTEX usamos una instancia equivalente sin bloquear.
+const fravegaProvider = createVtexProvider({
+  name: "fravega",
+  storeSlug: "fravega",
+  storeName: "Frávega",
+  baseUrl: "https://www.fravega.com",
+});
 
 const originalFetch = globalThis.fetch;
 const originalDatabaseUrl = process.env.DATABASE_URL;
@@ -97,6 +107,25 @@ test("returns empty on Fravega HTTP error", async () => {
   const products = await fravegaProvider.searchProducts("Galaxy A55");
 
   assert.deepEqual(products, []);
+});
+
+test("the real Fravega provider is blocked and does not hit the network", async () => {
+  let fetched = false;
+  globalThis.fetch = (async () => {
+    fetched = true;
+    return new Response("[]", { headers: { "content-type": "application/json" } });
+  }) as typeof fetch;
+
+  assert.equal(realFravegaProvider.blocked, true);
+  assert.deepEqual(await realFravegaProvider.searchProducts("Galaxy A55"), []);
+  assert.equal(
+    await realFravegaProvider.getProductByUrl(
+      "https://www.fravega.com/x-990353710/p",
+    ),
+    null,
+  );
+  assert.equal(await realFravegaProvider.getCurrentPrice({ externalId: "990353710" }), null);
+  assert.equal(fetched, false);
 });
 
 test("vtex registry exposes the expected AR stores", () => {

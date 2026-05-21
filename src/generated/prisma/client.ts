@@ -162,6 +162,11 @@ export type AnalyticsEvent = Prisma.AnalyticsEventModel
  */
 export type MercadoLibreAuth = Prisma.MercadoLibreAuthModel
 /**
+ * Model SystemHealthLog
+ * 
+ */
+export type SystemHealthLog = Prisma.SystemHealthLogModel
+/**
  * Model BankPromo
  * 
  */

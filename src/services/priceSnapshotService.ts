@@ -255,6 +255,12 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
       where: { slug: { in: providerSlugs }, deletedAt: null },
     });
     const storeIdToSlug = new Map(stores.map((store) => [store.id, store.slug]));
+    // Tiendas auto-bloqueadas por el monitor (p. ej. 403 repetidos): se saltean
+    // hasta que expire blockedUntil.
+    const now = Date.now();
+    const blockedStoreIds = new Set(
+      stores.filter((store) => store.blockedUntil && store.blockedUntil.getTime() > now).map((store) => store.id),
+    );
 
     if (stores.length === 0) {
       await finalizeJob(prisma, job, jobStart, "no_offers", 0, 0, 0, 0);
@@ -285,6 +291,11 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
 
     for (const offer of offers) {
       try {
+        // Tienda auto-bloqueada en DB: saltear sin reintentar ni contar error.
+        if (blockedStoreIds.has(offer.storeId)) {
+          continue;
+        }
+
         const storeSlug = storeIdToSlug.get(offer.storeId);
         const provider = storeSlug ? providerByStoreSlug.get(storeSlug) : undefined;
 
@@ -293,8 +304,8 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
           continue;
         }
 
-        // Provider bloqueado (p. ej. Frávega con 403): saltear sin reintentar
-        // ni contar como error.
+        // Provider bloqueado por código (p. ej. Frávega con 403): saltear sin
+        // reintentar ni contar como error.
         if (provider.blocked) {
           continue;
         }

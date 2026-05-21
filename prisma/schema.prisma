@@ -82,6 +82,10 @@ model Store {
   affiliateEnabled Boolean         @default(false)
   affiliateProgram String?         @default("mercadolibre")
   active           Boolean         @default(true)
+  // Auto-bloqueo temporal del monitor (p. ej. 403 repetidos). Si blockedUntil
+  // está en el futuro, el cron saltea esta tienda. Expira solo; no destructivo.
+  blockedUntil     DateTime?
+  blockReason      String?
   deletedAt        DateTime?
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
@@ -496,6 +500,26 @@ model MercadoLibreAuth {
   expiresAt    DateTime
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+// Bitácora del bot de monitoreo: reportes diarios, chequeos periódicos y
+// alertas críticas. dedupeKey + createdAt sirven para el anti-spam de alertas.
+model SystemHealthLog {
+  id              String   @id @default(uuid()) @db.Uuid
+  reportType      String   // "daily" | "health-watch" | "exception"
+  status          String   // "ok" | "warn" | "fail" | "critical"
+  summary         String
+  metrics         Json?
+  detectedErrors  Json?
+  actionsTaken    Json?
+  recommendations String?
+  dedupeKey       String?
+  emailSent       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  @@index([reportType, createdAt])
+  @@index([dedupeKey, createdAt])
+  @@index([createdAt])
 }
 
 model BankPromo {

@@ -75,6 +75,7 @@ export const ModelName = {
   NewsletterSubscription: 'NewsletterSubscription',
   AnalyticsEvent: 'AnalyticsEvent',
   MercadoLibreAuth: 'MercadoLibreAuth',
+  SystemHealthLog: 'SystemHealthLog',
   BankPromo: 'BankPromo'
 } as const
 
@@ -133,6 +134,8 @@ export const StoreScalarFieldEnum = {
   affiliateEnabled: 'affiliateEnabled',
   affiliateProgram: 'affiliateProgram',
   active: 'active',
+  blockedUntil: 'blockedUntil',
+  blockReason: 'blockReason',
   deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -468,6 +471,23 @@ export const MercadoLibreAuthScalarFieldEnum = {
 } as const
 
 export type MercadoLibreAuthScalarFieldEnum = (typeof MercadoLibreAuthScalarFieldEnum)[keyof typeof MercadoLibreAuthScalarFieldEnum]
+
+
+export const SystemHealthLogScalarFieldEnum = {
+  id: 'id',
+  reportType: 'reportType',
+  status: 'status',
+  summary: 'summary',
+  metrics: 'metrics',
+  detectedErrors: 'detectedErrors',
+  actionsTaken: 'actionsTaken',
+  recommendations: 'recommendations',
+  dedupeKey: 'dedupeKey',
+  emailSent: 'emailSent',
+  createdAt: 'createdAt'
+} as const
+
+export type SystemHealthLogScalarFieldEnum = (typeof SystemHealthLogScalarFieldEnum)[keyof typeof SystemHealthLogScalarFieldEnum]
 
 
 export const BankPromoScalarFieldEnum = {

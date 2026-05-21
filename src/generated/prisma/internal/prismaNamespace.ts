@@ -408,6 +408,7 @@ export const ModelName = {
   NewsletterSubscription: 'NewsletterSubscription',
   AnalyticsEvent: 'AnalyticsEvent',
   MercadoLibreAuth: 'MercadoLibreAuth',
+  SystemHealthLog: 'SystemHealthLog',
   BankPromo: 'BankPromo'
 } as const
 
@@ -424,7 +425,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "productImportDraft" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "productReview" | "productVote" | "pushSubscription" | "affiliateLink" | "searchLog" | "providerLog" | "scrapeJob" | "auditLog" | "mercadoLibreCache" | "productReport" | "newsletterSubscription" | "analyticsEvent" | "mercadoLibreAuth" | "bankPromo"
+    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "productImportDraft" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "productReview" | "productVote" | "pushSubscription" | "affiliateLink" | "searchLog" | "providerLog" | "scrapeJob" | "auditLog" | "mercadoLibreCache" | "productReport" | "newsletterSubscription" | "analyticsEvent" | "mercadoLibreAuth" | "systemHealthLog" | "bankPromo"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2204,6 +2205,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    SystemHealthLog: {
+      payload: Prisma.$SystemHealthLogPayload<ExtArgs>
+      fields: Prisma.SystemHealthLogFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SystemHealthLogFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemHealthLogPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SystemHealthLogFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemHealthLogPayload>
+        }
+        findFirst: {
+          args: Prisma.SystemHealthLogFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemHealthLogPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SystemHealthLogFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemHealthLogPayload>
+        }
+        findMany: {
+          args: Prisma.SystemHealthLogFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemHealthLogPayload>[]
+        }
+        create: {
+          args: Prisma.SystemHealthLogCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemHealthLogPayload>
+        }
+        createMany: {
+          args: Prisma.SystemHealthLogCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SystemHealthLogCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemHealthLogPayload>[]
+        }
+        delete: {
+          args: Prisma.SystemHealthLogDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemHealthLogPayload>
+        }
+        update: {
+          args: Prisma.SystemHealthLogUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemHealthLogPayload>
+        }
+        deleteMany: {
+          args: Prisma.SystemHealthLogDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SystemHealthLogUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SystemHealthLogUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemHealthLogPayload>[]
+        }
+        upsert: {
+          args: Prisma.SystemHealthLogUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemHealthLogPayload>
+        }
+        aggregate: {
+          args: Prisma.SystemHealthLogAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSystemHealthLog>
+        }
+        groupBy: {
+          args: Prisma.SystemHealthLogGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SystemHealthLogGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SystemHealthLogCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SystemHealthLogCountAggregateOutputType> | number
+        }
+      }
+    }
     BankPromo: {
       payload: Prisma.$BankPromoPayload<ExtArgs>
       fields: Prisma.BankPromoFieldRefs
@@ -2356,6 +2431,8 @@ export const StoreScalarFieldEnum = {
   affiliateEnabled: 'affiliateEnabled',
   affiliateProgram: 'affiliateProgram',
   active: 'active',
+  blockedUntil: 'blockedUntil',
+  blockReason: 'blockReason',
   deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -2691,6 +2768,23 @@ export const MercadoLibreAuthScalarFieldEnum = {
 } as const
 
 export type MercadoLibreAuthScalarFieldEnum = (typeof MercadoLibreAuthScalarFieldEnum)[keyof typeof MercadoLibreAuthScalarFieldEnum]
+
+
+export const SystemHealthLogScalarFieldEnum = {
+  id: 'id',
+  reportType: 'reportType',
+  status: 'status',
+  summary: 'summary',
+  metrics: 'metrics',
+  detectedErrors: 'detectedErrors',
+  actionsTaken: 'actionsTaken',
+  recommendations: 'recommendations',
+  dedupeKey: 'dedupeKey',
+  emailSent: 'emailSent',
+  createdAt: 'createdAt'
+} as const
+
+export type SystemHealthLogScalarFieldEnum = (typeof SystemHealthLogScalarFieldEnum)[keyof typeof SystemHealthLogScalarFieldEnum]
 
 
 export const BankPromoScalarFieldEnum = {
@@ -3066,6 +3160,7 @@ export type GlobalOmitConfig = {
   newsletterSubscription?: Prisma.NewsletterSubscriptionOmit
   analyticsEvent?: Prisma.AnalyticsEventOmit
   mercadoLibreAuth?: Prisma.MercadoLibreAuthOmit
+  systemHealthLog?: Prisma.SystemHealthLogOmit
   bankPromo?: Prisma.BankPromoOmit
 }
 
