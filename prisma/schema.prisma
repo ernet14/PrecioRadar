@@ -110,6 +110,10 @@ model Product {
   imageUrl        String?
   isDemo          Boolean          @default(false)
   normalizedName  String
+  // Descripción SEO autogenerada por IA (Etapa 17). Cacheada; se regenera si
+  // queda vieja. aiDescriptionAt marca cuándo se generó.
+  aiDescription   String?
+  aiDescriptionAt DateTime?
   deletedAt       DateTime?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt

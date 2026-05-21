@@ -20,6 +20,7 @@ export type ProductDetail = {
   model?: string | null;
   categorySlug?: string | null;
   imageUrl?: string | null;
+  aiDescription?: string | null;
   bestOffer: ProviderProduct;
   offers: ProviderProduct[];
   priceHistory: PriceHistoryPoint[];
@@ -364,6 +365,7 @@ async function getRealProductDetailBySlug(
       model: product.model,
       categorySlug,
       imageUrl: product.imageUrl,
+      aiDescription: product.aiDescription,
       bestOffer,
       offers,
       priceHistory,

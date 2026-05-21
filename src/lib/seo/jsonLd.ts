@@ -9,6 +9,11 @@ function getPriceValidUntil() {
 }
 
 function buildDescription(product: ProductDetail) {
+  // Si hay descripción generada por IA, la usamos como description de Schema.org.
+  if (product.aiDescription?.trim()) {
+    return product.aiDescription.trim();
+  }
+
   const parts: string[] = [
     `Compará el precio de ${product.name} en Argentina.`,
   ];

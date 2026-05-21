@@ -86,7 +86,9 @@ export async function generateMetadata({
   }
 
   const title = `${product.name} - Mejor precio en Argentina`;
-  const description = `Compará el precio de ${product.name} en ${product.offers.length} tienda${product.offers.length === 1 ? "" : "s"}. Mejor precio: ${new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(product.bestOffer.price)} en ${product.bestOffer.storeName}. Historial y alertas de precio gratis.`;
+  const description =
+    product.aiDescription?.trim() ||
+    `Compará el precio de ${product.name} en ${product.offers.length} tienda${product.offers.length === 1 ? "" : "s"}. Mejor precio: ${new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(product.bestOffer.price)} en ${product.bestOffer.storeName}. Historial y alertas de precio gratis.`;
   const canonicalUrl = getAbsoluteUrl(`/producto/${slug}`);
 
   return {
@@ -529,6 +531,16 @@ export default async function ProductoPage({
                 {product.brand ? `${product.brand} ` : ""}
                 {product.model ?? ""}
               </p>
+              {product.aiDescription?.trim() ? (
+                <div className="mt-5 border-t border-slate-100 pt-4">
+                  <p className="text-xs font-semibold uppercase tracking-normal text-slate-500">
+                    Sobre este producto
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    {product.aiDescription}
+                  </p>
+                </div>
+              ) : null}
             </Card>
 
             <Card className="overflow-hidden border-blue-100 bg-blue-50 shadow-[0_18px_45px_rgba(37,99,235,0.08)]">
