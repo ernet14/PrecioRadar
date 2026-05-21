@@ -32,7 +32,7 @@ const modeCopy = {
   },
   register: {
     title: "Crear cuenta",
-    description: "Usa email y contrasena. El nombre es opcional.",
+    description: "Usá tu nombre, email y una contraseña segura.",
     submit: "Registrarme",
     pending: "Creando cuenta...",
     switchText: "Ya tenes cuenta?",
@@ -76,15 +76,17 @@ export function AuthForm({ action, mode, nextPath = "/dashboard" }: AuthFormProp
         {mode === "register" ? (
           <div>
             <label className="text-sm font-medium text-slate-700" htmlFor="name">
-              Nombre opcional
+              Nombre
             </label>
             <input
               autoComplete="name"
               className="mt-2 h-12 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 text-base text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:bg-white focus:ring-4 focus:ring-emerald-100"
               defaultValue={state.fields?.name ?? ""}
               id="name"
+              minLength={2}
               name="name"
-              placeholder="Tu nombre"
+              placeholder="Tu nombre y apellido"
+              required
               type="text"
             />
           </div>
@@ -114,12 +116,17 @@ export function AuthForm({ action, mode, nextPath = "/dashboard" }: AuthFormProp
             autoComplete={mode === "login" ? "current-password" : "new-password"}
             className="mt-2 h-12 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 text-base text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:bg-white focus:ring-4 focus:ring-emerald-100"
             id="password"
-            minLength={6}
+            minLength={mode === "register" ? 8 : 6}
             name="password"
-            placeholder="Minimo 6 caracteres"
+            placeholder={mode === "register" ? "Minimo 8 caracteres" : "Tu contraseña"}
             required
             type="password"
           />
+          {mode === "register" ? (
+            <p className="mt-1 text-xs text-slate-500">
+              Al menos 8 caracteres, con letras y números.
+            </p>
+          ) : null}
         </div>
 
         {state.message ? (

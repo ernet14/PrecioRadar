@@ -11,7 +11,7 @@ import { syncAuthUserToPrisma } from "@/services/userSyncService";
 import { recordAuditEvent } from "@/services/auditLogService";
 import { getCurrentUser } from "@/lib/supabase/auth";
 import { rateLimit } from "@/lib/ratelimit";
-import { loginSchema } from "@/lib/validation/schemas";
+import { loginSchema, registerSchema } from "@/lib/validation/schemas";
 import type { AuthFormState } from "@/types/auth";
 
 async function getIp() {
@@ -117,11 +117,11 @@ export async function registerAction(
   _previousState: AuthFormState,
   formData: FormData,
 ): Promise<AuthFormState> {
-  const parsed = loginSchema.safeParse(Object.fromEntries(formData));
-  const name = String(formData.get("name") ?? "").trim();
+  const parsed = registerSchema.safeParse(Object.fromEntries(formData));
 
   if (!parsed.success) {
     const email = String(formData.get("email") ?? "").trim();
+    const name = String(formData.get("name") ?? "").trim();
     return {
       status: "error",
       message: parsed.error.issues[0]?.message ?? "Datos inválidos.",
@@ -129,7 +129,7 @@ export async function registerAction(
     };
   }
 
-  const { email: rawEmail, password } = parsed.data;
+  const { email: rawEmail, password, name } = parsed.data;
   const email = rawEmail.toLowerCase();
   const nextPath = getSafeRedirectPath(String(formData.get("next") ?? "").trim());
 
@@ -157,7 +157,7 @@ export async function registerAction(
     email,
     password,
     options: {
-      data: name ? { name } : undefined,
+      data: { name },
     },
   });
 

@@ -59,10 +59,24 @@ export async function requireUser(nextPath = "/dashboard") {
   return user;
 }
 
+// Allowlist opcional de emails admin (env ADMIN_EMAILS, separados por coma).
+// Si está vacía, se cae al chequeo por rol (comportamiento previo). Si está
+// seteada, el email debe estar en la lista ADEMÁS de tener rol ADMIN.
+function getAdminEmailAllowlist(): string[] {
+  return (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean);
+}
+
 export async function requireAdmin() {
   const user = await requireUser("/admin");
 
-  if (getUserRole(user) !== "ADMIN") {
+  const allowlist = getAdminEmailAllowlist();
+  const email = user.email?.toLowerCase() ?? "";
+  const passesAllowlist = allowlist.length === 0 || allowlist.includes(email);
+
+  if (getUserRole(user) !== "ADMIN" || !passesAllowlist) {
     redirect("/dashboard?error=admin");
   }
 

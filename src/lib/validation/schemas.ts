@@ -59,7 +59,23 @@ export const loginSchema = z.object({
   returnTo: safeReturnTo.optional(),
 });
 
-export const registerSchema = loginSchema;
+// Registro: más estricto que login (login no se endurece para no romper cuentas
+// existentes con contraseñas viejas). Nombre real requerido + contraseña fuerte.
+export const registerSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(2, "Ingresá tu nombre (al menos 2 caracteres).")
+    .max(80, "El nombre es demasiado largo.")
+    .regex(/\p{L}.*\p{L}/u, "Ingresá un nombre válido."),
+  email: z.string().trim().email("Ingresa un email válido."),
+  password: z
+    .string()
+    .min(8, "La contraseña debe tener al menos 8 caracteres.")
+    .regex(/[A-Za-z]/, "La contraseña debe incluir al menos una letra.")
+    .regex(/\d/, "La contraseña debe incluir al menos un número."),
+  returnTo: safeReturnTo.optional(),
+});
 
 export const pushSubscribeSchema = z.object({
   endpoint: z.string().url().max(2000),
