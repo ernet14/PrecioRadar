@@ -10,6 +10,7 @@ const TABS: { href: string; label: string; exact?: boolean }[] = [
   { href: "/admin/importar", label: "Importar" },
   { href: "/admin/status", label: "Estado" },
   { href: "/admin/reportes", label: "Reportes" },
+  { href: "/admin/keys", label: "API keys" },
 ];
 
 export function AdminTabs() {
