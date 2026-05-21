@@ -654,7 +654,6 @@ export default async function Home() {
               {[
                 "Los precios pueden cambiar en la tienda externa.",
                 "La compra se realiza fuera de PrecioRadar.",
-                "Algunos enlaces pueden generar comisión sin costo extra.",
                 "Los datos demo están identificados durante el desarrollo MVP.",
               ].map((line) => (
                 <li className="flex items-start gap-2" key={line}>

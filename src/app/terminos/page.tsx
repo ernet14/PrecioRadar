@@ -57,10 +57,10 @@ const sections = [
     ],
   },
   {
-    title: "Enlaces afiliados",
+    title: "Enlaces a tiendas",
     body: [
-      "Algunos enlaces a tiendas externas pueden incluir parámetros de afiliado. Si realizás una compra a través de esos enlaces, PrecioRadar puede recibir una comisión por parte de la tienda, sin costo adicional para vos.",
-      "La existencia de comisiones no afecta los precios mostrados ni implica recomendación o garantía del producto o tienda. Siempre verificá la oferta antes de comprar.",
+      "PrecioRadar enlaza a las publicaciones originales de las tiendas externas, donde se realiza la compra. Actualmente no utilizamos enlaces de afiliado ni recibimos comisiones por esas compras.",
+      "Si en el futuro incorporáramos enlaces de afiliado, lo informaríamos de forma visible y no afectaría los precios mostrados ni implicaría recomendación o garantía del producto o tienda. Siempre verificá la oferta antes de comprar.",
     ],
   },
   {

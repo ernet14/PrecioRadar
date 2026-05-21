@@ -45,9 +45,6 @@ export function Footer() {
             Comparador de precios en Argentina con historial, alertas y
             recomendaciones para detectar ofertas reales.
           </p>
-          <p className="mt-4 text-xs leading-5 text-slate-500">
-            Algunos enlaces pueden generar comisión sin costo extra para vos.
-          </p>
         </div>
 
         <div>

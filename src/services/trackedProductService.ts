@@ -4,6 +4,7 @@ import { logger } from "@/lib/logger";
 import type { ProviderProduct } from "@/providers/stores";
 import {
   getMockProductDetailBySlug,
+  getProductDetailBySlug,
   type ProductDetail,
 } from "@/services/productService";
 
@@ -382,13 +383,16 @@ export async function followProduct(
   }
 
   try {
-    const mockDetail = getMockProductDetailBySlug(slug);
+    // Resuelve el producto real (DB) primero y solo cae al catálogo demo.
+    // Antes usaba sólo el mock, por lo que seguir una oferta de una tienda real
+    // (VTEX) devolvía not_found y el botón "no hacía nada".
+    const detail = await getProductDetailBySlug(slug);
 
-    if (!mockDetail) {
+    if (!detail) {
       return { status: "not_found" };
     }
 
-    const offer = findProductOffer(mockDetail, offerKey);
+    const offer = findProductOffer(detail, offerKey);
 
     if (!offer) {
       return { status: "not_found" };
@@ -500,9 +504,9 @@ export async function listTrackedProducts(
     },
   });
 
-  return trackedProducts
-    .map((trackedProduct) => {
-      const product = getMockProductDetailBySlug(trackedProduct.product.slug);
+  const items = await Promise.all(
+    trackedProducts.map(async (trackedProduct) => {
+      const product = await getProductDetailBySlug(trackedProduct.product.slug);
 
       if (!product) {
         return null;
@@ -534,6 +538,10 @@ export async function listTrackedProducts(
         trackedProduct.createdAt,
         trackingScope,
       );
-    })
-    .filter((product): product is TrackedProductListItem => Boolean(product));
+    }),
+  );
+
+  return items.filter(
+    (product): product is TrackedProductListItem => Boolean(product),
+  );
 }

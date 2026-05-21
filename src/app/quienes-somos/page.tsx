@@ -28,7 +28,7 @@ const sections = [
     title: "Nuestro compromiso: el comparador honesto",
     body: [
       "Nunca mostramos una recomendación sin datos reales que la sostengan. Si no tenemos suficiente historial de un producto, lo decimos claramente en vez de inventar un veredicto.",
-      "Cuando un enlace es de afiliado (ganamos una comisión si comprás, sin costo extra para vos), lo aclaramos. Y el mejor precio real siempre se muestra primero, tenga afiliado o no: nunca priorizamos una oferta por la comisión que nos deja.",
+      "El mejor precio real siempre se muestra primero. Hoy no monetizamos con enlaces de afiliado; si en el futuro lo hiciéramos, lo aclararíamos de forma visible y nunca priorizaríamos una oferta por la comisión que deje.",
       "Estamos en beta y sumamos tiendas todas las semanas. Preferimos crecer despacio y con datos confiables antes que prometer más de lo que podemos sostener.",
     ],
   },
