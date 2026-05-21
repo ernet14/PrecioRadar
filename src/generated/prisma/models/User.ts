@@ -202,6 +202,7 @@ export type UserWhereInput = {
   clickTracking?: Prisma.ClickTrackingListRelationFilter
   notifications?: Prisma.NotificationListRelationFilter
   productReports?: Prisma.ProductReportListRelationFilter
+  productReviews?: Prisma.ProductReviewListRelationFilter
   productVotes?: Prisma.ProductVoteListRelationFilter
   pushSubscriptions?: Prisma.PushSubscriptionListRelationFilter
   searchLogs?: Prisma.SearchLogListRelationFilter
@@ -220,6 +221,7 @@ export type UserOrderByWithRelationInput = {
   clickTracking?: Prisma.ClickTrackingOrderByRelationAggregateInput
   notifications?: Prisma.NotificationOrderByRelationAggregateInput
   productReports?: Prisma.ProductReportOrderByRelationAggregateInput
+  productReviews?: Prisma.ProductReviewOrderByRelationAggregateInput
   productVotes?: Prisma.ProductVoteOrderByRelationAggregateInput
   pushSubscriptions?: Prisma.PushSubscriptionOrderByRelationAggregateInput
   searchLogs?: Prisma.SearchLogOrderByRelationAggregateInput
@@ -241,6 +243,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   clickTracking?: Prisma.ClickTrackingListRelationFilter
   notifications?: Prisma.NotificationListRelationFilter
   productReports?: Prisma.ProductReportListRelationFilter
+  productReviews?: Prisma.ProductReviewListRelationFilter
   productVotes?: Prisma.ProductVoteListRelationFilter
   pushSubscriptions?: Prisma.PushSubscriptionListRelationFilter
   searchLogs?: Prisma.SearchLogListRelationFilter
@@ -285,6 +288,7 @@ export type UserCreateInput = {
   clickTracking?: Prisma.ClickTrackingCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   productReports?: Prisma.ProductReportCreateNestedManyWithoutUserInput
+  productReviews?: Prisma.ProductReviewCreateNestedManyWithoutUserInput
   productVotes?: Prisma.ProductVoteCreateNestedManyWithoutUserInput
   pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
   searchLogs?: Prisma.SearchLogCreateNestedManyWithoutUserInput
@@ -303,6 +307,7 @@ export type UserUncheckedCreateInput = {
   clickTracking?: Prisma.ClickTrackingUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   productReports?: Prisma.ProductReportUncheckedCreateNestedManyWithoutUserInput
+  productReviews?: Prisma.ProductReviewUncheckedCreateNestedManyWithoutUserInput
   productVotes?: Prisma.ProductVoteUncheckedCreateNestedManyWithoutUserInput
   pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
   searchLogs?: Prisma.SearchLogUncheckedCreateNestedManyWithoutUserInput
@@ -321,6 +326,7 @@ export type UserUpdateInput = {
   clickTracking?: Prisma.ClickTrackingUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   productReports?: Prisma.ProductReportUpdateManyWithoutUserNestedInput
+  productReviews?: Prisma.ProductReviewUpdateManyWithoutUserNestedInput
   productVotes?: Prisma.ProductVoteUpdateManyWithoutUserNestedInput
   pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
   searchLogs?: Prisma.SearchLogUpdateManyWithoutUserNestedInput
@@ -339,6 +345,7 @@ export type UserUncheckedUpdateInput = {
   clickTracking?: Prisma.ClickTrackingUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   productReports?: Prisma.ProductReportUncheckedUpdateManyWithoutUserNestedInput
+  productReviews?: Prisma.ProductReviewUncheckedUpdateManyWithoutUserNestedInput
   productVotes?: Prisma.ProductVoteUncheckedUpdateManyWithoutUserNestedInput
   pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   searchLogs?: Prisma.SearchLogUncheckedUpdateManyWithoutUserNestedInput
@@ -493,6 +500,20 @@ export type UserUpdateOneWithoutClickTrackingNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutClickTrackingInput, Prisma.UserUpdateWithoutClickTrackingInput>, Prisma.UserUncheckedUpdateWithoutClickTrackingInput>
 }
 
+export type UserCreateNestedOneWithoutProductReviewsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutProductReviewsInput, Prisma.UserUncheckedCreateWithoutProductReviewsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutProductReviewsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutProductReviewsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutProductReviewsInput, Prisma.UserUncheckedCreateWithoutProductReviewsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutProductReviewsInput
+  upsert?: Prisma.UserUpsertWithoutProductReviewsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutProductReviewsInput, Prisma.UserUpdateWithoutProductReviewsInput>, Prisma.UserUncheckedUpdateWithoutProductReviewsInput>
+}
+
 export type UserCreateNestedOneWithoutProductVotesInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutProductVotesInput, Prisma.UserUncheckedCreateWithoutProductVotesInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutProductVotesInput
@@ -567,6 +588,7 @@ export type UserCreateWithoutTrackedProductsInput = {
   clickTracking?: Prisma.ClickTrackingCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   productReports?: Prisma.ProductReportCreateNestedManyWithoutUserInput
+  productReviews?: Prisma.ProductReviewCreateNestedManyWithoutUserInput
   productVotes?: Prisma.ProductVoteCreateNestedManyWithoutUserInput
   pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
   searchLogs?: Prisma.SearchLogCreateNestedManyWithoutUserInput
@@ -584,6 +606,7 @@ export type UserUncheckedCreateWithoutTrackedProductsInput = {
   clickTracking?: Prisma.ClickTrackingUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   productReports?: Prisma.ProductReportUncheckedCreateNestedManyWithoutUserInput
+  productReviews?: Prisma.ProductReviewUncheckedCreateNestedManyWithoutUserInput
   productVotes?: Prisma.ProductVoteUncheckedCreateNestedManyWithoutUserInput
   pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
   searchLogs?: Prisma.SearchLogUncheckedCreateNestedManyWithoutUserInput
@@ -617,6 +640,7 @@ export type UserUpdateWithoutTrackedProductsInput = {
   clickTracking?: Prisma.ClickTrackingUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   productReports?: Prisma.ProductReportUpdateManyWithoutUserNestedInput
+  productReviews?: Prisma.ProductReviewUpdateManyWithoutUserNestedInput
   productVotes?: Prisma.ProductVoteUpdateManyWithoutUserNestedInput
   pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
   searchLogs?: Prisma.SearchLogUpdateManyWithoutUserNestedInput
@@ -634,6 +658,7 @@ export type UserUncheckedUpdateWithoutTrackedProductsInput = {
   clickTracking?: Prisma.ClickTrackingUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   productReports?: Prisma.ProductReportUncheckedUpdateManyWithoutUserNestedInput
+  productReviews?: Prisma.ProductReviewUncheckedUpdateManyWithoutUserNestedInput
   productVotes?: Prisma.ProductVoteUncheckedUpdateManyWithoutUserNestedInput
   pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   searchLogs?: Prisma.SearchLogUncheckedUpdateManyWithoutUserNestedInput
@@ -650,6 +675,7 @@ export type UserCreateWithoutAlertsInput = {
   clickTracking?: Prisma.ClickTrackingCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   productReports?: Prisma.ProductReportCreateNestedManyWithoutUserInput
+  productReviews?: Prisma.ProductReviewCreateNestedManyWithoutUserInput
   productVotes?: Prisma.ProductVoteCreateNestedManyWithoutUserInput
   pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
   searchLogs?: Prisma.SearchLogCreateNestedManyWithoutUserInput
@@ -667,6 +693,7 @@ export type UserUncheckedCreateWithoutAlertsInput = {
   clickTracking?: Prisma.ClickTrackingUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   productReports?: Prisma.ProductReportUncheckedCreateNestedManyWithoutUserInput
+  productReviews?: Prisma.ProductReviewUncheckedCreateNestedManyWithoutUserInput
   productVotes?: Prisma.ProductVoteUncheckedCreateNestedManyWithoutUserInput
   pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
   searchLogs?: Prisma.SearchLogUncheckedCreateNestedManyWithoutUserInput
@@ -700,6 +727,7 @@ export type UserUpdateWithoutAlertsInput = {
   clickTracking?: Prisma.ClickTrackingUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   productReports?: Prisma.ProductReportUpdateManyWithoutUserNestedInput
+  productReviews?: Prisma.ProductReviewUpdateManyWithoutUserNestedInput
   productVotes?: Prisma.ProductVoteUpdateManyWithoutUserNestedInput
   pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
   searchLogs?: Prisma.SearchLogUpdateManyWithoutUserNestedInput
@@ -717,6 +745,7 @@ export type UserUncheckedUpdateWithoutAlertsInput = {
   clickTracking?: Prisma.ClickTrackingUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   productReports?: Prisma.ProductReportUncheckedUpdateManyWithoutUserNestedInput
+  productReviews?: Prisma.ProductReviewUncheckedUpdateManyWithoutUserNestedInput
   productVotes?: Prisma.ProductVoteUncheckedUpdateManyWithoutUserNestedInput
   pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   searchLogs?: Prisma.SearchLogUncheckedUpdateManyWithoutUserNestedInput
@@ -734,6 +763,7 @@ export type UserCreateWithoutNotificationsInput = {
   alerts?: Prisma.AlertCreateNestedManyWithoutUserInput
   clickTracking?: Prisma.ClickTrackingCreateNestedManyWithoutUserInput
   productReports?: Prisma.ProductReportCreateNestedManyWithoutUserInput
+  productReviews?: Prisma.ProductReviewCreateNestedManyWithoutUserInput
   productVotes?: Prisma.ProductVoteCreateNestedManyWithoutUserInput
   pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
   searchLogs?: Prisma.SearchLogCreateNestedManyWithoutUserInput
@@ -751,6 +781,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutUserInput
   clickTracking?: Prisma.ClickTrackingUncheckedCreateNestedManyWithoutUserInput
   productReports?: Prisma.ProductReportUncheckedCreateNestedManyWithoutUserInput
+  productReviews?: Prisma.ProductReviewUncheckedCreateNestedManyWithoutUserInput
   productVotes?: Prisma.ProductVoteUncheckedCreateNestedManyWithoutUserInput
   pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
   searchLogs?: Prisma.SearchLogUncheckedCreateNestedManyWithoutUserInput
@@ -784,6 +815,7 @@ export type UserUpdateWithoutNotificationsInput = {
   alerts?: Prisma.AlertUpdateManyWithoutUserNestedInput
   clickTracking?: Prisma.ClickTrackingUpdateManyWithoutUserNestedInput
   productReports?: Prisma.ProductReportUpdateManyWithoutUserNestedInput
+  productReviews?: Prisma.ProductReviewUpdateManyWithoutUserNestedInput
   productVotes?: Prisma.ProductVoteUpdateManyWithoutUserNestedInput
   pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
   searchLogs?: Prisma.SearchLogUpdateManyWithoutUserNestedInput
@@ -801,6 +833,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   alerts?: Prisma.AlertUncheckedUpdateManyWithoutUserNestedInput
   clickTracking?: Prisma.ClickTrackingUncheckedUpdateManyWithoutUserNestedInput
   productReports?: Prisma.ProductReportUncheckedUpdateManyWithoutUserNestedInput
+  productReviews?: Prisma.ProductReviewUncheckedUpdateManyWithoutUserNestedInput
   productVotes?: Prisma.ProductVoteUncheckedUpdateManyWithoutUserNestedInput
   pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   searchLogs?: Prisma.SearchLogUncheckedUpdateManyWithoutUserNestedInput
@@ -818,6 +851,7 @@ export type UserCreateWithoutClickTrackingInput = {
   alerts?: Prisma.AlertCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   productReports?: Prisma.ProductReportCreateNestedManyWithoutUserInput
+  productReviews?: Prisma.ProductReviewCreateNestedManyWithoutUserInput
   productVotes?: Prisma.ProductVoteCreateNestedManyWithoutUserInput
   pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
   searchLogs?: Prisma.SearchLogCreateNestedManyWithoutUserInput
@@ -835,6 +869,7 @@ export type UserUncheckedCreateWithoutClickTrackingInput = {
   alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   productReports?: Prisma.ProductReportUncheckedCreateNestedManyWithoutUserInput
+  productReviews?: Prisma.ProductReviewUncheckedCreateNestedManyWithoutUserInput
   productVotes?: Prisma.ProductVoteUncheckedCreateNestedManyWithoutUserInput
   pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
   searchLogs?: Prisma.SearchLogUncheckedCreateNestedManyWithoutUserInput
@@ -868,6 +903,7 @@ export type UserUpdateWithoutClickTrackingInput = {
   alerts?: Prisma.AlertUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   productReports?: Prisma.ProductReportUpdateManyWithoutUserNestedInput
+  productReviews?: Prisma.ProductReviewUpdateManyWithoutUserNestedInput
   productVotes?: Prisma.ProductVoteUpdateManyWithoutUserNestedInput
   pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
   searchLogs?: Prisma.SearchLogUpdateManyWithoutUserNestedInput
@@ -883,6 +919,95 @@ export type UserUncheckedUpdateWithoutClickTrackingInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   alerts?: Prisma.AlertUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  productReports?: Prisma.ProductReportUncheckedUpdateManyWithoutUserNestedInput
+  productReviews?: Prisma.ProductReviewUncheckedUpdateManyWithoutUserNestedInput
+  productVotes?: Prisma.ProductVoteUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  searchLogs?: Prisma.SearchLogUncheckedUpdateManyWithoutUserNestedInput
+  trackedProducts?: Prisma.TrackedProductUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutProductReviewsInput = {
+  id?: string
+  email: string
+  name?: string | null
+  role?: $Enums.UserRole
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  alerts?: Prisma.AlertCreateNestedManyWithoutUserInput
+  clickTracking?: Prisma.ClickTrackingCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  productReports?: Prisma.ProductReportCreateNestedManyWithoutUserInput
+  productVotes?: Prisma.ProductVoteCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  searchLogs?: Prisma.SearchLogCreateNestedManyWithoutUserInput
+  trackedProducts?: Prisma.TrackedProductCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutProductReviewsInput = {
+  id?: string
+  email: string
+  name?: string | null
+  role?: $Enums.UserRole
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutUserInput
+  clickTracking?: Prisma.ClickTrackingUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  productReports?: Prisma.ProductReportUncheckedCreateNestedManyWithoutUserInput
+  productVotes?: Prisma.ProductVoteUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  searchLogs?: Prisma.SearchLogUncheckedCreateNestedManyWithoutUserInput
+  trackedProducts?: Prisma.TrackedProductUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutProductReviewsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutProductReviewsInput, Prisma.UserUncheckedCreateWithoutProductReviewsInput>
+}
+
+export type UserUpsertWithoutProductReviewsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutProductReviewsInput, Prisma.UserUncheckedUpdateWithoutProductReviewsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutProductReviewsInput, Prisma.UserUncheckedCreateWithoutProductReviewsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutProductReviewsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutProductReviewsInput, Prisma.UserUncheckedUpdateWithoutProductReviewsInput>
+}
+
+export type UserUpdateWithoutProductReviewsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  alerts?: Prisma.AlertUpdateManyWithoutUserNestedInput
+  clickTracking?: Prisma.ClickTrackingUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  productReports?: Prisma.ProductReportUpdateManyWithoutUserNestedInput
+  productVotes?: Prisma.ProductVoteUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  searchLogs?: Prisma.SearchLogUpdateManyWithoutUserNestedInput
+  trackedProducts?: Prisma.TrackedProductUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutProductReviewsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  alerts?: Prisma.AlertUncheckedUpdateManyWithoutUserNestedInput
+  clickTracking?: Prisma.ClickTrackingUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   productReports?: Prisma.ProductReportUncheckedUpdateManyWithoutUserNestedInput
   productVotes?: Prisma.ProductVoteUncheckedUpdateManyWithoutUserNestedInput
@@ -903,6 +1028,7 @@ export type UserCreateWithoutProductVotesInput = {
   clickTracking?: Prisma.ClickTrackingCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   productReports?: Prisma.ProductReportCreateNestedManyWithoutUserInput
+  productReviews?: Prisma.ProductReviewCreateNestedManyWithoutUserInput
   pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
   searchLogs?: Prisma.SearchLogCreateNestedManyWithoutUserInput
   trackedProducts?: Prisma.TrackedProductCreateNestedManyWithoutUserInput
@@ -920,6 +1046,7 @@ export type UserUncheckedCreateWithoutProductVotesInput = {
   clickTracking?: Prisma.ClickTrackingUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   productReports?: Prisma.ProductReportUncheckedCreateNestedManyWithoutUserInput
+  productReviews?: Prisma.ProductReviewUncheckedCreateNestedManyWithoutUserInput
   pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
   searchLogs?: Prisma.SearchLogUncheckedCreateNestedManyWithoutUserInput
   trackedProducts?: Prisma.TrackedProductUncheckedCreateNestedManyWithoutUserInput
@@ -953,6 +1080,7 @@ export type UserUpdateWithoutProductVotesInput = {
   clickTracking?: Prisma.ClickTrackingUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   productReports?: Prisma.ProductReportUpdateManyWithoutUserNestedInput
+  productReviews?: Prisma.ProductReviewUpdateManyWithoutUserNestedInput
   pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
   searchLogs?: Prisma.SearchLogUpdateManyWithoutUserNestedInput
   trackedProducts?: Prisma.TrackedProductUpdateManyWithoutUserNestedInput
@@ -970,6 +1098,7 @@ export type UserUncheckedUpdateWithoutProductVotesInput = {
   clickTracking?: Prisma.ClickTrackingUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   productReports?: Prisma.ProductReportUncheckedUpdateManyWithoutUserNestedInput
+  productReviews?: Prisma.ProductReviewUncheckedUpdateManyWithoutUserNestedInput
   pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   searchLogs?: Prisma.SearchLogUncheckedUpdateManyWithoutUserNestedInput
   trackedProducts?: Prisma.TrackedProductUncheckedUpdateManyWithoutUserNestedInput
@@ -987,6 +1116,7 @@ export type UserCreateWithoutPushSubscriptionsInput = {
   clickTracking?: Prisma.ClickTrackingCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   productReports?: Prisma.ProductReportCreateNestedManyWithoutUserInput
+  productReviews?: Prisma.ProductReviewCreateNestedManyWithoutUserInput
   productVotes?: Prisma.ProductVoteCreateNestedManyWithoutUserInput
   searchLogs?: Prisma.SearchLogCreateNestedManyWithoutUserInput
   trackedProducts?: Prisma.TrackedProductCreateNestedManyWithoutUserInput
@@ -1004,6 +1134,7 @@ export type UserUncheckedCreateWithoutPushSubscriptionsInput = {
   clickTracking?: Prisma.ClickTrackingUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   productReports?: Prisma.ProductReportUncheckedCreateNestedManyWithoutUserInput
+  productReviews?: Prisma.ProductReviewUncheckedCreateNestedManyWithoutUserInput
   productVotes?: Prisma.ProductVoteUncheckedCreateNestedManyWithoutUserInput
   searchLogs?: Prisma.SearchLogUncheckedCreateNestedManyWithoutUserInput
   trackedProducts?: Prisma.TrackedProductUncheckedCreateNestedManyWithoutUserInput
@@ -1037,6 +1168,7 @@ export type UserUpdateWithoutPushSubscriptionsInput = {
   clickTracking?: Prisma.ClickTrackingUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   productReports?: Prisma.ProductReportUpdateManyWithoutUserNestedInput
+  productReviews?: Prisma.ProductReviewUpdateManyWithoutUserNestedInput
   productVotes?: Prisma.ProductVoteUpdateManyWithoutUserNestedInput
   searchLogs?: Prisma.SearchLogUpdateManyWithoutUserNestedInput
   trackedProducts?: Prisma.TrackedProductUpdateManyWithoutUserNestedInput
@@ -1054,6 +1186,7 @@ export type UserUncheckedUpdateWithoutPushSubscriptionsInput = {
   clickTracking?: Prisma.ClickTrackingUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   productReports?: Prisma.ProductReportUncheckedUpdateManyWithoutUserNestedInput
+  productReviews?: Prisma.ProductReviewUncheckedUpdateManyWithoutUserNestedInput
   productVotes?: Prisma.ProductVoteUncheckedUpdateManyWithoutUserNestedInput
   searchLogs?: Prisma.SearchLogUncheckedUpdateManyWithoutUserNestedInput
   trackedProducts?: Prisma.TrackedProductUncheckedUpdateManyWithoutUserNestedInput
@@ -1071,6 +1204,7 @@ export type UserCreateWithoutSearchLogsInput = {
   clickTracking?: Prisma.ClickTrackingCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   productReports?: Prisma.ProductReportCreateNestedManyWithoutUserInput
+  productReviews?: Prisma.ProductReviewCreateNestedManyWithoutUserInput
   productVotes?: Prisma.ProductVoteCreateNestedManyWithoutUserInput
   pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
   trackedProducts?: Prisma.TrackedProductCreateNestedManyWithoutUserInput
@@ -1088,6 +1222,7 @@ export type UserUncheckedCreateWithoutSearchLogsInput = {
   clickTracking?: Prisma.ClickTrackingUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   productReports?: Prisma.ProductReportUncheckedCreateNestedManyWithoutUserInput
+  productReviews?: Prisma.ProductReviewUncheckedCreateNestedManyWithoutUserInput
   productVotes?: Prisma.ProductVoteUncheckedCreateNestedManyWithoutUserInput
   pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
   trackedProducts?: Prisma.TrackedProductUncheckedCreateNestedManyWithoutUserInput
@@ -1121,6 +1256,7 @@ export type UserUpdateWithoutSearchLogsInput = {
   clickTracking?: Prisma.ClickTrackingUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   productReports?: Prisma.ProductReportUpdateManyWithoutUserNestedInput
+  productReviews?: Prisma.ProductReviewUpdateManyWithoutUserNestedInput
   productVotes?: Prisma.ProductVoteUpdateManyWithoutUserNestedInput
   pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
   trackedProducts?: Prisma.TrackedProductUpdateManyWithoutUserNestedInput
@@ -1138,6 +1274,7 @@ export type UserUncheckedUpdateWithoutSearchLogsInput = {
   clickTracking?: Prisma.ClickTrackingUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   productReports?: Prisma.ProductReportUncheckedUpdateManyWithoutUserNestedInput
+  productReviews?: Prisma.ProductReviewUncheckedUpdateManyWithoutUserNestedInput
   productVotes?: Prisma.ProductVoteUncheckedUpdateManyWithoutUserNestedInput
   pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   trackedProducts?: Prisma.TrackedProductUncheckedUpdateManyWithoutUserNestedInput
@@ -1154,6 +1291,7 @@ export type UserCreateWithoutProductReportsInput = {
   alerts?: Prisma.AlertCreateNestedManyWithoutUserInput
   clickTracking?: Prisma.ClickTrackingCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  productReviews?: Prisma.ProductReviewCreateNestedManyWithoutUserInput
   productVotes?: Prisma.ProductVoteCreateNestedManyWithoutUserInput
   pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
   searchLogs?: Prisma.SearchLogCreateNestedManyWithoutUserInput
@@ -1171,6 +1309,7 @@ export type UserUncheckedCreateWithoutProductReportsInput = {
   alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutUserInput
   clickTracking?: Prisma.ClickTrackingUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  productReviews?: Prisma.ProductReviewUncheckedCreateNestedManyWithoutUserInput
   productVotes?: Prisma.ProductVoteUncheckedCreateNestedManyWithoutUserInput
   pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
   searchLogs?: Prisma.SearchLogUncheckedCreateNestedManyWithoutUserInput
@@ -1204,6 +1343,7 @@ export type UserUpdateWithoutProductReportsInput = {
   alerts?: Prisma.AlertUpdateManyWithoutUserNestedInput
   clickTracking?: Prisma.ClickTrackingUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  productReviews?: Prisma.ProductReviewUpdateManyWithoutUserNestedInput
   productVotes?: Prisma.ProductVoteUpdateManyWithoutUserNestedInput
   pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
   searchLogs?: Prisma.SearchLogUpdateManyWithoutUserNestedInput
@@ -1221,6 +1361,7 @@ export type UserUncheckedUpdateWithoutProductReportsInput = {
   alerts?: Prisma.AlertUncheckedUpdateManyWithoutUserNestedInput
   clickTracking?: Prisma.ClickTrackingUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  productReviews?: Prisma.ProductReviewUncheckedUpdateManyWithoutUserNestedInput
   productVotes?: Prisma.ProductVoteUncheckedUpdateManyWithoutUserNestedInput
   pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   searchLogs?: Prisma.SearchLogUncheckedUpdateManyWithoutUserNestedInput
@@ -1237,6 +1378,7 @@ export type UserCountOutputType = {
   clickTracking: number
   notifications: number
   productReports: number
+  productReviews: number
   productVotes: number
   pushSubscriptions: number
   searchLogs: number
@@ -1248,6 +1390,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   clickTracking?: boolean | UserCountOutputTypeCountClickTrackingArgs
   notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
   productReports?: boolean | UserCountOutputTypeCountProductReportsArgs
+  productReviews?: boolean | UserCountOutputTypeCountProductReviewsArgs
   productVotes?: boolean | UserCountOutputTypeCountProductVotesArgs
   pushSubscriptions?: boolean | UserCountOutputTypeCountPushSubscriptionsArgs
   searchLogs?: boolean | UserCountOutputTypeCountSearchLogsArgs
@@ -1295,6 +1438,13 @@ export type UserCountOutputTypeCountProductReportsArgs<ExtArgs extends runtime.T
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountProductReviewsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductReviewWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountProductVotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ProductVoteWhereInput
 }
@@ -1333,6 +1483,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   clickTracking?: boolean | Prisma.User$clickTrackingArgs<ExtArgs>
   notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
   productReports?: boolean | Prisma.User$productReportsArgs<ExtArgs>
+  productReviews?: boolean | Prisma.User$productReviewsArgs<ExtArgs>
   productVotes?: boolean | Prisma.User$productVotesArgs<ExtArgs>
   pushSubscriptions?: boolean | Prisma.User$pushSubscriptionsArgs<ExtArgs>
   searchLogs?: boolean | Prisma.User$searchLogsArgs<ExtArgs>
@@ -1376,6 +1527,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   clickTracking?: boolean | Prisma.User$clickTrackingArgs<ExtArgs>
   notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
   productReports?: boolean | Prisma.User$productReportsArgs<ExtArgs>
+  productReviews?: boolean | Prisma.User$productReviewsArgs<ExtArgs>
   productVotes?: boolean | Prisma.User$productVotesArgs<ExtArgs>
   pushSubscriptions?: boolean | Prisma.User$pushSubscriptionsArgs<ExtArgs>
   searchLogs?: boolean | Prisma.User$searchLogsArgs<ExtArgs>
@@ -1392,6 +1544,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     clickTracking: Prisma.$ClickTrackingPayload<ExtArgs>[]
     notifications: Prisma.$NotificationPayload<ExtArgs>[]
     productReports: Prisma.$ProductReportPayload<ExtArgs>[]
+    productReviews: Prisma.$ProductReviewPayload<ExtArgs>[]
     productVotes: Prisma.$ProductVotePayload<ExtArgs>[]
     pushSubscriptions: Prisma.$PushSubscriptionPayload<ExtArgs>[]
     searchLogs: Prisma.$SearchLogPayload<ExtArgs>[]
@@ -1803,6 +1956,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   clickTracking<T extends Prisma.User$clickTrackingArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$clickTrackingArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClickTrackingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   notifications<T extends Prisma.User$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   productReports<T extends Prisma.User$productReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$productReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  productReviews<T extends Prisma.User$productReviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$productReviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   productVotes<T extends Prisma.User$productVotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$productVotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductVotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   pushSubscriptions<T extends Prisma.User$pushSubscriptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$pushSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   searchLogs<T extends Prisma.User$searchLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$searchLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SearchLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2329,6 +2483,30 @@ export type User$productReportsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.ProductReportScalarFieldEnum | Prisma.ProductReportScalarFieldEnum[]
+}
+
+/**
+ * User.productReviews
+ */
+export type User$productReviewsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductReview
+   */
+  select?: Prisma.ProductReviewSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProductReview
+   */
+  omit?: Prisma.ProductReviewOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductReviewInclude<ExtArgs> | null
+  where?: Prisma.ProductReviewWhereInput
+  orderBy?: Prisma.ProductReviewOrderByWithRelationInput | Prisma.ProductReviewOrderByWithRelationInput[]
+  cursor?: Prisma.ProductReviewWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductReviewScalarFieldEnum | Prisma.ProductReviewScalarFieldEnum[]
 }
 
 /**

@@ -62,6 +62,7 @@ export const ModelName = {
   Alert: 'Alert',
   Notification: 'Notification',
   ClickTracking: 'ClickTracking',
+  ProductReview: 'ProductReview',
   ProductVote: 'ProductVote',
   PushSubscription: 'PushSubscription',
   AffiliateLink: 'AffiliateLink',
@@ -284,6 +285,20 @@ export const ClickTrackingScalarFieldEnum = {
 } as const
 
 export type ClickTrackingScalarFieldEnum = (typeof ClickTrackingScalarFieldEnum)[keyof typeof ClickTrackingScalarFieldEnum]
+
+
+export const ProductReviewScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  userId: 'userId',
+  rating: 'rating',
+  body: 'body',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductReviewScalarFieldEnum = (typeof ProductReviewScalarFieldEnum)[keyof typeof ProductReviewScalarFieldEnum]
 
 
 export const ProductVoteScalarFieldEnum = {

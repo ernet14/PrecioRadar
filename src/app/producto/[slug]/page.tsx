@@ -16,6 +16,11 @@ import {
 } from "@/components/product/DealQualityBadge";
 import { OfferVotePanel } from "@/components/product/OfferVotePanel";
 import { getVoteSummary } from "@/services/voteService";
+import { ProductReviews } from "@/components/product/ProductReviews";
+import {
+  getReviewSummary,
+  listProductReviews,
+} from "@/services/reviewService";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { ShareButton } from "@/components/product/ShareButton";
@@ -56,6 +61,7 @@ type ProductoPageProps = {
     report?: string | string[];
     reportOffer?: string | string[];
     tracking?: string | string[];
+    review?: string | string[];
   }>;
 };
 
@@ -426,12 +432,15 @@ export default async function ProductoPage({
   }
 
   const user = await getCurrentUser();
-  const [trackingOverview, alertOverview, allPromos, voteSummary] = await Promise.all([
-    getTrackingOverviewForUser(user?.id),
-    getAlertOverviewForUser(user?.id),
-    getActivePromosForToday(undefined, { categorySlug: product.categorySlug }),
-    getVoteSummary({ slug: product.slug, userId: user?.id }),
-  ]);
+  const [trackingOverview, alertOverview, allPromos, voteSummary, reviewSummary, reviews] =
+    await Promise.all([
+      getTrackingOverviewForUser(user?.id),
+      getAlertOverviewForUser(user?.id),
+      getActivePromosForToday(undefined, { categorySlug: product.categorySlug }),
+      getVoteSummary({ slug: product.slug, userId: user?.id }),
+      getReviewSummary(product.slug),
+      listProductReviews(product.slug),
+    ]);
   const promoOptions = getTopBankPromoOptionsForOffers({
     offers: product.offers,
     promos: allPromos,
@@ -440,8 +449,9 @@ export default async function ProductoPage({
   const reportStatus = getQueryValue(queryParams.report);
   const selectedReportOfferKey = getQueryValue(queryParams.reportOffer);
   const trackingStatus = getQueryValue(queryParams.tracking);
+  const reviewStatus = getQueryValue(queryParams.review);
 
-  const jsonLd = buildProductJsonLd(product);
+  const jsonLd = buildProductJsonLd(product, { summary: reviewSummary, reviews });
 
   return (
     <main className="bg-[#f4f7fb] py-8 text-slate-950">
@@ -633,6 +643,15 @@ export default async function ProductoPage({
             />
           </Card>
         </section>
+
+        <ProductReviews
+          summary={reviewSummary}
+          reviews={reviews}
+          slug={product.slug}
+          returnTo={`/producto/${product.slug}`}
+          isLoggedIn={Boolean(user)}
+          reviewStatus={reviewStatus}
+        />
 
         <section>
           <div className="mb-4 flex items-center justify-between gap-3">

@@ -475,14 +475,6 @@ export type ProductVoteUncheckedUpdateManyWithoutProductNestedInput = {
   deleteMany?: Prisma.ProductVoteScalarWhereInput | Prisma.ProductVoteScalarWhereInput[]
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type ProductVoteCreateWithoutUserInput = {
   id?: string
   value: number

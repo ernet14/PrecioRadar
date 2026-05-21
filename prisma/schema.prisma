@@ -49,6 +49,7 @@ model User {
   clickTracking     ClickTracking[]
   notifications     Notification[]
   productReports    ProductReport[]
+  productReviews    ProductReview[]
   productVotes      ProductVote[]
   pushSubscriptions PushSubscription[]
   searchLogs        SearchLog[]
@@ -116,6 +117,7 @@ model Product {
   offers          ProductOffer[]
   priceHistory    PriceHistory[]
   productReports  ProductReport[]
+  productReviews  ProductReview[]
   productVotes    ProductVote[]
   trackedProducts TrackedProduct[]
 
@@ -287,6 +289,23 @@ model ClickTracking {
   @@index([clickedAt])
   @@index([isAffiliate])
   @@index([program])
+}
+
+model ProductReview {
+  id        String   @id @default(uuid()) @db.Uuid
+  productId String   @db.Uuid
+  userId    String   @db.Uuid
+  rating    Int      // 1..5
+  body      String
+  status    String   @default("APPROVED") // APPROVED | REJECTED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product   Product  @relation(fields: [productId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([productId, userId])
+  @@index([productId, status])
 }
 
 model ProductVote {

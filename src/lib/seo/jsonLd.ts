@@ -28,7 +28,12 @@ function buildDescription(product: ProductDetail) {
   return parts.join(" ");
 }
 
-export function buildProductJsonLd(product: ProductDetail) {
+type ReviewData = {
+  summary: { average: number; count: number };
+  reviews: { authorName: string; rating: number; body: string; createdAt: Date }[];
+};
+
+export function buildProductJsonLd(product: ProductDetail, reviewData?: ReviewData) {
   const validUntil = getPriceValidUntil();
 
   const offers = product.offers
@@ -56,6 +61,29 @@ export function buildProductJsonLd(product: ProductDetail) {
     productID: product.slug,
     ...(product.brand ? { brand: { "@type": "Brand", name: product.brand } } : {}),
     ...(product.imageUrl ? { image: product.imageUrl } : {}),
+    ...(reviewData && reviewData.summary.count > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: reviewData.summary.average,
+            reviewCount: reviewData.summary.count,
+            bestRating: 5,
+            worstRating: 1,
+          },
+          review: reviewData.reviews.slice(0, 5).map((review) => ({
+            "@type": "Review",
+            author: { "@type": "Person", name: review.authorName },
+            reviewRating: {
+              "@type": "Rating",
+              ratingValue: review.rating,
+              bestRating: 5,
+              worstRating: 1,
+            },
+            reviewBody: review.body,
+            datePublished: review.createdAt.toISOString().split("T")[0],
+          })),
+        }
+      : {}),
     offers:
       offers.length === 1
         ? offers[0]

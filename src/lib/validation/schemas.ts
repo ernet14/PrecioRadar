@@ -81,3 +81,10 @@ export const voteProductSchema = z.object({
     .refine((value) => value === 1 || value === -1, "Voto inválido"),
   returnTo: safeReturnTo.optional(),
 });
+
+export const reviewProductSchema = z.object({
+  slug,
+  rating: z.coerce.number().int().min(1).max(5),
+  body: z.string().trim().min(10, "La reseña es muy corta.").max(1000),
+  returnTo: safeReturnTo.optional(),
+});
