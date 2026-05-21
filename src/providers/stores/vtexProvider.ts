@@ -26,6 +26,9 @@ export type VtexStoreConfig = {
   storeSlug: string;
   storeName: string;
   baseUrl: string;
+  // Marca la tienda como bloqueada (p. ej. 403 persistente): no se hacen
+  // requests y el cron/búsqueda la saltean sin reintentar.
+  blocked?: boolean;
 };
 
 const requestTimeoutMs = 6000;
@@ -96,7 +99,7 @@ function extractProductId(url: string): string | null {
 }
 
 export function createVtexProvider(config: VtexStoreConfig): StoreProvider {
-  const { name, storeSlug, storeName, baseUrl } = config;
+  const { name, storeSlug, storeName, baseUrl, blocked = false } = config;
   const circuitName = `vtex:${storeSlug}`;
   const hostPattern = new RegExp(
     baseUrl.replace(/^https?:\/\//, "").replace(/\./g, "\\."),
@@ -143,8 +146,10 @@ export function createVtexProvider(config: VtexStoreConfig): StoreProvider {
 
   const provider: StoreProvider = {
     name,
+    blocked,
 
     async searchProducts(query: string) {
+      if (blocked) return [];
       const normalizedQuery = query.trim();
       if (!normalizedQuery) return [];
 
@@ -206,6 +211,7 @@ export function createVtexProvider(config: VtexStoreConfig): StoreProvider {
     },
 
     async getProductByUrl(url: string) {
+      if (blocked) return null;
       try {
         if (!hostPattern.test(url)) return null;
         const productId = extractProductId(url);
@@ -228,6 +234,7 @@ export function createVtexProvider(config: VtexStoreConfig): StoreProvider {
     },
 
     async getCurrentPrice(input: ProviderPriceInput): Promise<ProviderPrice | null> {
+      if (blocked) return null;
       try {
         const productId = input.externalId ?? (input.url ? extractProductId(input.url) : null);
         if (!productId) return null;

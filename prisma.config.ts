@@ -10,6 +10,8 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts",
   },
   datasource: {
-    url: env("DATABASE_URL"),
+    // Migraciones por conexión directa/session (DIRECT_URL): el transaction
+    // pooler que usa el runtime no soporta los advisory locks de migrate.
+    url: env("DIRECT_URL"),
   },
 });

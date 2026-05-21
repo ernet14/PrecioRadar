@@ -5,7 +5,10 @@ import { createVtexProvider, type VtexStoreConfig } from "@/providers/stores/vte
 // `https://HOST/api/catalog_system/pub/products/search/notebook?_from=0&_to=1`
 // devuelve un array JSON con precio, y agregar su config acá.
 const vtexStoreConfigs: VtexStoreConfig[] = [
-  { name: "fravega", storeSlug: "fravega", storeName: "Frávega", baseUrl: "https://www.fravega.com" },
+  // Frávega bloqueado temporalmente: su Search API VTEX devuelve HTTP 403
+  // persistente desde Vercel (2026-05). Quitar `blocked` cuando vuelva a
+  // responder para reactivar sin más cambios de código.
+  { name: "fravega", storeSlug: "fravega", storeName: "Frávega", baseUrl: "https://www.fravega.com", blocked: true },
   { name: "cetrogar", storeSlug: "cetrogar", storeName: "Cetrogar", baseUrl: "https://www.cetrogar.com.ar" },
   { name: "naldo", storeSlug: "naldo", storeName: "Naldo", baseUrl: "https://www.naldo.com.ar" },
   { name: "oncity", storeSlug: "oncity", storeName: "OnCity", baseUrl: "https://www.oncity.com" },

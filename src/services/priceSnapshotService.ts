@@ -293,6 +293,12 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
           continue;
         }
 
+        // Provider bloqueado (p. ej. Frávega con 403): saltear sin reintentar
+        // ni contar como error.
+        if (provider.blocked) {
+          continue;
+        }
+
         const currentPrice = await provider.getCurrentPrice({
           externalId: offer.externalId ?? undefined,
           url: offer.productUrl,

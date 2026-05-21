@@ -40,6 +40,10 @@ export type ProviderProduct = {
 
 export interface StoreProvider {
   name: string;
+  // Si está bloqueado, el provider no hace requests de red (devuelve vacío) y
+  // el cron lo saltea sin contarlo como error. Útil para tiendas que responden
+  // 403 persistente y no deben generar reintentos.
+  blocked?: boolean;
   searchProducts(query: string): Promise<ProviderProduct[]>;
   getProductByUrl(url: string): Promise<ProviderProduct | null>;
   getCurrentPrice(input: ProviderPriceInput): Promise<ProviderPrice | null>;
