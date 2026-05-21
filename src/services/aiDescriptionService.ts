@@ -4,9 +4,9 @@ import { logger } from "@/lib/logger";
 import { formatCurrencyARS } from "@/lib/utils";
 
 // Descripciones SEO de producto generadas por IA (Etapa 17).
-// Usa el Vercel AI Gateway con un model string "openai/gpt-4o-mini": en Vercel
-// se autentica solo por OIDC; en local necesita AI_GATEWAY_API_KEY. Si no hay
-// credencial, generateText falla y devolvemos "skipped" (no rompe nada).
+// Usa el Vercel AI Gateway con un model string "openai/gpt-4o-mini".
+// Es OPT-IN: requiere AI_GATEWAY_API_KEY. Si no está, no se intenta ninguna
+// llamada (cero riesgo de cargos) y los endpoints devuelven ai_unavailable.
 //
 // La descripción es factual y SOLO usa datos provistos (nombre, marca, modelo,
 // categoría, rango de precios, tiendas). El prompt prohíbe inventar specs u
@@ -25,10 +25,10 @@ export type GenerateDescriptionResult =
   | { status: "error"; error: string };
 
 function isGatewayConfigured() {
-  // En Vercel el OIDC token alcanza; en local hace falta la API key del gateway.
-  return Boolean(
-    process.env.AI_GATEWAY_API_KEY?.trim() || process.env.VERCEL_OIDC_TOKEN?.trim(),
-  );
+  // Opt-in explícito: requiere AI_GATEWAY_API_KEY. Sin ella el feature queda
+  // degradado (no se intenta ninguna llamada al gateway → cero riesgo de cargos)
+  // y los endpoints devuelven ai_unavailable.
+  return Boolean(process.env.AI_GATEWAY_API_KEY?.trim());
 }
 
 function buildPrompt(input: {
