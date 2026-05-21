@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Container } from "@/components/layout/Container";
 import { Card } from "@/components/ui/Card";
 import { formatDate } from "@/lib/utils";
@@ -122,11 +121,8 @@ export default async function PromosHoyPage() {
           </section>
         ) : (
           <Card className="border-dashed border-slate-200 p-6 text-sm text-slate-500">
-            No hay promos activas para hoy. Si sos admin, cargalas desde{" "}
-            <Link className="font-semibold text-blue-700 hover:underline" href="/admin/promos">
-              /admin/promos
-            </Link>
-            .
+            Por ahora no tenemos promos bancarias confirmadas para hoy. Volve a
+            revisar: actualizamos el calendario seguido.
           </Card>
         )}
       </Container>

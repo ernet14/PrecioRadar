@@ -5,6 +5,7 @@ import { requireAdmin } from "@/lib/supabase/auth";
 import {
   formatDayOfWeek,
   formatPromoBenefit,
+  getActivePromosForDate,
   listAllBankPromos,
 } from "@/services/bankPromoService";
 import type { BankPromo } from "@/services/bankPromoService";
@@ -74,6 +75,7 @@ function PromoRow({ promo }: { promo: BankPromo }) {
 export default async function PromosPage() {
   await requireAdmin();
   const promos = await listAllBankPromos();
+  const activeToday = await getActivePromosForDate({ date: new Date() });
 
   return (
     <main className="bg-[#f4f7fb] py-10 text-slate-950">
@@ -91,10 +93,19 @@ export default async function PromosPage() {
               Descuentos, reintegros y cuotas sin interes vigentes.
             </p>
           </div>
-          <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-semibold text-slate-700">
-            {promos.length} promos
-          </span>
+          <div className="flex flex-col items-end gap-1 text-right">
+            <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-semibold text-slate-700">
+              {promos.length} cargadas · {activeToday.length} activas hoy
+            </span>
+          </div>
         </section>
+
+        {activeToday.length === 0 ? (
+          <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900">
+            Hoy /promos-hoy no muestra ninguna promo (no hay activas para la
+            fecha). Carga o activa alguna desde el formulario.
+          </p>
+        ) : null}
 
         <section className="grid gap-4 lg:grid-cols-3">
           <div className="space-y-3 lg:col-span-2">

@@ -44,6 +44,67 @@ export type ApiPricingResult =
   | { status: "not_found" }
   | { status: "database_unavailable" };
 
+export type ApiProductSummary = {
+  slug: string;
+  name: string;
+  brand: string | null;
+  category: string | null;
+  bestPrice: number | null;
+  currency: string;
+  offerCount: number;
+};
+
+export type ApiSearchResult =
+  | { status: "ok"; query: string; count: number; results: ApiProductSummary[] }
+  | { status: "database_unavailable" };
+
+// Discovery/búsqueda para la API pública (Etapa 18). Solo productos reales con
+// al menos una oferta disponible. `limit` acotado entre 1 y 50.
+export async function searchApiProducts(
+  query: string,
+  limit: number,
+): Promise<ApiSearchResult> {
+  const prisma = getPrismaClient();
+  if (!prisma) return { status: "database_unavailable" };
+
+  const trimmed = query.trim();
+  const take = Math.max(1, Math.min(limit, 50));
+
+  const products = await prisma.product.findMany({
+    where: {
+      deletedAt: null,
+      isDemo: false,
+      offers: { some: { isDemo: false, available: true } },
+      ...(trimmed ? { name: { contains: trimmed, mode: "insensitive" } } : {}),
+    },
+    take,
+    orderBy: { updatedAt: "desc" },
+    include: {
+      category: { select: { name: true } },
+      offers: {
+        where: { isDemo: false, available: true },
+        select: { price: true, currency: true },
+      },
+    },
+  });
+
+  const results: ApiProductSummary[] = products.map((product) => {
+    const prices = product.offers.map((offer) => Number(offer.price));
+    const bestPrice = prices.length > 0 ? Math.min(...prices) : null;
+    return {
+      slug: product.slug,
+      name: product.name,
+      brand: product.brand,
+      category: product.category?.name ?? null,
+      bestPrice,
+      currency: product.offers[0]?.currency ?? "ARS",
+      offerCount: product.offers.length,
+    };
+  });
+
+  return { status: "ok", query: trimmed, count: results.length, results };
+}
+
 export async function getApiProductPricing(
   slug: string,
   historyDays: number | null,
