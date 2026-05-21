@@ -9,6 +9,7 @@ import { createNotification } from "@/services/notificationService";
 import { sendPushToUser } from "@/services/pushService";
 import {
   getMockProductDetailBySlug,
+  getProductDetailBySlug,
   type ProductDetail,
 } from "@/services/productService";
 
@@ -551,17 +552,47 @@ export async function listUserAlerts(
     },
   });
 
-  return alerts
-    .map((alert) => {
-      const product = getMockProductDetailBySlug(alert.product.slug);
+  return Promise.all(
+    alerts.map(async (alert) => {
+      const targetPrice =
+        alert.targetPrice === null ? null : Number(alert.targetPrice);
+      const targetPercentage =
+        alert.targetPercentage === null ? null : Number(alert.targetPercentage);
 
-      if (!product) {
-        return null;
+      // Fallback con lo persistido: si el detalle no resuelve, igual mostramos
+      // la alerta (sin precio actual) en vez de dropearla.
+      const fallback: UserAlertListItem = {
+        id: alert.id,
+        productSlug: alert.product.slug,
+        productName: alert.product.name,
+        productImageUrl: alert.product.imageUrl ?? null,
+        currentPriceLabel: "Sin precio actual",
+        storeName: "—",
+        alertType: alert.alertType,
+        targetPriceLabel:
+          targetPrice === null || Number.isNaN(targetPrice)
+            ? null
+            : formatCurrencyARS(targetPrice),
+        targetPercentageLabel:
+          targetPercentage === null || Number.isNaN(targetPercentage)
+            ? null
+            : `${targetPercentage}%`,
+        active: alert.active,
+        paused: alert.paused,
+        createdAt: alert.createdAt,
+      };
+
+      try {
+        const product = await getProductDetailBySlug(alert.product.slug);
+        return product ? createUserAlertListItem(alert, product) : fallback;
+      } catch (error) {
+        logger.error("Unable to resolve alert product detail; using stored data.", {
+          error,
+        });
+        return fallback;
       }
-
-      return createUserAlertListItem(alert, product);
-    })
-    .filter((alert): alert is UserAlertListItem => Boolean(alert));
+    }),
+  );
 }
 
 export async function evaluateUserAlerts(
@@ -609,7 +640,9 @@ export async function evaluateUserAlerts(
         continue;
       }
 
-      const product = getMockProductDetailBySlug(alert.product.slug);
+      // Resuelve productos reales (DB) además del demo; antes era mock-only y
+      // las alertas sobre productos reales nunca se evaluaban ni disparaban.
+      const product = await getProductDetailBySlug(alert.product.slug);
 
       if (!product) {
         continue;
