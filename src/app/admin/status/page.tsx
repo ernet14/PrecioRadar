@@ -1097,16 +1097,25 @@ export default async function AdminStatusPage({
           </div>
           <div className="flex flex-col items-stretch gap-3 md:items-end">
             <RefreshControls generatedAtIso={generatedAtIso} />
-            <Link
-              className={`self-start rounded-md px-2 py-1 text-xs font-semibold underline-offset-2 hover:underline md:self-end ${isConsoleMode ? "text-slate-300" : "text-slate-600"}`}
-              href={
-                isConsoleMode
-                  ? `/admin/status?range=${range}`
-                  : `/admin/status?range=${range}&ui=console`
-              }
-            >
-              {isConsoleMode ? "Modo claro" : "Modo console"}
-            </Link>
+            <div className="flex items-center gap-3 md:self-end">
+              <Link
+                className="inline-flex items-center gap-1.5 rounded-md border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100"
+                href="/admin/monitor"
+              >
+                <span aria-hidden className="inline-block size-2 animate-pulse rounded-full bg-emerald-500" />
+                Monitor en vivo
+              </Link>
+              <Link
+                className={`rounded-md px-2 py-1 text-xs font-semibold underline-offset-2 hover:underline ${isConsoleMode ? "text-slate-300" : "text-slate-600"}`}
+                href={
+                  isConsoleMode
+                    ? `/admin/status?range=${range}`
+                    : `/admin/status?range=${range}&ui=console`
+                }
+              >
+                {isConsoleMode ? "Modo claro" : "Modo console"}
+              </Link>
+            </div>
           </div>
         </header>
 

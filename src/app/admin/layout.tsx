@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/supabase/auth";
 import { AdminTabs } from "./AdminTabs";
+import { AdminScorecardStrip } from "./AdminScorecardStrip";
 
 export const metadata: Metadata = {
   title: {
@@ -21,6 +22,7 @@ export default async function AdminLayout({
 
   return (
     <>
+      <AdminScorecardStrip />
       <AdminTabs />
       {children}
     </>

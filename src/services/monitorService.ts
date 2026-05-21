@@ -145,6 +145,50 @@ export async function getMonitorData(): Promise<MonitorData | null> {
   };
 }
 
+export type ScorecardHeadline = {
+  comparableProducts: number;
+  productsWithOffers: number;
+  comparableRate: number;
+  providerErrors24h: number;
+  priceUpdatesLastHour: number;
+};
+
+// Versión liviana del scorecard (pocas queries) para la barra siempre visible
+// del admin. Evita correr el scorecard completo en cada página del panel.
+export async function getScorecardHeadline(): Promise<ScorecardHeadline | null> {
+  const prisma = getPrismaClient();
+  if (!prisma) return null;
+
+  const comparableRows = await prisma.$queryRaw<{ count: bigint }[]>`
+    SELECT COUNT(*)::bigint AS count FROM (
+      SELECT o."productId"
+      FROM "ProductOffer" o
+      JOIN "Product" p ON p.id = o."productId"
+      WHERE o."isDemo" = false AND o.available = true AND p."deletedAt" IS NULL AND p."isDemo" = false
+      GROUP BY o."productId"
+      HAVING COUNT(DISTINCT o."storeId") >= 2
+    ) t`;
+  const comparableProducts = Number(comparableRows[0]?.count ?? 0);
+
+  const [productsWithOffers, providerErrors24h, priceUpdatesLastHour] = await Promise.all([
+    prisma.product.count({
+      where: { deletedAt: null, isDemo: false, offers: { some: { isDemo: false, available: true } } },
+    }),
+    prisma.providerLog.count({
+      where: { createdAt: { gte: new Date(Date.now() - 24 * 3_600_000) }, status: { notIn: SUCCESS_STATUSES } },
+    }),
+    prisma.priceHistory.count({ where: { isDemo: false, recordedAt: { gte: new Date(Date.now() - 3_600_000) } } }),
+  ]);
+
+  return {
+    comparableProducts,
+    productsWithOffers,
+    comparableRate: productsWithOffers > 0 ? Math.round((comparableProducts / productsWithOffers) * 100) : 0,
+    providerErrors24h,
+    priceUpdatesLastHour,
+  };
+}
+
 export type CatalogScorecard = {
   realProducts: number;
   productsWithOffers: number;
