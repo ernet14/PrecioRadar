@@ -1,6 +1,46 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { getCanonicalProductKey } from "../src/lib/utils/text";
+import { getCanonicalProductKey, normalizeEan } from "../src/lib/utils/text";
+
+test("EAN agrupa el mismo producto aunque el título y la marca difieran", () => {
+  const carrefour = getCanonicalProductKey({
+    name: "Gaseosa Coca-Cola 2.25L",
+    brand: "Coca Cola",
+    ean: "7790895000997",
+  });
+  const jumbo = getCanonicalProductKey({
+    name: "Coca Cola Sabor Original 2,25 Lt",
+    brand: "Coca-Cola",
+    ean: "7790895000997",
+  });
+
+  assert.equal(carrefour, jumbo);
+  assert.equal(carrefour, "ean-7790895000997");
+});
+
+test("EAN tiene prioridad sobre el SKU del nombre", () => {
+  const key = getCanonicalProductKey({
+    name: "LG Smart TV 55 55UP7750PSB 4K",
+    brand: "LG",
+    ean: "8806091234567",
+  });
+  assert.equal(key, "ean-8806091234567");
+});
+
+test("EAN inválido (corto o todo ceros) se ignora y cae al SKU", () => {
+  const key = getCanonicalProductKey({
+    name: "LG Smart TV 55 55UP7750PSB 4K",
+    brand: "LG",
+    ean: "0000000000000",
+  });
+  assert.equal(key, "lg-55up7750psb");
+});
+
+test("normalizeEan limpia separadores y valida longitud", () => {
+  assert.equal(normalizeEan("779-089 500 0997"), "7790895000997");
+  assert.equal(normalizeEan("123"), null);
+  assert.equal(normalizeEan(null), null);
+});
 
 test("agrupa el mismo SKU entre tiendas que lo nombran distinto", () => {
   const oncity = getCanonicalProductKey({

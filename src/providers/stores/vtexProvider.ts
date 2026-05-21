@@ -45,6 +45,8 @@ type VtexSeller = { commertialOffer?: VtexCommertialOffer };
 
 type VtexItem = {
   itemId?: unknown;
+  ean?: unknown;
+  referenceId?: { Value?: unknown }[];
   images?: { imageUrl?: unknown }[];
   sellers?: VtexSeller[];
 };
@@ -81,6 +83,13 @@ function getBestOffer(product: VtexProduct): { price: number; available: boolean
 function getImageUrl(product: VtexProduct): string | null {
   const image = product.items?.[0]?.images?.[0]?.imageUrl;
   return typeof image === "string" ? image : null;
+}
+
+// VTEX expone el código de barras en items[].ean (a veces vacío o "0"). Lo
+// devolvemos crudo; la normalización/validación vive en normalizeEan.
+function getEan(product: VtexProduct): string | null {
+  const ean = product.items?.[0]?.ean;
+  return typeof ean === "string" && ean.trim() ? ean.trim() : null;
 }
 
 function getCategorySlug(product: VtexProduct): string | null {
@@ -284,6 +293,7 @@ export function createVtexProvider(config: VtexStoreConfig): StoreProvider {
         normalizedName: normalizeProductName(product.productName),
         brand: typeof product.brand === "string" ? product.brand : null,
         model: null,
+        ean: getEan(product),
         categorySlug: getCategorySlug(product),
         imageUrl: getImageUrl(product),
         productUrl: product.link,

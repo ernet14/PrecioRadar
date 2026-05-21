@@ -325,7 +325,7 @@ function providerProductToSearchResultItem(
   // Slug canónico (marca + SKU) para que la tarjeta enlace al mismo detalle que
   // persiste el cron, fusionando las ofertas de varias tiendas.
   const productSlug =
-    getCanonicalProductKey({ name: product.name, brand: product.brand }) ??
+    getCanonicalProductKey({ name: product.name, brand: product.brand, ean: product.ean }) ??
     product.slug ??
     slugify(product.name);
   const productId = `product-${productSlug}`;
@@ -563,6 +563,7 @@ function splitMatches(products: ProviderProduct[], query: string) {
       getCanonicalProductKey({
         name: scoredProduct.product.name,
         brand: scoredProduct.product.brand,
+        ean: scoredProduct.product.ean,
       }) ?? scoredProduct.product.normalizedName;
     const currentGroup = productGroups.get(key) ?? [];
     currentGroup.push(scoredProduct);

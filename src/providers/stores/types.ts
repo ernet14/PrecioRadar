@@ -27,6 +27,9 @@ export type ProviderProduct = {
   normalizedName: string;
   brand?: string | null;
   model?: string | null;
+  // Código de barras (EAN/GTIN) cuando el provider lo expone. Es la clave más
+  // confiable para agrupar el mismo producto entre tiendas.
+  ean?: string | null;
   categorySlug?: string | null;
   imageUrl?: string | null;
   productUrl: string;

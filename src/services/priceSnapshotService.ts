@@ -65,7 +65,7 @@ async function ensureProduct(
   // distintas tiendas caiga en un único Product y se compare entre tiendas.
   // Si no hay SKU confiable, cae al slug por nombre (sin agrupar cross-store).
   const productSlug =
-    getCanonicalProductKey({ name: offer.name, brand: offer.brand }) ??
+    getCanonicalProductKey({ name: offer.name, brand: offer.brand, ean: offer.ean }) ??
     offer.slug ??
     slugify(offer.name);
 
