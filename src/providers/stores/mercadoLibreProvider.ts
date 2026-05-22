@@ -613,3 +613,31 @@ export const mercadoLibreProvider: StoreProvider = {
     };
   },
 };
+
+// Trae el producto completo de MercadoLibre por item id (no por URL). Reusa el mismo
+// fetch cacheado + circuit breaker que el resto del provider. Lo consume la vista de
+// ítem (/ml/[itemId]) e, indirectamente, la futura extensión. /items/{id} sí trae precio
+// (a diferencia de /sites/search, bloqueado con 403).
+export async function getMercadoLibreProductById(
+  itemId: string,
+): Promise<ProviderProduct | null> {
+  const cleanId = itemId.trim();
+  if (!cleanId) return null;
+
+  try {
+    const result = await fetchMercadoLibreJson(`/items/${encodeURIComponent(cleanId)}`, {
+      endpoint: "items",
+      identifier: cleanId,
+    });
+
+    if (result.errorMessage) {
+      await recordMercadoLibreFailure("getProductById", result.errorMessage);
+      return null;
+    }
+
+    return result.data ? mercadoLibreProvider.normalizeProductData(result.data) : null;
+  } catch (error) {
+    await recordMercadoLibreFailure("getProductById", getProviderErrorMessage(error));
+    return null;
+  }
+}
