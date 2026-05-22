@@ -7,8 +7,14 @@
   token, con token de usuario y con `client_credentials`. No hay cambio de código que lo
   destrabe; hay que pedir habilitación a MeLi. Detalle y texto del pedido en
   `docs/mercadolibre-permiso-busqueda.md`.
-- **`/items/{id}` y multiget sí traen precio** y son estables/legales. El flujo por link
-  pegado no pasa por el gate y queda siempre activo.
+- **`/items/{id}` de terceros está BLOQUEADO en prod** (`403 access_denied` / PolicyAgent),
+  aun con el token de USUARIO. Verificado 2026-05-22 con ítem vivo `MLA1502732935`. Es el
+  MISMO muro que el search 403, no resoluble por código ni reconectando OAuth. Contradice el
+  doc de 2026-05-20 (`/items` daba 200) — probablemente ML lo restringió o ese 200 era de un
+  ítem propio del seller. **Implica que la premisa de la extensión (leer cualquier
+  publicación por la API) NO se sostiene hoy.** `getMercadoLibreToken()` no tiene fallback a
+  client_credentials: si hay token, es el de usuario (el token termina en el user_id de la
+  cuenta). IDs de 8 dígitos (`MLA43534649`) dan `404 not_found` = ítems muertos.
 - El search está apagado por `MERCADOLIBRE_SEARCH_ENABLED` (default off) para no meter
   latencia ni ruido de logs mientras no haya permiso.
 - Afiliados ML hoy es **manual por oferta** (link completo desde el panel, guardado en
