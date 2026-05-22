@@ -30,7 +30,8 @@ async function recentlyCompacted(
   return Date.now() - lastJob.startedAt.getTime() < ONE_DAY_MS;
 }
 
-// Borra puntos en el rango [from, to) dejando solo el de menor recordedAt por bucket.
+// Borra puntos en el rango [from, to) preservando, por bucket, la fila más antigua
+// (ancla del período) más el mínimo y el máximo de precio.
 async function compactRange(
   prisma: NonNullable<ReturnType<typeof getPrismaClient>>,
   bucket: "day" | "week" | "month",
@@ -44,7 +45,10 @@ async function compactRange(
         ? "week"
         : "month";
 
-  // Por cada (offerId, bucket) mantenemos el row con MIN("recordedAt") y borramos el resto.
+  // Por cada (offerId, bucket) preservamos 3 filas clave: la más antigua (ancla del
+  // período), la de menor precio y la de mayor precio; borramos el resto. Así no se
+  // pierde el mínimo/máximo histórico, necesario para el índice de precios y para el
+  // veredicto de "precio más bajo de la historia" de la extensión.
   // Solo aplica a registros isDemo=false.
   const result = await prisma.$executeRawUnsafe(
     `
@@ -54,7 +58,15 @@ async function compactRange(
         ROW_NUMBER() OVER (
           PARTITION BY "offerId", DATE_TRUNC($1, "recordedAt")
           ORDER BY "recordedAt" ASC
-        ) AS rn
+        ) AS rn_time,
+        ROW_NUMBER() OVER (
+          PARTITION BY "offerId", DATE_TRUNC($1, "recordedAt")
+          ORDER BY "price" ASC, "recordedAt" ASC
+        ) AS rn_min,
+        ROW_NUMBER() OVER (
+          PARTITION BY "offerId", DATE_TRUNC($1, "recordedAt")
+          ORDER BY "price" DESC, "recordedAt" ASC
+        ) AS rn_max
       FROM "PriceHistory"
       WHERE "isDemo" = false
         AND "offerId" IS NOT NULL
@@ -63,7 +75,10 @@ async function compactRange(
     )
     DELETE FROM "PriceHistory" ph
     USING ranked r
-    WHERE ph."id" = r."id" AND r.rn > 1
+    WHERE ph."id" = r."id"
+      AND r.rn_time > 1
+      AND r.rn_min > 1
+      AND r.rn_max > 1
     `,
     dateTrunc,
     fromDate.toISOString(),
