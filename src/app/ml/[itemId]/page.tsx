@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import Link from "next/link";
 import { getMercadoLibreItemView } from "@/services/mercadoLibreItemViewService";
 import { PriceHistoryChart } from "@/components/product/PriceHistoryChart";
 import { DealQualityPanel } from "@/components/product/DealQualityBadge";
@@ -22,7 +22,24 @@ export default async function MercadoLibreItemPage({
   const { itemId } = await params;
   const view = await getMercadoLibreItemView(itemId);
 
-  if (!view) notFound();
+  if (!view) {
+    return (
+      <main className="mx-auto max-w-2xl px-4 py-12 text-center">
+        <h1 className="text-lg font-semibold">No pudimos traer este producto</h1>
+        <p className="mt-2 text-sm text-slate-600">
+          No encontramos datos para el ID <code>{itemId}</code> en MercadoLibre ahora mismo.
+          Verificá que el ID sea correcto (ej: <code>MLA1234567890</code>) o probá de nuevo
+          en un rato.
+        </p>
+        <Link
+          href="/"
+          className="mt-6 inline-flex items-center justify-center rounded-lg border px-4 py-2 text-sm font-semibold hover:bg-slate-50"
+        >
+          Volver al inicio
+        </Link>
+      </main>
+    );
+  }
 
   const { verdict } = view;
   const s = verdict.stats;
