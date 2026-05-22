@@ -61,6 +61,46 @@ test("no confunde 30% con un tope (el tope exige $)", () => {
   assert.equal(draft.maxAmount, null);
 });
 
+test("'Banco Francés' mapea a BBVA y detecta rango lunes a viernes", () => {
+  const draft = parseBankPromoText(
+    "Banco Francés: 20% de descuento de lunes a viernes en gastronomía.",
+  );
+  assert.equal(draft.entity, "BBVA");
+  assert.equal(draft.discountPct, 20);
+  assert.deepEqual(draft.dayOfWeek, [1, 2, 3, 4, 5]);
+});
+
+test("'fin de semana' => sábado y domingo", () => {
+  const draft = parseBankPromoText("Galicia 15% los fines de semana.");
+  assert.deepEqual(draft.dayOfWeek, [0, 6]);
+});
+
+test("cuotas sin interés => installments, sin descuento", () => {
+  const draft = parseBankPromoText("Banco Macro: 12 cuotas sin interés en electro.");
+  assert.equal(draft.promoType, "installments");
+  assert.equal(draft.installments, 12);
+  assert.equal(draft.discountPct, null);
+});
+
+test("'X pagos sin interés' también cuenta como cuotas", () => {
+  const draft = parseBankPromoText("Santander: 6 pagos sin interés.");
+  assert.equal(draft.promoType, "installments");
+  assert.equal(draft.installments, 6);
+});
+
+test("tope con keyword después del monto ($5.000 de tope)", () => {
+  const draft = parseBankPromoText("ICBC 25% de reintegro, $5.000 de tope por mes.");
+  assert.equal(draft.discountPct, 25);
+  assert.equal(draft.maxAmount, 5000);
+  assert.equal(draft.promoType, "refund");
+});
+
+test("'por ciento' escrito en palabras", () => {
+  const draft = parseBankPromoText("Comafi: ahorrá 15 por ciento los martes.");
+  assert.equal(draft.discountPct, 15);
+  assert.deepEqual(draft.dayOfWeek, [2]);
+});
+
 test("texto sin entidad conocida deja entity vacio (revisar a mano)", () => {
   const draft = parseBankPromoText("Promo 10% sin banco identificado.");
   assert.equal(draft.entity, "");

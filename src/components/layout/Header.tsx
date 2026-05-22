@@ -2,7 +2,7 @@ import Link from "next/link";
 import { logoutAction } from "@/app/auth/actions";
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/Button";
-import { getCurrentUser } from "@/lib/supabase/auth";
+import { getCurrentUser, isAdmin } from "@/lib/supabase/auth";
 
 const navLinkClass =
   "relative text-slate-600 transition hover:text-slate-950 after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-0 after:rounded-full after:bg-gradient-to-r after:from-indigo-500 after:to-emerald-400 after:transition-all hover:after:w-full";
@@ -55,6 +55,11 @@ export async function Header() {
 
         {user ? (
           <div className="flex items-center gap-2">
+            {isAdmin(user) ? (
+              <Link className={secondaryLinkClass} href="/admin">
+                Admin
+              </Link>
+            ) : null}
             <Link className={secondaryLinkClass} href="/sellers">
               Precios PRO
             </Link>
