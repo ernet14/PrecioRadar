@@ -7,6 +7,8 @@ const productLinks = [
   { href: "/guias", label: "Guías de compra" },
   { href: "/promos-hoy", label: "Promos bancarias" },
   { href: "/termometro", label: "Termómetro de ofertas" },
+  { href: "/api-docs", label: "API para desarrolladores" },
+  { href: "/api-planes", label: "Planes de la API" },
   { href: "/#como-funciona", label: "Cómo funciona" },
 ];
 
