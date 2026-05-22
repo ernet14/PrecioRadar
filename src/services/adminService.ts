@@ -248,8 +248,8 @@ export async function getAdminOverview(): Promise<AdminOverview> {
   }
 
   try {
-    const products = await prisma.product.count();
-    const offers = await prisma.productOffer.count();
+    const products = await prisma.product.count({ where: { isDemo: false } });
+    const offers = await prisma.productOffer.count({ where: { isDemo: false } });
     const stores = await prisma.store.count();
     const categories = await prisma.category.count();
     const users = await prisma.user.count();

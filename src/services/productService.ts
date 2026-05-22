@@ -183,7 +183,7 @@ export function getMockProductDetailBySlug(
   };
 }
 
-async function getRealPriceHistoryForOffer(
+export async function getRealPriceHistoryForOffer(
   externalId: string,
   storeSlug: string,
 ): Promise<PriceHistoryPoint[]> {

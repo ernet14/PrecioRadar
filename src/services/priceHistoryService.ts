@@ -35,6 +35,26 @@ export function getAveragePrice(history: PriceHistoryPoint[], days: number): num
   return filtered.reduce((total, point) => total + point.price, 0) / filtered.length;
 }
 
+export function getMinPrice(
+  history: PriceHistoryPoint[],
+  days?: number,
+): number | null {
+  if (history.length === 0) return null;
+
+  const points =
+    days === undefined
+      ? history
+      : history.filter(
+          (point) =>
+            new Date(point.recordedAt).getTime() >=
+            Date.now() - days * 24 * 60 * 60 * 1000,
+        );
+
+  if (points.length === 0) return null;
+
+  return Math.min(...points.map((point) => point.price));
+}
+
 export function getPriceHistoryForRange(
   history: PriceHistoryPoint[],
   rangeDays: PriceHistoryRangeDays,
