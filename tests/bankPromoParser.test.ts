@@ -38,6 +38,29 @@ test("'todos los dias' deja dayOfWeek vacio y detecta MODO", () => {
   assert.equal(draft.paymentType, "modo");
 });
 
+test("T&C real: toma el % del beneficio e ignora la TNA, con tope y día", () => {
+  const draft = parseBankPromoText(
+    "Promo BBVA: 30% de descuento los miércoles en supermercados. Tope de $8.000 por mes. Financiación en cuotas TNA 75%.",
+  );
+  assert.equal(draft.entity, "BBVA");
+  assert.equal(draft.discountPct, 30);
+  assert.equal(draft.maxAmount, 8000);
+  assert.deepEqual(draft.dayOfWeek, [3]);
+  assert.equal(draft.promoType, "percentage");
+});
+
+test("'descuento del 25%' (keyword antes del número) también se detecta", () => {
+  const draft = parseBankPromoText("Banco Macro: descuento del 25% los sábados. CFT 120%.");
+  assert.equal(draft.discountPct, 25);
+  assert.deepEqual(draft.dayOfWeek, [6]);
+});
+
+test("no confunde 30% con un tope (el tope exige $)", () => {
+  const draft = parseBankPromoText("Galicia 30% de ahorro, sin tope.");
+  assert.equal(draft.discountPct, 30);
+  assert.equal(draft.maxAmount, null);
+});
+
 test("texto sin entidad conocida deja entity vacio (revisar a mano)", () => {
   const draft = parseBankPromoText("Promo 10% sin banco identificado.");
   assert.equal(draft.entity, "");

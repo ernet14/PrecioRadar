@@ -23,7 +23,7 @@ export function PromoComposer() {
         <textarea
           className={textareaClass}
           name="text"
-          placeholder="Ej: Banco Galicia 25% de reintegro los jueves con tope de $30.000 en supermercados con tarjeta de credito."
+          placeholder="Pega el link de la promo del banco (lo leo solo) y/o los términos y condiciones. Ej: https://www.bbva.com.ar/... + texto."
           rows={4}
         />
         <button
@@ -36,6 +36,11 @@ export function PromoComposer() {
         {parseState.error ? (
           <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
             {parseState.error}
+          </p>
+        ) : null}
+        {parseState.note ? (
+          <p className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-700">
+            {parseState.note}
           </p>
         ) : null}
         {parseState.draft ? (

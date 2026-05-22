@@ -74,6 +74,47 @@ function detectEntity(text: string): string | null {
   return null;
 }
 
+// Contextos para no confundir el % del beneficio con tasas financieras.
+const RATE_CONTEXT = /\b(tna|tea|tem|cft|cftea)\b|inter[eé]s anual|costo financiero|financiaci[oó]n/i;
+const BENEFIT_CONTEXT = /descuento|reintegro|ahorro|devoluci[oó]n|cashback|bonificaci[oó]n|\boff\b/i;
+
+// Elige el porcentaje del beneficio: descarta los que están en contexto de tasa
+// (TNA/TEA/CFT) y prioriza los cercanos a palabras de beneficio; a igual score,
+// el más alto (suele ser el descuento principal).
+function findDiscountPct(text: string): number | null {
+  let best: number | null = null;
+  let bestScore = -1;
+
+  for (const match of text.matchAll(/(\d{1,3})(?:[.,]\d+)?\s*%/g)) {
+    const value = Number.parseInt(match[1], 10);
+    if (!Number.isFinite(value) || value <= 0 || value > 100) continue;
+
+    const index = match.index ?? 0;
+    // Ventana ANGOSTA pegada al número para descartar tasas (TNA/TEA/CFT): así un
+    // "CFT 120%" lejano no envenena a un "25% de descuento" legítimo.
+    const rateWindow = text.slice(Math.max(0, index - 25), index + 8);
+    if (RATE_CONTEXT.test(rateWindow)) continue;
+
+    // Ventana ANCHA para el beneficio: "descuento" puede ir antes o después.
+    const benefitWindow = text.slice(Math.max(0, index - 50), index + 40);
+    const score = BENEFIT_CONTEXT.test(benefitWindow) ? 2 : 1;
+    if (score > bestScore || (score === bestScore && best !== null && value > best)) {
+      bestScore = score;
+      best = value;
+    }
+  }
+
+  return best;
+}
+
+// Tope/reintegro máximo: exige el signo $ para no agarrar "30" de "30%".
+function findMaxAmount(text: string): number | null {
+  const match = text.match(
+    /(?:tope|reintegro|m[aá]ximo|hasta|devoluci[oó]n|l[ií]mite)[^$]{0,40}\$\s?([\d.]{3,})/i,
+  );
+  return match ? parseArsAmount(match[1]) : null;
+}
+
 function detectPaymentType(text: string): string {
   const lower = text.toLowerCase();
   if (/\bmodo\b/.test(lower)) return "modo";
@@ -89,15 +130,13 @@ export function parseBankPromoText(text: string): ParsedBankPromoDraft {
   const installmentsMatch = text.match(/(\d{1,2})\s*cuotas/i);
   const installments = installmentsMatch ? Number.parseInt(installmentsMatch[1], 10) : null;
 
-  const isInstallments = /cuotas\s+sin\s+inter[eé]s/i.test(text) || (installments !== null && /cuotas/i.test(text) && !/%/.test(text));
+  const discountPct = findDiscountPct(text);
+  const maxAmount = findMaxAmount(text);
+
+  const isInstallments =
+    /cuotas\s+sin\s+inter[eé]s/i.test(text) || (installments !== null && discountPct === null);
   const isRefund = /reintegro|devoluci[oó]n|cashback/i.test(text);
   const promoType = isInstallments ? "installments" : isRefund ? "refund" : "percentage";
-
-  const pctMatch = text.match(/(\d{1,3})\s*%/);
-  const discountPct = pctMatch ? Math.min(100, Number.parseInt(pctMatch[1], 10)) : null;
-
-  const capMatch = text.match(/(?:tope|hasta|m[aá]ximo)[^\d$]*\$?\s*([\d.,]+)/i);
-  const maxAmount = capMatch ? parseArsAmount(capMatch[1]) : null;
 
   const dayOfWeek = /todos\s+los\s+d[ií]as/i.test(text)
     ? []

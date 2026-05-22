@@ -10,6 +10,7 @@ import {
   parseBankPromoText,
   type ParsedBankPromoDraft,
 } from "@/services/bankPromoParser";
+import { extractFirstUrl, fetchBankPromoText } from "@/services/bankPromoFetcher";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -128,6 +129,7 @@ export type ParsePromoState = {
   draft: ParsedBankPromoDraft | null;
   key?: string;
   error?: string;
+  note?: string;
 };
 
 export async function parsePromoTextAction(
@@ -138,10 +140,28 @@ export async function parsePromoTextAction(
 
   const text = String(formData.get("text") ?? "").trim();
   if (!text) {
-    return { draft: null, error: "Pega el texto de la promo para analizarlo." };
+    return { draft: null, error: "Pega el texto o el link de la promo para analizarlo." };
   }
 
-  return { draft: parseBankPromoText(text), key: Date.now().toString() };
+  // Si hay un link de banco conocido, lo leemos y combinamos con el texto pegado.
+  let combined = text;
+  let note: string | undefined;
+  const url = extractFirstUrl(text);
+
+  if (url) {
+    const fetched = await fetchBankPromoText(url);
+    if (fetched.status === "ok") {
+      combined = `${fetched.text}\n\n${text}`;
+      note = "Leí el contenido del link y lo combiné con el texto pegado.";
+    } else if (fetched.status === "not_allowed") {
+      note =
+        "El link no es de un banco/billetera reconocido: usé solo el texto pegado. Pegá también los términos y condiciones para mejor detección.";
+    } else {
+      note = `No pude leer el link (${fetched.reason}): usé el texto pegado. Pegá también los términos y condiciones para mejor detección.`;
+    }
+  }
+
+  return { draft: parseBankPromoText(combined), key: Date.now().toString(), note };
 }
 
 export async function togglePromoAction(
