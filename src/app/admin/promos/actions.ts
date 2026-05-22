@@ -161,7 +161,22 @@ export async function parsePromoTextAction(
     }
   }
 
-  return { draft: parseBankPromoText(combined), key: Date.now().toString(), note };
+  const draft = parseBankPromoText(combined);
+
+  // Si quedó "flaco" (solo el banco, sin beneficio/día), avisamos que conviene
+  // pegar los términos y condiciones completos (los links de banco son SPA y el
+  // fetch trae poco).
+  const isThin =
+    draft.discountPct === null &&
+    draft.installments === null &&
+    draft.dayOfWeek.length === 0;
+  if (isThin) {
+    const hint =
+      "Saqué pocos datos. Pegá los términos y condiciones completos (no solo el link) para completar tipo, %, tope, cuotas y días.";
+    note = note ? `${note} ${hint}` : hint;
+  }
+
+  return { draft, key: Date.now().toString(), note };
 }
 
 export async function togglePromoAction(
