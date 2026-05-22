@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Container } from "@/components/layout/Container";
+import { Logo } from "@/components/layout/Logo";
 
 const productLinks = [
   { href: "/#buscar", label: "Buscar" },
@@ -29,19 +30,10 @@ export function Footer() {
         <div>
           <Link
             href="/"
-            className="flex items-center gap-2 text-lg font-bold tracking-tight text-slate-950"
+            className="group"
             aria-label="PrecioRadar"
           >
-            <span
-              aria-hidden
-              className="relative grid h-9 w-9 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-white shadow-[0_8px_20px_-6px_rgba(79,70,229,0.6)]"
-            >
-              <span className="absolute inset-1 rounded-md border border-white/25" />
-              <span className="absolute h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_10px_rgba(52,211,153,0.85)]" />
-            </span>
-            <span className="leading-none">
-              Precio<span className="text-indigo-600">Radar</span>
-            </span>
+            <Logo />
           </Link>
           <p className="mt-4 max-w-sm text-sm leading-6 text-slate-600">
             Comparador de precios en Argentina con historial, alertas y

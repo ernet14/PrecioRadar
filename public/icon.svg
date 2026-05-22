@@ -6,9 +6,28 @@
       <stop offset="1" stop-color="#7c3aed"/>
     </linearGradient>
   </defs>
+  <!-- Fondo con gradiente e inset de borde sutil -->
   <rect width="512" height="512" rx="112" fill="url(#g)"/>
-  <circle cx="256" cy="256" r="150" fill="none" stroke="#ffffff" stroke-opacity="0.30" stroke-width="14"/>
-  <circle cx="256" cy="256" r="92" fill="none" stroke="#ffffff" stroke-opacity="0.45" stroke-width="14"/>
-  <line x1="256" y1="256" x2="372" y2="170" stroke="#ffffff" stroke-opacity="0.85" stroke-width="16" stroke-linecap="round"/>
-  <circle cx="362" cy="178" r="34" fill="#34d399"/>
+  <rect x="12" y="12" width="488" height="488" rx="100" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="14"/>
+
+  <!-- Círculos concéntricos del radar -->
+  <circle cx="256" cy="256" r="199" fill="none" stroke="#ffffff" stroke-opacity="0.3" stroke-width="28"/>
+  <circle cx="256" cy="256" r="128" fill="none" stroke="#ffffff" stroke-opacity="0.2" stroke-width="17" stroke-dasharray="28 28"/>
+  <circle cx="256" cy="256" r="57" fill="none" stroke="#ffffff" stroke-opacity="0.15" stroke-width="14"/>
+
+  <!-- Cruz de precisión -->
+  <line x1="256" y1="57" x2="256" y2="455" stroke="#ffffff" stroke-opacity="0.15" stroke-width="14"/>
+  <line x1="57" y1="256" x2="455" y2="256" stroke="#ffffff" stroke-opacity="0.15" stroke-width="14"/>
+
+  <!-- Línea de barrido principal -->
+  <line x1="256" y1="256" x2="398" y2="114" stroke="#ffffff" stroke-width="31" stroke-linecap="round"/>
+
+  <!-- Rastro de barrido secundario -->
+  <line x1="256" y1="256" x2="427" y2="185" stroke="#ffffff" stroke-opacity="0.5" stroke-width="26" stroke-linecap="round"/>
+  <line x1="256" y1="256" x2="441" y2="270" stroke="#ffffff" stroke-opacity="0.2" stroke-width="21" stroke-linecap="round"/>
+
+  <!-- Puntos detectados (monocromáticos) -->
+  <circle cx="384" cy="128" r="26" fill="#ffffff" fill-opacity="0.9"/>
+  <circle cx="156" cy="341" r="21" fill="#ffffff" fill-opacity="0.4"/>
+  <circle cx="341" cy="370" r="26" fill="#ffffff" fill-opacity="0.2"/>
 </svg>

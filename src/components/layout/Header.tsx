@@ -3,6 +3,7 @@ import { logoutAction } from "@/app/auth/actions";
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/Button";
 import { getCurrentUser, isAdmin } from "@/lib/supabase/auth";
+import { Logo } from "@/components/layout/Logo";
 
 const navLinkClass =
   "relative text-slate-600 transition hover:text-slate-950 after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-0 after:rounded-full after:bg-gradient-to-r after:from-indigo-500 after:to-emerald-400 after:transition-all hover:after:w-full";
@@ -20,19 +21,10 @@ export async function Header() {
       <Container className="flex min-h-16 items-center justify-between gap-4 py-3">
         <Link
           href="/"
-          className="group flex items-center gap-2 text-lg font-bold tracking-tight text-slate-950"
+          className="group"
           aria-label="PrecioRadar inicio"
         >
-          <span
-            aria-hidden
-            className="relative grid h-9 w-9 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-white shadow-[0_8px_20px_-6px_rgba(79,70,229,0.6)]"
-          >
-            <span className="absolute inset-1 rounded-md border border-white/25" />
-            <span className="absolute h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_10px_rgba(52,211,153,0.85)]" />
-          </span>
-          <span className="leading-none">
-            Precio<span className="text-indigo-600">Radar</span>
-          </span>
+          <Logo />
         </Link>
 
         <nav className="hidden items-center gap-7 text-sm font-medium md:flex">
