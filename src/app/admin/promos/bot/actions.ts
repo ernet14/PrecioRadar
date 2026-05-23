@@ -3,6 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/supabase/auth";
 import {
+  deleteBankPromo,
+  toggleBankPromoActive,
+} from "@/services/bankPromoService";
+import {
   addBankPromoBotSource,
   deleteBankPromoBotSource,
   importBankPromosFromConfiguredSources,
@@ -42,5 +46,23 @@ export async function resumeBankPromoBotSourceAction(formData: FormData) {
 export async function deleteBankPromoBotSourceAction(formData: FormData) {
   await requireAdmin();
   await deleteBankPromoBotSource(String(formData.get("id") ?? ""));
+  revalidateBankPromoBotPaths();
+}
+
+export async function publishBotPromoAction(formData: FormData) {
+  await requireAdmin();
+  await toggleBankPromoActive(String(formData.get("id") ?? ""), true);
+  revalidateBankPromoBotPaths();
+}
+
+export async function pauseBotPromoAction(formData: FormData) {
+  await requireAdmin();
+  await toggleBankPromoActive(String(formData.get("id") ?? ""), false);
+  revalidateBankPromoBotPaths();
+}
+
+export async function deleteBotPromoAction(formData: FormData) {
+  await requireAdmin();
+  await deleteBankPromo(String(formData.get("id") ?? ""));
   revalidateBankPromoBotPaths();
 }

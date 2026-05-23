@@ -1,6 +1,7 @@
 import { getPrismaClient } from "@/lib/prisma";
 import { logger } from "@/lib/logger";
 import { startOfDay } from "@/services/bankPromoService";
+import type { BankPromo } from "@/generated/prisma/client";
 import { fetchBankPromoText, isAllowedBankUrl } from "@/services/bankPromoFetcher";
 import { parseBankPromoText } from "@/services/bankPromoParser";
 import { commercialEvents, type CommercialEvent } from "@/data/commercialEvents";
@@ -20,16 +21,7 @@ export type ImportBankPromosResult =
 
 export type BankPromoBotOverview =
   | {
-      botPromos: {
-        active: boolean;
-        entity: string;
-        id: string;
-        notes: string | null;
-        sourceUrl: string | null;
-        updatedAt: Date;
-        validFrom: Date;
-        validUntil: Date | null;
-      }[];
+      botPromos: BankPromo[];
       lastRuns: {
         createdAt: Date;
         detectedErrors: unknown;
@@ -536,16 +528,6 @@ export async function getBankPromoBotOverview(): Promise<BankPromoBotOverview> {
     const [botPromos, lastRuns, sourceUrls] = await Promise.all([
       prisma.bankPromo.findMany({
         orderBy: { updatedAt: "desc" },
-        select: {
-          active: true,
-          entity: true,
-          id: true,
-          notes: true,
-          sourceUrl: true,
-          updatedAt: true,
-          validFrom: true,
-          validUntil: true,
-        },
         take: 20,
         where: {
           sourceUrl: { not: null },

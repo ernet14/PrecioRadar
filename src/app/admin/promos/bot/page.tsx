@@ -2,12 +2,19 @@ import Link from "next/link";
 import { Container } from "@/components/layout/Container";
 import { requireAdmin } from "@/lib/supabase/auth";
 import {
+  formatDayOfWeek,
+  formatPromoBenefit,
+} from "@/services/bankPromoService";
+import {
   getBankPromoBotOverview,
   isBankPromoBotAutopublishEnabled,
 } from "@/services/bankPromoBotService";
 import {
   addBankPromoBotSourceAction,
+  deleteBotPromoAction,
   deleteBankPromoBotSourceAction,
+  pauseBotPromoAction,
+  publishBotPromoAction,
   pauseBankPromoBotSourceAction,
   resumeBankPromoBotSourceAction,
   runBankPromoBotAction,
@@ -265,9 +272,13 @@ export default async function BankPromoBotPage() {
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <p className="font-semibold text-slate-950">{promo.entity}</p>
+                      <p className="font-semibold text-slate-950">
+                        {promo.entity} - {formatPromoBenefit(promo)}
+                      </p>
                       <p className="mt-1 text-sm text-slate-500">
-                        Vigencia: {formatDate(promo.validFrom)} - {formatDate(promo.validUntil)}
+                        {formatDayOfWeek(promo.dayOfWeek)} - Pago:{" "}
+                        {promo.paymentType} - Vigencia: {formatDate(promo.validFrom)} -{" "}
+                        {formatDate(promo.validUntil)}
                       </p>
                       <p className="mt-1 break-all font-mono text-xs text-slate-400">
                         {promo.sourceUrl}
@@ -285,6 +296,38 @@ export default async function BankPromoBotPage() {
                     >
                       {promo.active ? "Publicada" : "Revision"}
                     </span>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {promo.active ? (
+                      <form action={pauseBotPromoAction}>
+                        <input name="id" type="hidden" value={promo.id} />
+                        <button
+                          className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                          type="submit"
+                        >
+                          Pausar
+                        </button>
+                      </form>
+                    ) : (
+                      <form action={publishBotPromoAction}>
+                        <input name="id" type="hidden" value={promo.id} />
+                        <button
+                          className="rounded-lg border border-emerald-200 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-50"
+                          type="submit"
+                        >
+                          Publicar
+                        </button>
+                      </form>
+                    )}
+                    <form action={deleteBotPromoAction}>
+                      <input name="id" type="hidden" value={promo.id} />
+                      <button
+                        className="rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50"
+                        type="submit"
+                      >
+                        Borrar
+                      </button>
+                    </form>
                   </div>
                   <p className="mt-3 text-xs text-slate-400">
                     Actualizada {formatDateTime(promo.updatedAt)}
