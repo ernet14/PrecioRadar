@@ -38,16 +38,26 @@ tiendas, es **comparabilidad**: de 313 productos con ofertas, solo **26 (8%) tie
 El catálogo (380 productos) se sembró por tienda sin asegurar solape, así que 92% no compara
 contra nada — y un comparador sin comparación no entrega su valor central.
 
-### Fase 1 — Densificar la comparación (próximo)
-- **Sembrar SKUs con solape**: elegir un set acotado (p.ej. modelos concretos de celulares
-  Samsung/Sony/Motorola + electro) e importarlos en las 5 VTEX de electro para que comparen
-  de verdad. Calidad de solape > cantidad de productos. Subir el `comparableRate` muy por
-  encima del 8%.
-- **Verificar matching EAN**: confirmar que productos que SON el mismo se agrupan (`getCanonicalProductKey`).
-- **Higiene**: Frávega está `blocked` pero sus ofertas viejas siguen `available=true` (46) e
-  inflan los contadores — marcarlas no disponibles. Limpiar las 3 ofertas ML residuales.
+### Fase 1 — Densificar la comparación (en curso, 2026-05-23)
+- **Sembrar SKUs con solape** ✅: `scripts/seed-catalog.ts` busca un set curado de modelos en
+  las VTEX activas y persiste por el flujo real (idempotente, dry-run/`--apply`). Sembrados:
+  celulares (S24 Ultra, Edge 50 Fusion, Redmi Note 13/13C, iPhone 15/13) + TVs (U8000 50/55/65,
+  LG 50UA8050PSA, QLED 65). 11/15 modelos quedan comparables.
+- **Verificar matching EAN** ✅: clave de celulares por marca+modelo+capacidad (el EAN
+  por-variante fragmenta por color); fix `getPhoneStorage` (`"256/8gb"`) y `normalizeEan`
+  (padding GTIN-14: `07796…` == `7796…`). Las TVs agrupan limpio por EAN/SKU a través de
+  súper+electro; los celulares fragmentan por segmento (electro=storage/no-EAN vs
+  súper=EAN/no-storage) — limitación estructural conocida, despriorizada.
+- **Higiene** ✅: el cron ahora marca `available=false` las ofertas de tiendas con bloqueo
+  permanente (`provider.blocked`) en vez de saltearlas; `scripts/cleanup-blocked-offers.ts`
+  limpió las existentes (46 Frávega + 2 ML).
+- **Medición**: `scripts/measure-comparables.ts` (reusa `getScorecardHeadline`).
+  `comparableRate` honesto pasó de **8% (sucio) → 14% (40 comparables / 291 con ofertas)**.
 - Telcos (Movistar/Claro/Personal): **descartadas** — Movistar no es VTEX (devolvió HTML) y
   los celulares ya comparan en las VTEX de electro.
+- **Próximo**: seguir sumando modelos electro/EAN de alto solape (TVs/electro agrupan 4-6
+  tiendas); apuntar a modelos que las tiendas stockean HOY (los viejos como A55/G24/G34 están
+  discontinuados y solo aparecen en 1 tienda).
 
 ### Fase 2 — Adquisición sostenible (SEO long-tail)
 Sobre el dataset comparable, páginas de producto indexables (regla de oro del roadmap).
