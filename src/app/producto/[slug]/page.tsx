@@ -29,7 +29,7 @@ import { formatCurrencyARS, formatDate } from "@/lib/utils";
 import { getCurrentUser } from "@/lib/supabase/auth";
 import { buildOfferClickHref } from "@/services/clickTrackingService";
 import {
-  getAllMockProductSlugs,
+  getIndexableProductSlugs,
   getProductDetailBySlug,
   type ProductDetail,
   type ProductSummary,
@@ -69,8 +69,9 @@ const offerGridStyle = {
   "--offer-grid": "minmax(220px, 1fr) 125px 110px 120px 150px",
 } as CSSProperties;
 
-export function generateStaticParams() {
-  return getAllMockProductSlugs().map((slug) => ({ slug }));
+export async function generateStaticParams() {
+  const products = await getIndexableProductSlugs();
+  return products.map((product) => ({ slug: product.slug }));
 }
 
 export async function generateMetadata({

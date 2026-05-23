@@ -104,6 +104,41 @@ export function getAllMockProductSlugs() {
   );
 }
 
+export type IndexableProduct = { slug: string; comparable: boolean; lastModified: Date };
+
+// Slugs de productos REALES (no demo, no borrados) con al menos una oferta viva,
+// para el sitemap y generateStaticParams. `comparable` = 2+ tiendas distintas
+// (contenido único más fuerte → mayor prioridad de indexación). Devuelve [] si no
+// hay DB (p.ej. build sin conexión): el sitemap cae a sus rutas estáticas.
+export async function getIndexableProductSlugs(): Promise<IndexableProduct[]> {
+  const prisma = getPrismaClient();
+  if (!prisma) return [];
+
+  try {
+    const rows = await prisma.$queryRaw<{ slug: string; last_modified: Date; stores: bigint }[]>`
+      SELECT p.slug, MAX(o."updatedAt") AS last_modified, COUNT(DISTINCT o."storeId") AS stores
+      FROM "Product" p
+      JOIN "ProductOffer" o ON o."productId" = p.id
+      JOIN "Store" s ON s.id = o."storeId"
+      WHERE o."isDemo" = false
+        AND o.available = true
+        AND p."deletedAt" IS NULL
+        AND p."isDemo" = false
+        AND s."deletedAt" IS NULL
+        AND s."isDemo" = false
+        AND s.active = true
+      GROUP BY p.slug
+      ORDER BY stores DESC, last_modified DESC`;
+    return rows.map((r) => ({
+      slug: r.slug,
+      comparable: Number(r.stores) >= 2,
+      lastModified: r.last_modified,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export function listMockProductsByCategory(categorySlug: string): ProductSummary[] {
   const filtered = mockStoreProducts.filter(
     (product) => product.categorySlug === categorySlug,

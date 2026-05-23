@@ -69,9 +69,16 @@ contra nada — y un comparador sin comparación no entrega su valor central.
   tiendas); apuntar a modelos que las tiendas stockean HOY (los viejos como A55/G24/G34 están
   discontinuados y solo aparecen en 1 tienda).
 
-### Fase 2 — Adquisición sostenible (SEO long-tail)
+### Fase 2 — Adquisición sostenible (SEO long-tail) (iniciada 2026-05-23)
 Sobre el dataset comparable, páginas de producto indexables (regla de oro del roadmap).
 Compone con el tiempo igual que el `PriceHistory`. Más valioso que features nuevos.
+
+- **Primer paso SEO real** ✅: `sitemap.xml` y `generateStaticParams` de `/producto/[slug]`
+  usan productos reales indexables (no demo, no borrados, con oferta viva y tienda activa)
+  en vez del catálogo mock. Los comparables tienen prioridad más alta. Si no hay DB en build,
+  el sitemap cae a rutas estáticas.
+- Medición local 2026-05-23: **216 productos reales indexables**, **49 comparables** con el
+  filtro estricto de sitemap.
 
 ### Fase 3+ — Índice de inflación / capa de datos B2B
 Índice de precios/inflación público + radar dólar pass-through, sobre el dataset VTEX
