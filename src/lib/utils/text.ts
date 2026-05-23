@@ -160,9 +160,15 @@ export function getPhoneCanonicalKey(input: { name: string; brand?: string | nul
 export function normalizeEan(ean: string | null | undefined): string | null {
   if (!ean) return null;
 
-  const digits = ean.replace(/\D/g, "");
+  let digits = ean.replace(/\D/g, "");
   if (digits.length < 8 || digits.length > 14) return null;
   if (/^0+$/.test(digits)) return null;
+
+  // El padding GTIN-14 a la izquierda no cambia el producto: "07796962002314"
+  // (como lo expone una tienda) y "7796962002314" (como lo expone otra) son el
+  // MISMO EAN. Quitamos los ceros de relleno sin bajar de 12 dígitos, para no
+  // tocar UPC-A/EAN-8 (que no se rellenan así).
+  while (digits.length > 12 && digits.startsWith("0")) digits = digits.slice(1);
 
   return digits;
 }

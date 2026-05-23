@@ -31,15 +31,17 @@ const MODELS: Model[] = [
   { q: "Samsung Galaxy A35", must: ["a35"], not: ["funda", "vidrio", "watch"] },
   { q: "Samsung Galaxy S24 Ultra", must: ["s24", "ultra"], not: ["funda", "vidrio", "cable", "auricular"] },
   { q: "Motorola Moto G24", must: ["g24"], not: ["funda", "auricular", "buds", "power"] },
-  { q: "Motorola Moto G34", must: ["g34"], not: ["funda", "auricular"] },
   { q: "Motorola Edge 50 Fusion", must: ["edge", "50", "fusion"], not: ["funda"] },
   { q: "Xiaomi Redmi Note 13", must: ["redmi", "note", "13"], not: ["funda", "14", "pro"] },
   { q: "Xiaomi Redmi 13C", must: ["redmi", "13c"], not: ["funda", "note"] },
   { q: "iPhone 15 128GB", must: ["iphone", "15"], not: ["funda", "vidrio", "cable", "pro", "plus"] },
   { q: "iPhone 13 128GB", must: ["iphone", "13"], not: ["funda", "vidrio", "cable", "pro", "mini"] },
-  // --- TVs (agrupan por EAN, ya validado) ---
+  // --- TVs (agrupan por EAN/SKU a través de súper+electro, ya validado) ---
   { q: "Samsung Crystal UHD 50 U8000", must: ["50", "u8000"], not: ["soporte", "business"] },
   { q: "Samsung Crystal UHD 55 U8000", must: ["55", "u8000"], not: ["soporte", "business"] },
+  { q: "Samsung Crystal UHD 65 U8000", must: ["65", "u8000"], not: ["soporte", "business", "50", "55", "75"] },
+  { q: "LG Smart TV 50 UHD 4K 50UA8050PSA", must: ["50ua8050psa"], not: ["soporte"] },
+  { q: "Samsung Smart TV QLED 65 Q6FAA", must: ["qn65q6faagczb"], not: ["soporte", "business"] },
 ];
 
 const normalize = (s: string) => normalizeProductName(s);

@@ -304,9 +304,15 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
           continue;
         }
 
-        // Provider bloqueado por código (p. ej. Frávega con 403): saltear sin
-        // reintentar ni contar como error.
+        // Provider bloqueado por código (p. ej. Frávega con 403): bloqueo
+        // PERMANENTE, así que marcamos la oferta no disponible (no vuelve sola)
+        // para que no cuente como "viva" en el scorecard. Distinto del skip de
+        // blockedStoreIds (blockedUntil), que es temporal y sí debe volver.
         if (provider.blocked) {
+          await prisma.productOffer.update({
+            where: { id: offer.id },
+            data: { available: false },
+          });
           continue;
         }
 

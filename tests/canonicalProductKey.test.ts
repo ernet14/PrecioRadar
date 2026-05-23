@@ -42,6 +42,14 @@ test("normalizeEan limpia separadores y valida longitud", () => {
   assert.equal(normalizeEan(null), null);
 });
 
+test("normalizeEan unifica el padding GTIN-14 (cero a la izquierda) con la forma corta", () => {
+  // Una tienda expone "07796962002314" (14 díg.) y otra "7796962002314" (13): mismo producto.
+  assert.equal(normalizeEan("07796962002314"), "7796962002314");
+  assert.equal(normalizeEan("07796962002314"), normalizeEan("7796962002314"));
+  // No toca EAN-8 ni el caso normal de 13 díg. sin padding.
+  assert.equal(normalizeEan("8806097300984"), "8806097300984");
+});
+
 test("agrupa el mismo SKU entre tiendas que lo nombran distinto", () => {
   const oncity = getCanonicalProductKey({
     name: "Notebook Lenovo Ideapad Slim 3 15AMN8 82XQ00TCAR AMD R5",
