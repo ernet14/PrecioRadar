@@ -55,9 +55,14 @@ contra nada — y un comparador sin comparación no entrega su valor central.
   producto con oferta en 1 sola tienda + clave canónica, re-busca su nombre en las otras VTEX
   y persiste las ofertas cuya clave coincide exactamente (match seguro por EAN/SKU/phone-key).
   Ataca la causa raíz (catálogo sembrado por tienda sin solape) y escala. Idempotente.
+- **Limpieza pre-SEO** ✅: `scripts/audit-comparables.ts` validó que el matching por clave
+  canónica es correcto (sin agrupaciones falsas). `scripts/rekey-products.ts` consolidó 136
+  productos con slug-por-nombre (persistidos antes de la lógica canónica) en 49 canónicos —
+  dedup de variantes de color que serían páginas duplicadas en SEO. `scripts/fix-junk-prices.ts`
+  marcó 7 ofertas con precio roto (celular/heladera < $10k por feed defectuoso).
 - **Medición**: `scripts/measure-comparables.ts` (reusa `getScorecardHeadline`).
-  `comparableRate` honesto: **8% (sucio) → 14% (seed+higiene) → 20% (61 comparables / 298 con
-  ofertas, tras descubrimiento)**.
+  `comparableRate` honesto: **8% (sucio) → 14% (seed+higiene) → 20% (descubrimiento) → 24%
+  (61 comparables / 256 con ofertas, tras dedup+limpieza)**.
 - Telcos (Movistar/Claro/Personal): **descartadas** — Movistar no es VTEX (devolvió HTML) y
   los celulares ya comparan en las VTEX de electro.
 - **Próximo**: seguir sumando modelos electro/EAN de alto solape (TVs/electro agrupan 4-6
