@@ -8,6 +8,7 @@ import { commercialEvents, type CommercialEvent } from "@/data/commercialEvents"
 export type ImportBankPromosResult =
   | {
       createdCount: number;
+      reviewCount: number;
       skippedCount: number;
       sourceCount: number;
       status: "imported";
@@ -36,7 +37,7 @@ export type BankPromoBotOverview =
         status: string;
         summary: string;
       }[];
-      sourceUrls: { allowed: boolean; url: string }[];
+      sourceUrls: BankPromoBotSourceView[];
       status: "ready";
     }
   | { reason: string; status: "database_unavailable" | "error" };
@@ -45,6 +46,17 @@ const missingDatabaseReason =
   "Falta configurar DATABASE_URL o DIRECT_URL con la conexion Postgres de Supabase.";
 
 type DetectedPromoEvent = Pick<CommercialEvent, "end" | "name" | "slug" | "start">;
+
+type BankPromoBotSourceView = {
+  active: boolean;
+  allowed: boolean;
+  id: string | null;
+  lastCheckedAt: Date | null;
+  lastMessage: string | null;
+  lastStatus: string | null;
+  source: "db" | "env";
+  url: string;
+};
 
 type BankPromoImportCandidate =
   | {
@@ -82,8 +94,156 @@ export function parseBankPromoSourceUrls(value: string | undefined): string[] {
   );
 }
 
+export function mergeBankPromoSourceUrls(...groups: string[][]): string[] {
+  return Array.from(new Set(groups.flat().map((url) => url.trim()).filter(Boolean)));
+}
+
 export function isBankPromoBotAutopublishEnabled() {
   return true;
+}
+
+function normalizeBankPromoSourceUrl(value: string) {
+  try {
+    const url = new URL(value.trim());
+    url.hash = "";
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
+async function getConfiguredBankPromoSources(
+  prisma: NonNullable<ReturnType<typeof getPrismaClient>>,
+  { includeInactive = false }: { includeInactive?: boolean } = {},
+): Promise<BankPromoBotSourceView[]> {
+  const envSources = parseBankPromoSourceUrls(process.env.BANK_PROMO_SOURCE_URLS).map(
+    (url) => ({
+      active: true,
+      allowed: isAllowedBankUrl(url),
+      id: null,
+      lastCheckedAt: null,
+      lastMessage: null,
+      lastStatus: null,
+      source: "env" as const,
+      url,
+    }),
+  );
+
+  try {
+    const dbSources = await prisma.bankPromoBotSource.findMany({
+      orderBy: [{ active: "desc" }, { updatedAt: "desc" }],
+      select: {
+        active: true,
+        id: true,
+        lastCheckedAt: true,
+        lastMessage: true,
+        lastStatus: true,
+        url: true,
+      },
+      where: includeInactive ? undefined : { active: true },
+    });
+
+    if (dbSources.length === 0) return envSources;
+
+    return dbSources.map((source) => ({
+      ...source,
+      allowed: isAllowedBankUrl(source.url),
+      source: "db" as const,
+    }));
+  } catch (error) {
+    logger.error("Unable to load bank promo bot sources; using env fallback.", {
+      error,
+      route: "bankPromoBotService.getConfiguredBankPromoSources",
+    });
+    return envSources;
+  }
+}
+
+async function updateBankPromoSourceStatus(
+  prisma: NonNullable<ReturnType<typeof getPrismaClient>>,
+  source: BankPromoBotSourceView,
+  status: string,
+  message: string,
+) {
+  if (!source.id) return;
+
+  await prisma.bankPromoBotSource.update({
+    data: {
+      lastCheckedAt: new Date(),
+      lastMessage: message,
+      lastStatus: status,
+    },
+    where: { id: source.id },
+  });
+}
+
+export type BankPromoBotSourceMutationResult =
+  | { status: "ok" }
+  | { reason: string; status: "database_unavailable" | "invalid_url" | "not_allowed" | "error" };
+
+export async function addBankPromoBotSource(
+  rawUrl: string,
+): Promise<BankPromoBotSourceMutationResult> {
+  const prisma = getPrismaClient();
+  if (!prisma) return { status: "database_unavailable", reason: missingDatabaseReason };
+
+  const url = normalizeBankPromoSourceUrl(rawUrl);
+  if (!url) return { status: "invalid_url", reason: "URL invalida." };
+  if (!isAllowedBankUrl(url)) {
+    return { status: "not_allowed", reason: "La URL no pertenece a un banco o billetera permitida." };
+  }
+
+  try {
+    await prisma.bankPromoBotSource.upsert({
+      create: { active: true, url },
+      update: { active: true },
+      where: { url },
+    });
+    return { status: "ok" };
+  } catch (error) {
+    logger.error("Unable to add bank promo bot source.", {
+      error,
+      route: "bankPromoBotService.addBankPromoBotSource",
+    });
+    return { status: "error", reason: "No se pudo guardar la fuente." };
+  }
+}
+
+export async function setBankPromoBotSourceActive(
+  id: string,
+  active: boolean,
+): Promise<BankPromoBotSourceMutationResult> {
+  const prisma = getPrismaClient();
+  if (!prisma) return { status: "database_unavailable", reason: missingDatabaseReason };
+
+  try {
+    await prisma.bankPromoBotSource.update({ data: { active }, where: { id } });
+    return { status: "ok" };
+  } catch (error) {
+    logger.error("Unable to toggle bank promo bot source.", {
+      error,
+      route: "bankPromoBotService.setBankPromoBotSourceActive",
+    });
+    return { status: "error", reason: "No se pudo actualizar la fuente." };
+  }
+}
+
+export async function deleteBankPromoBotSource(
+  id: string,
+): Promise<BankPromoBotSourceMutationResult> {
+  const prisma = getPrismaClient();
+  if (!prisma) return { status: "database_unavailable", reason: missingDatabaseReason };
+
+  try {
+    await prisma.bankPromoBotSource.delete({ where: { id } });
+    return { status: "ok" };
+  } catch (error) {
+    logger.error("Unable to delete bank promo bot source.", {
+      error,
+      route: "bankPromoBotService.deleteBankPromoBotSource",
+    });
+    return { status: "error", reason: "No se pudo borrar la fuente." };
+  }
 }
 
 function hasUsableBenefit(draft: ReturnType<typeof parseBankPromoText>) {
@@ -217,7 +377,7 @@ async function logBankPromoBotRun(
       result.status === "imported" && result.skippedCount > 0 ? "warn" : "ok";
     const summary =
       result.status === "imported"
-        ? `Bot promos bancarias: ${result.createdCount} creadas, ${result.updatedCount} actualizadas, ${result.verifiedCount} verificadas, ${result.skippedCount} omitidas.`
+        ? `Bot promos bancarias: ${result.createdCount} creadas, ${result.updatedCount} actualizadas, ${result.verifiedCount} verificadas, ${result.reviewCount} en revision, ${result.skippedCount} omitidas.`
         : "Bot promos bancarias: error inesperado.";
 
     await prisma.systemHealthLog.create({
@@ -250,10 +410,11 @@ export async function importBankPromosFromConfiguredSources(
     return { status: "database_unavailable", reason: missingDatabaseReason };
   }
 
-  const sources = parseBankPromoSourceUrls(process.env.BANK_PROMO_SOURCE_URLS);
+  const sources = await getConfiguredBankPromoSources(prisma);
   if (sources.length === 0) {
     const result = {
       createdCount: 0,
+      reviewCount: 0,
       skippedCount: 0,
       sourceCount: 0,
       status: "imported",
@@ -265,16 +426,36 @@ export async function importBankPromosFromConfiguredSources(
   }
 
   let createdCount = 0;
+  let reviewCount = 0;
   let skippedCount = 0;
   let updatedCount = 0;
   let verifiedCount = 0;
 
   try {
-    for (const sourceUrl of sources) {
+    for (const source of sources) {
+      const sourceUrl = source.url;
+
+      if (!source.active || !source.allowed) {
+        skippedCount += 1;
+        await updateBankPromoSourceStatus(
+          prisma,
+          source,
+          "skipped",
+          source.allowed ? "Fuente pausada." : "URL fuera de allowlist.",
+        );
+        continue;
+      }
+
       const fetched = await fetchBankPromoText(sourceUrl);
 
       if (fetched.status !== "ok") {
         skippedCount += 1;
+        await updateBankPromoSourceStatus(
+          prisma,
+          source,
+          fetched.status,
+          fetched.status === "error" ? fetched.reason : "URL no permitida.",
+        );
         continue;
       }
 
@@ -286,10 +467,15 @@ export async function importBankPromosFromConfiguredSources(
 
       if (candidate.status === "skipped") {
         skippedCount += 1;
+        await updateBankPromoSourceStatus(prisma, source, "skipped", candidate.reason);
         continue;
       }
 
-      if (candidate.verified) verifiedCount += 1;
+      if (candidate.verified) {
+        verifiedCount += 1;
+      } else {
+        reviewCount += 1;
+      }
 
       const existing = await prisma.bankPromo.findFirst({
         where: { sourceUrl },
@@ -306,10 +492,20 @@ export async function importBankPromosFromConfiguredSources(
         await prisma.bankPromo.create({ data: candidate.data });
         createdCount += 1;
       }
+
+      await updateBankPromoSourceStatus(
+        prisma,
+        source,
+        candidate.verified ? "published" : "review",
+        candidate.verified
+          ? "Promo verificada y publicada."
+          : "Promo importada inactiva para revision.",
+      );
     }
 
     const result = {
       createdCount,
+      reviewCount,
       skippedCount,
       sourceCount: sources.length,
       status: "imported",
@@ -337,7 +533,7 @@ export async function getBankPromoBotOverview(): Promise<BankPromoBotOverview> {
   }
 
   try {
-    const [botPromos, lastRuns] = await Promise.all([
+    const [botPromos, lastRuns, sourceUrls] = await Promise.all([
       prisma.bankPromo.findMany({
         orderBy: { updatedAt: "desc" },
         select: {
@@ -367,14 +563,13 @@ export async function getBankPromoBotOverview(): Promise<BankPromoBotOverview> {
         take: 10,
         where: { reportType: "bank-promo-bot" },
       }),
+      getConfiguredBankPromoSources(prisma, { includeInactive: true }),
     ]);
 
     return {
       botPromos,
       lastRuns,
-      sourceUrls: parseBankPromoSourceUrls(process.env.BANK_PROMO_SOURCE_URLS).map(
-        (url) => ({ allowed: isAllowedBankUrl(url), url }),
-      ),
+      sourceUrls,
       status: "ready",
     };
   } catch (error) {

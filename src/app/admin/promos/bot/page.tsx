@@ -5,7 +5,13 @@ import {
   getBankPromoBotOverview,
   isBankPromoBotAutopublishEnabled,
 } from "@/services/bankPromoBotService";
-import { runBankPromoBotAction } from "./actions";
+import {
+  addBankPromoBotSourceAction,
+  deleteBankPromoBotSourceAction,
+  pauseBankPromoBotSourceAction,
+  resumeBankPromoBotSourceAction,
+  runBankPromoBotAction,
+} from "./actions";
 
 function formatDateTime(date: Date) {
   return new Intl.DateTimeFormat("es-AR", {
@@ -106,6 +112,33 @@ export default async function BankPromoBotPage() {
         <section className="grid gap-4 lg:grid-cols-2">
           <div className="space-y-3">
             <h2 className="text-lg font-semibold text-slate-950">Fuentes</h2>
+            <form
+              action={addBankPromoBotSourceAction}
+              className="rounded-xl border border-slate-200 bg-white p-4"
+            >
+              <label
+                className="text-xs font-semibold uppercase tracking-wide text-slate-400"
+                htmlFor="bank-promo-source-url"
+              >
+                Nueva fuente
+              </label>
+              <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+                <input
+                  className="min-w-0 flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none transition focus:border-slate-400"
+                  id="bank-promo-source-url"
+                  name="url"
+                  placeholder="https://www.bbva.com.ar/..."
+                  required
+                  type="url"
+                />
+                <button
+                  className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                  type="submit"
+                >
+                  Agregar
+                </button>
+              </div>
+            </form>
             {overview.sourceUrls.length > 0 ? (
               overview.sourceUrls.map((source) => (
                 <div
@@ -116,21 +149,74 @@ export default async function BankPromoBotPage() {
                     <p className="break-all font-mono text-xs text-slate-600">
                       {source.url}
                     </p>
-                    <span
-                      className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-semibold ${
-                        source.allowed
-                          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                          : "border-rose-200 bg-rose-50 text-rose-700"
-                      }`}
-                    >
-                      {source.allowed ? "Permitida" : "Bloqueada"}
-                    </span>
+                    <div className="flex shrink-0 flex-wrap justify-end gap-2">
+                      <span
+                        className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${
+                          source.allowed
+                            ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                            : "border-rose-200 bg-rose-50 text-rose-700"
+                        }`}
+                      >
+                        {source.allowed ? "Permitida" : "Bloqueada"}
+                      </span>
+                      <span
+                        className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${
+                          source.active
+                            ? "border-sky-200 bg-sky-50 text-sky-700"
+                            : "border-slate-200 bg-slate-50 text-slate-500"
+                        }`}
+                      >
+                        {source.active ? "Activa" : "Pausada"}
+                      </span>
+                    </div>
                   </div>
+                  <p className="mt-2 text-xs text-slate-400">
+                    Origen: {source.source === "db" ? "admin" : ".env"}
+                    {source.lastStatus ? ` · Ultimo estado: ${source.lastStatus}` : ""}
+                    {source.lastCheckedAt ? ` · ${formatDateTime(source.lastCheckedAt)}` : ""}
+                  </p>
+                  {source.lastMessage ? (
+                    <p className="mt-1 text-xs text-slate-500">{source.lastMessage}</p>
+                  ) : null}
+                  {source.id ? (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {source.active ? (
+                        <form action={pauseBankPromoBotSourceAction}>
+                          <input name="id" type="hidden" value={source.id} />
+                          <button
+                            className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                            type="submit"
+                          >
+                            Pausar
+                          </button>
+                        </form>
+                      ) : (
+                        <form action={resumeBankPromoBotSourceAction}>
+                          <input name="id" type="hidden" value={source.id} />
+                          <button
+                            className="rounded-lg border border-emerald-200 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-50"
+                            type="submit"
+                          >
+                            Activar
+                          </button>
+                        </form>
+                      )}
+                      <form action={deleteBankPromoBotSourceAction}>
+                        <input name="id" type="hidden" value={source.id} />
+                        <button
+                          className="rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50"
+                          type="submit"
+                        >
+                          Borrar
+                        </button>
+                      </form>
+                    </div>
+                  ) : null}
                 </div>
               ))
             ) : (
               <p className="rounded-xl border border-dashed border-slate-200 bg-white p-5 text-sm text-slate-500">
-                No hay URLs en BANK_PROMO_SOURCE_URLS.
+                Agrega URLs de bancos o billeteras para que el bot empiece a revisar promos.
               </p>
             )}
           </div>

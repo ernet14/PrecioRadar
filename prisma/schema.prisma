@@ -559,6 +559,19 @@ model BankPromo {
   @@index([active])
 }
 
+model BankPromoBotSource {
+  id            String    @id @default(uuid()) @db.Uuid
+  url           String    @unique
+  active        Boolean   @default(true)
+  lastCheckedAt DateTime?
+  lastStatus    String?
+  lastMessage   String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([active, updatedAt])
+}
+
 // API pública pagada (Etapa 18, modelo Keepa-light). Cada clave tiene un tier
 // que define rate limit diario y profundidad de historial accesible. Se guarda
 // solo el hash SHA-256 de la clave (la clave en claro se muestra una vez al

@@ -4,6 +4,7 @@ import {
   buildBankPromoImportCandidate,
   detectBankPromoEvents,
   importBankPromosFromConfiguredSources,
+  mergeBankPromoSourceUrls,
   parseBankPromoSourceUrls,
 } from "../src/services/bankPromoBotService";
 
@@ -43,6 +44,16 @@ test("parseBankPromoSourceUrls deduplicates comma and newline separated URLs", (
     ["https://www.bbva.com.ar/a", "https://galicia.ar/b"],
   );
   assert.deepEqual(parseBankPromoSourceUrls("  \n "), []);
+});
+
+test("mergeBankPromoSourceUrls keeps source order and removes duplicates", () => {
+  assert.deepEqual(
+    mergeBankPromoSourceUrls(
+      ["https://www.bbva.com.ar/a", "https://galicia.ar/b"],
+      ["https://galicia.ar/b", "https://modo.com.ar/c"],
+    ),
+    ["https://www.bbva.com.ar/a", "https://galicia.ar/b", "https://modo.com.ar/c"],
+  );
 });
 
 test("importBankPromosFromConfiguredSources reports missing database", async () => {

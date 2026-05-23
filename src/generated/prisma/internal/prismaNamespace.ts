@@ -410,6 +410,7 @@ export const ModelName = {
   MercadoLibreAuth: 'MercadoLibreAuth',
   SystemHealthLog: 'SystemHealthLog',
   BankPromo: 'BankPromo',
+  BankPromoBotSource: 'BankPromoBotSource',
   ApiKey: 'ApiKey'
 } as const
 
@@ -426,7 +427,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "productImportDraft" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "productReview" | "productVote" | "pushSubscription" | "affiliateLink" | "searchLog" | "providerLog" | "scrapeJob" | "auditLog" | "mercadoLibreCache" | "productReport" | "newsletterSubscription" | "analyticsEvent" | "mercadoLibreAuth" | "systemHealthLog" | "bankPromo" | "apiKey"
+    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "productImportDraft" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "productReview" | "productVote" | "pushSubscription" | "affiliateLink" | "searchLog" | "providerLog" | "scrapeJob" | "auditLog" | "mercadoLibreCache" | "productReport" | "newsletterSubscription" | "analyticsEvent" | "mercadoLibreAuth" | "systemHealthLog" | "bankPromo" | "bankPromoBotSource" | "apiKey"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2354,6 +2355,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    BankPromoBotSource: {
+      payload: Prisma.$BankPromoBotSourcePayload<ExtArgs>
+      fields: Prisma.BankPromoBotSourceFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BankPromoBotSourceFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankPromoBotSourcePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BankPromoBotSourceFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankPromoBotSourcePayload>
+        }
+        findFirst: {
+          args: Prisma.BankPromoBotSourceFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankPromoBotSourcePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BankPromoBotSourceFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankPromoBotSourcePayload>
+        }
+        findMany: {
+          args: Prisma.BankPromoBotSourceFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankPromoBotSourcePayload>[]
+        }
+        create: {
+          args: Prisma.BankPromoBotSourceCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankPromoBotSourcePayload>
+        }
+        createMany: {
+          args: Prisma.BankPromoBotSourceCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BankPromoBotSourceCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankPromoBotSourcePayload>[]
+        }
+        delete: {
+          args: Prisma.BankPromoBotSourceDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankPromoBotSourcePayload>
+        }
+        update: {
+          args: Prisma.BankPromoBotSourceUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankPromoBotSourcePayload>
+        }
+        deleteMany: {
+          args: Prisma.BankPromoBotSourceDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BankPromoBotSourceUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BankPromoBotSourceUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankPromoBotSourcePayload>[]
+        }
+        upsert: {
+          args: Prisma.BankPromoBotSourceUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankPromoBotSourcePayload>
+        }
+        aggregate: {
+          args: Prisma.BankPromoBotSourceAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBankPromoBotSource>
+        }
+        groupBy: {
+          args: Prisma.BankPromoBotSourceGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BankPromoBotSourceGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BankPromoBotSourceCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BankPromoBotSourceCountAggregateOutputType> | number
+        }
+      }
+    }
     ApiKey: {
       payload: Prisma.$ApiKeyPayload<ExtArgs>
       fields: Prisma.ApiKeyFieldRefs
@@ -2889,6 +2964,20 @@ export const BankPromoScalarFieldEnum = {
 export type BankPromoScalarFieldEnum = (typeof BankPromoScalarFieldEnum)[keyof typeof BankPromoScalarFieldEnum]
 
 
+export const BankPromoBotSourceScalarFieldEnum = {
+  id: 'id',
+  url: 'url',
+  active: 'active',
+  lastCheckedAt: 'lastCheckedAt',
+  lastStatus: 'lastStatus',
+  lastMessage: 'lastMessage',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BankPromoBotSourceScalarFieldEnum = (typeof BankPromoBotSourceScalarFieldEnum)[keyof typeof BankPromoBotSourceScalarFieldEnum]
+
+
 export const ApiKeyScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -3270,6 +3359,7 @@ export type GlobalOmitConfig = {
   mercadoLibreAuth?: Prisma.MercadoLibreAuthOmit
   systemHealthLog?: Prisma.SystemHealthLogOmit
   bankPromo?: Prisma.BankPromoOmit
+  bankPromoBotSource?: Prisma.BankPromoBotSourceOmit
   apiKey?: Prisma.ApiKeyOmit
 }
 

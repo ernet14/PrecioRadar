@@ -148,6 +148,11 @@ export type SystemHealthLog = Prisma.SystemHealthLogModel
  */
 export type BankPromo = Prisma.BankPromoModel
 /**
+ * Model BankPromoBotSource
+ * 
+ */
+export type BankPromoBotSource = Prisma.BankPromoBotSourceModel
+/**
  * Model ApiKey
  * 
  */

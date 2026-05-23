@@ -77,6 +77,7 @@ export const ModelName = {
   MercadoLibreAuth: 'MercadoLibreAuth',
   SystemHealthLog: 'SystemHealthLog',
   BankPromo: 'BankPromo',
+  BankPromoBotSource: 'BankPromoBotSource',
   ApiKey: 'ApiKey'
 } as const
 
@@ -516,6 +517,20 @@ export const BankPromoScalarFieldEnum = {
 } as const
 
 export type BankPromoScalarFieldEnum = (typeof BankPromoScalarFieldEnum)[keyof typeof BankPromoScalarFieldEnum]
+
+
+export const BankPromoBotSourceScalarFieldEnum = {
+  id: 'id',
+  url: 'url',
+  active: 'active',
+  lastCheckedAt: 'lastCheckedAt',
+  lastStatus: 'lastStatus',
+  lastMessage: 'lastMessage',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BankPromoBotSourceScalarFieldEnum = (typeof BankPromoBotSourceScalarFieldEnum)[keyof typeof BankPromoBotSourceScalarFieldEnum]
 
 
 export const ApiKeyScalarFieldEnum = {
