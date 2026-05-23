@@ -27,7 +27,7 @@ type Issue = {
   providerSlug?: string;
 };
 
-const SUCCESS_STATUSES = new Set(["ok", "ready", "success"]);
+const SUCCESS_STATUSES = new Set(["ok", "ready", "success", "skipped"]);
 const SATURATION_PATTERNS = [
   /max clients reached/i,
   /emaxconnsession/i,

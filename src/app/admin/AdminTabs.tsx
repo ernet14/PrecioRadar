@@ -6,7 +6,8 @@ import { cn } from "@/lib/cn";
 
 const TABS: { href: string; label: string; exact?: boolean }[] = [
   { href: "/admin", label: "Resumen", exact: true },
-  { href: "/admin/promos", label: "Promos" },
+  { href: "/admin/promos", label: "Promos", exact: true },
+  { href: "/admin/promos/bot", label: "Bot promos" },
   { href: "/admin/importar", label: "Importar" },
   { href: "/admin/monitor", label: "Monitor en vivo" },
   { href: "/admin/status", label: "Estado" },

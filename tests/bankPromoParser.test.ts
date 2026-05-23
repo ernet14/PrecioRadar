@@ -2,6 +2,15 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { parseBankPromoText, slugifyEntity } from "../src/services/bankPromoParser";
 
+function localDateKey(date: Date | null | undefined) {
+  if (!date) return null;
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join("-");
+}
+
 test("slugifyEntity normaliza acentos y espacios", () => {
   assert.equal(slugifyEntity("Banco Nación"), "banco-nacion");
   assert.equal(slugifyEntity("Naranja X"), "naranja-x");
@@ -106,4 +115,24 @@ test("texto sin entidad conocida deja entity vacio (revisar a mano)", () => {
   assert.equal(draft.entity, "");
   assert.equal(draft.entitySlug, "");
   assert.equal(draft.discountPct, 10);
+});
+
+test("parsea vigencia con rango numerico", () => {
+  const draft = parseBankPromoText(
+    "BBVA 30% de descuento del 11/05/2026 al 17/05/2026 con tope de $8.000.",
+    new Date("2026-05-12T12:00:00"),
+  );
+
+  assert.equal(localDateKey(draft.validFrom), "2026-05-11");
+  assert.equal(localDateKey(draft.validUntil), "2026-05-17");
+});
+
+test("parsea vigencia con rango escrito", () => {
+  const draft = parseBankPromoText(
+    "Galicia 20% de reintegro del 2 al 8 de noviembre de 2026.",
+    new Date("2026-10-20T12:00:00"),
+  );
+
+  assert.equal(localDateKey(draft.validFrom), "2026-11-02");
+  assert.equal(localDateKey(draft.validUntil), "2026-11-08");
 });

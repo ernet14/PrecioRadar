@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { CommercialEventBanner } from "@/components/commercial/CommercialEventBanner";
 import { Container } from "@/components/layout/Container";
 import { SearchForm } from "@/components/search/SearchForm";
 import { Badge } from "@/components/ui/Badge";
@@ -131,6 +132,7 @@ export default async function Home() {
 
   return (
     <main className="bg-section-soft text-slate-950">
+      <CommercialEventBanner />
       <section className="relative overflow-hidden bg-hero-premium text-white">
         {/* Capa: grid técnico tenue */}
         <div

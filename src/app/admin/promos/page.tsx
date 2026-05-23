@@ -97,6 +97,12 @@ export default async function PromosPage() {
             <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-semibold text-slate-700">
               {promos.length} cargadas · {activeToday.length} activas hoy
             </span>
+            <Link
+              className="rounded-lg bg-slate-950 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-slate-800"
+              href="/admin/promos/bot"
+            >
+              Ver bot de promos
+            </Link>
           </div>
         </section>
 

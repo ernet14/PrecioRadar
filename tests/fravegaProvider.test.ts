@@ -3,6 +3,7 @@ import test, { afterEach } from "node:test";
 import { createVtexProvider } from "../src/providers/stores/vtexProvider";
 import { fravegaProvider as realFravegaProvider } from "../src/providers/stores/fravegaProvider";
 import { vtexProviders } from "../src/providers/stores/vtexStores";
+import { getCircuitSnapshot } from "../src/lib/circuitBreaker";
 
 // El provider real de Frávega está `blocked` (403 persistente), así que para
 // cubrir la normalización VTEX usamos una instancia equivalente sin bloquear.
@@ -107,6 +108,30 @@ test("returns empty on Fravega HTTP error", async () => {
   const products = await fravegaProvider.searchProducts("Galaxy A55");
 
   assert.deepEqual(products, []);
+});
+
+test("opens the VTEX circuit on scripts-not-allowed blocks", async () => {
+  delete process.env.DATABASE_URL;
+  delete process.env.DIRECT_URL;
+  const blockedProvider = createVtexProvider({
+    name: "script-block-test",
+    storeSlug: "script-block-test",
+    storeName: "Script Block Test",
+    baseUrl: "https://www.example.com",
+  });
+  let fetchCount = 0;
+  globalThis.fetch = (async () => {
+    fetchCount += 1;
+    return new Response("Bad Request! Scripts are not allowed!", { status: 400 });
+  }) as typeof fetch;
+
+  for (let index = 0; index < 5; index += 1) {
+    assert.deepEqual(await blockedProvider.searchProducts("Galaxy A55"), []);
+  }
+
+  assert.equal(getCircuitSnapshot("vtex:script-block-test")?.state, "open");
+  assert.deepEqual(await blockedProvider.searchProducts("Galaxy A55"), []);
+  assert.equal(fetchCount, 5);
 });
 
 test("the real Fravega provider is blocked and does not hit the network", async () => {

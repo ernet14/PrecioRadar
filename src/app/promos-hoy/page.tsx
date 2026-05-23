@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/layout/Container";
+import { CommercialEventBanner } from "@/components/commercial/CommercialEventBanner";
 import { Card } from "@/components/ui/Card";
 import { formatDate } from "@/lib/utils";
 import { getAbsoluteUrl } from "@/lib/seo/site";
@@ -61,6 +62,7 @@ export default async function PromosHoyPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <CommercialEventBanner now={today} />
       <Container className="space-y-8">
         <section className="rounded-3xl bg-slate-950 p-6 text-white shadow-[0_24px_60px_rgba(15,23,42,0.18)] md:p-8">
           <p className="text-sm font-semibold text-emerald-200">

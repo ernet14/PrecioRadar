@@ -107,6 +107,13 @@ function extractProductId(url: string): string | null {
   return match ? match[1] : null;
 }
 
+function shouldOpenCircuitForVtexFailure(status: number | undefined, errorMessage: string | undefined) {
+  if (typeof status !== "number") return true;
+  if (status < 400 || status >= 500) return true;
+
+  return status === 400 && /scripts are not allowed/i.test(errorMessage ?? "");
+}
+
 export function createVtexProvider(config: VtexStoreConfig): StoreProvider {
   const { name, storeSlug, storeName, baseUrl, blocked = false } = config;
   const circuitName = `vtex:${storeSlug}`;
@@ -181,11 +188,12 @@ export function createVtexProvider(config: VtexStoreConfig): StoreProvider {
       const latencyMs = performance.now() - startedAt;
 
       if (result.errorMessage || result.data === null) {
-        // Solo abrir el circuito ante fallos transitorios (no 4xx permanentes).
-        const status = result.status;
-        const isPermanentClientError =
-          typeof status === "number" && status >= 400 && status < 500;
-        if (!isPermanentClientError) recordCircuitFailure(circuitName);
+        // La mayoria de 4xx son permanentes, pero VTEX usa 400 "Scripts are
+        // not allowed" como bloqueo anti-automatizacion. En ese caso abrimos
+        // circuito para no seguir golpeando todas las tiendas y llenar logs.
+        if (shouldOpenCircuitForVtexFailure(result.status, result.errorMessage)) {
+          recordCircuitFailure(circuitName);
+        }
         await recordFailure("searchProducts", result.errorMessage ?? "Sin datos.");
         return [];
       }

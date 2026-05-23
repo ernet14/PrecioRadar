@@ -7,6 +7,7 @@ import {
   deactivateExpiredBankPromos,
   evaluateBankPromoNotifications,
 } from "@/services/bankPromoService";
+import { importBankPromosFromConfiguredSources } from "@/services/bankPromoBotService";
 
 export const dynamic = "force-dynamic";
 
@@ -17,12 +18,17 @@ async function handleEvaluateBankPromos(request: Request) {
     return cronUnauthorizedResponse(authorization);
   }
 
-  // Mantenimiento: dar de baja las promos vencidas antes de evaluar.
+  // Bot de integración: lee fuentes configuradas, importa/actualiza promos y
+  // luego corre el mantenimiento + notificaciones.
+  const importResult = await importBankPromosFromConfiguredSources();
   const deactivated = await deactivateExpiredBankPromos();
   const result = await evaluateBankPromoNotifications();
 
   if (result.status === "evaluated") {
-    return Response.json({ ...result, deactivated }, { headers: noStoreHeaders });
+    return Response.json(
+      { ...result, deactivated, importResult },
+      { headers: noStoreHeaders },
+    );
   }
 
   if (result.status === "database_unavailable") {

@@ -12,6 +12,8 @@ export type ParsedBankPromoDraft = {
   installments: number | null;
   dayOfWeek: number[];
   paymentType: string;
+  validFrom: Date | null;
+  validUntil: Date | null;
   notes: string;
 };
 
@@ -50,6 +52,22 @@ const DAY_INDEX: Record<string, number> = {
   jueves: 4,
   viernes: 5,
   sabado: 6,
+};
+
+const MONTH_INDEX: Record<string, number> = {
+  enero: 0,
+  febrero: 1,
+  marzo: 2,
+  abril: 3,
+  mayo: 4,
+  junio: 5,
+  julio: 6,
+  agosto: 7,
+  septiembre: 8,
+  setiembre: 8,
+  octubre: 9,
+  noviembre: 10,
+  diciembre: 11,
 };
 
 export function slugifyEntity(value: string): string {
@@ -181,7 +199,120 @@ function detectPaymentType(text: string): string {
   return "cualquiera";
 }
 
-export function parseBankPromoText(text: string): ParsedBankPromoDraft {
+function normalizeYear(rawYear: string | undefined, fallbackYear: number) {
+  if (!rawYear) return fallbackYear;
+  const year = Number.parseInt(rawYear, 10);
+  if (!Number.isFinite(year)) return fallbackYear;
+  return year < 100 ? 2000 + year : year;
+}
+
+function dateAtStartOfDay(year: number, monthIndex: number, day: number) {
+  const date = new Date(year, monthIndex, day);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function dateAtEndOfDay(year: number, monthIndex: number, day: number) {
+  const date = new Date(year, monthIndex, day, 23, 59, 59, 999);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function parseNumericDate(
+  day: string,
+  month: string,
+  year: string | undefined,
+  fallbackYear: number,
+  endOfDay: boolean,
+) {
+  const parsedDay = Number.parseInt(day, 10);
+  const parsedMonth = Number.parseInt(month, 10) - 1;
+  const parsedYear = normalizeYear(year, fallbackYear);
+
+  if (
+    !Number.isFinite(parsedDay) ||
+    !Number.isFinite(parsedMonth) ||
+    parsedDay < 1 ||
+    parsedDay > 31 ||
+    parsedMonth < 0 ||
+    parsedMonth > 11
+  ) {
+    return null;
+  }
+
+  return endOfDay
+    ? dateAtEndOfDay(parsedYear, parsedMonth, parsedDay)
+    : dateAtStartOfDay(parsedYear, parsedMonth, parsedDay);
+}
+
+function detectValidityRange(
+  text: string,
+  referenceDate = new Date(),
+): { validFrom: Date | null; validUntil: Date | null } {
+  const fallbackYear = referenceDate.getFullYear();
+  const numericRange = text.match(
+    /(?:del|desde(?:\s+el)?)\s+(\d{1,2})[\/.-](\d{1,2})(?:[\/.-](\d{2,4}))?\s+(?:al|hasta(?:\s+el)?)\s+(\d{1,2})[\/.-](\d{1,2})(?:[\/.-](\d{2,4}))?/i,
+  );
+
+  if (numericRange) {
+    const startYear = numericRange[3] ?? numericRange[6];
+    const endYear = numericRange[6] ?? numericRange[3];
+    return {
+      validFrom: parseNumericDate(
+        numericRange[1],
+        numericRange[2],
+        startYear,
+        fallbackYear,
+        false,
+      ),
+      validUntil: parseNumericDate(
+        numericRange[4],
+        numericRange[5],
+        endYear,
+        fallbackYear,
+        true,
+      ),
+    };
+  }
+
+  const writtenRange = removeAccents(text.toLowerCase()).match(
+    /(?:del|desde(?: el)?)\s+(\d{1,2})\s+(?:al|hasta(?: el)?)\s+(\d{1,2})\s+de\s+([a-z]+)(?:\s+de\s+(\d{2,4}))?/,
+  );
+
+  if (writtenRange) {
+    const monthIndex = MONTH_INDEX[writtenRange[3]];
+    const year = normalizeYear(writtenRange[4], fallbackYear);
+
+    if (monthIndex !== undefined) {
+      return {
+        validFrom: dateAtStartOfDay(year, monthIndex, Number.parseInt(writtenRange[1], 10)),
+        validUntil: dateAtEndOfDay(year, monthIndex, Number.parseInt(writtenRange[2], 10)),
+      };
+    }
+  }
+
+  const until = text.match(
+    /(?:hasta|vigente hasta|valida? hasta|vence(?: el)?)\s+(?:el\s+)?(\d{1,2})[\/.-](\d{1,2})(?:[\/.-](\d{2,4}))?/i,
+  );
+
+  if (until) {
+    return {
+      validFrom: null,
+      validUntil: parseNumericDate(
+        until[1],
+        until[2],
+        until[3],
+        fallbackYear,
+        true,
+      ),
+    };
+  }
+
+  return { validFrom: null, validUntil: null };
+}
+
+export function parseBankPromoText(
+  text: string,
+  referenceDate = new Date(),
+): ParsedBankPromoDraft {
   const entity = detectEntity(text) ?? "";
 
   const installmentsMatch = text.match(/(\d{1,2})\s*(?:cuotas|pagos)/i);
@@ -197,6 +328,7 @@ export function parseBankPromoText(text: string): ParsedBankPromoDraft {
   const promoType = isInstallments ? "installments" : isRefund ? "refund" : "percentage";
 
   const dayOfWeek = detectDays(text);
+  const validity = detectValidityRange(text, referenceDate);
 
   return {
     entity,
@@ -207,6 +339,8 @@ export function parseBankPromoText(text: string): ParsedBankPromoDraft {
     installments,
     dayOfWeek,
     paymentType: detectPaymentType(text),
+    validFrom: validity.validFrom,
+    validUntil: validity.validUntil,
     notes: text.trim().slice(0, 500),
   };
 }
