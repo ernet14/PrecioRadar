@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { getCanonicalProductKey, normalizeEan } from "../src/lib/utils/text";
+import { getCanonicalProductKey, getPhoneCanonicalKey, normalizeEan } from "../src/lib/utils/text";
 
 test("EAN agrupa el mismo producto aunque el título y la marca difieran", () => {
   const carrefour = getCanonicalProductKey({
@@ -65,19 +65,64 @@ test("usa el token más largo (SKU específico) y no la familia corta", () => {
   assert.equal(key, "lg-55up7750psb");
 });
 
-test("NO agrupa variantes de capacidad distintas (token corto < 6)", () => {
-  const gb128 = getCanonicalProductKey({
-    name: "Samsung Galaxy A55 5G 128GB",
-    brand: "Samsung",
-  });
-  const gb256 = getCanonicalProductKey({
-    name: "Samsung Galaxy A55 5G 256GB",
-    brand: "Samsung",
-  });
+test("celular: agrupa por marca+modelo+capacidad pero NO mezcla capacidades", () => {
+  const gb128 = getCanonicalProductKey({ name: "Samsung Galaxy A55 5G 128GB", brand: "Samsung" });
+  const gb256 = getCanonicalProductKey({ name: "Samsung Galaxy A55 5G 256GB", brand: "Samsung" });
 
-  // Sin SKU largo confiable => null en ambos => caen al nombre normalizado.
-  assert.equal(gb128, null);
-  assert.equal(gb256, null);
+  assert.equal(gb128, "phone-samsung-a55-128");
+  assert.equal(gb256, "phone-samsung-a55-256");
+  assert.notEqual(gb128, gb256); // 128 != 256 siguen separados.
+});
+
+test("celular: el mismo modelo+capacidad agrupa entre tiendas (ignora color y EAN por-variante)", () => {
+  // Títulos reales de Naldo y Carrefour (la sonda los trajo con EANs vacíos o distintos).
+  const naldo = getCanonicalProductKey({ name: "Celular Samsung Galaxy A15 4GB 128GB Black", brand: "Samsung" });
+  const carrefour = getCanonicalProductKey({ name: "Celular  Samsung Galaxy A15 128GB 4GB RAM", brand: "Samsung", ean: "0000000000000" });
+  assert.equal(naldo, "phone-samsung-a15-128");
+  assert.equal(carrefour, "phone-samsung-a15-128");
+});
+
+test("celular: variantes con sufijo (S24 Ultra) agrupan entre 3 tiendas con storage en formatos distintos", () => {
+  const coppel = getCanonicalProductKey({ name: "Celular Samsung S24 Ultra 12GB 256GB Gris", brand: "Samsung" });
+  const carrefour = getCanonicalProductKey({ name: "Celular Samsung Galaxy S24 Ultra 12/256 GB 5G", brand: "Samsung" });
+  const jumbo = getCanonicalProductKey({ name: "Celular Samsung Galaxy S24 Ultra 256gb Titanium", brand: "Samsung", ean: "8806095316888" });
+  assert.equal(coppel, "phone-samsung-s24-ultra-256");
+  assert.equal(carrefour, "phone-samsung-s24-ultra-256");
+  assert.equal(jumbo, "phone-samsung-s24-ultra-256"); // gana sobre el EAN.
+});
+
+test("celular: Motorola, Xiaomi y Apple agrupan por modelo+capacidad", () => {
+  assert.equal(getCanonicalProductKey({ name: "Celular Motorola G24 4GB 128GB Gris", brand: "Motorola" }), "phone-motorola-g24-128");
+  assert.equal(getCanonicalProductKey({ name: "Celular Motorola Moto G24 6.6  4GB Ram 128GB Pink", brand: "Motorola" }), "phone-motorola-g24-128");
+  assert.equal(getCanonicalProductKey({ name: "Celular Motorola Edge 50 Fusion 8GB 256GB Celeste", brand: "Motorola" }), "phone-motorola-edge-50-fusion-256");
+  assert.equal(getCanonicalProductKey({ name: "Celular libre Motorola Edge 50 fusion 8gb 256gb", brand: "Motorola" }), "phone-motorola-edge-50-fusion-256");
+  assert.equal(getCanonicalProductKey({ name: "Celular Xiaomi Redmi Note 13 4G 6 Gb 128 Gb Verde", brand: "Xiaomi", ean: "6941812763858" }), "phone-xiaomi-redmi-note-13-128");
+  assert.equal(getCanonicalProductKey({ name: "Celular libre Xiaomi redmi note 13 6gb 128 gb azul", brand: "Xiaomi" }), "phone-xiaomi-redmi-note-13-128");
+  assert.equal(getCanonicalProductKey({ name: 'IPhone 15 Apple 6.1" 128Gb Negro', brand: "Apple", ean: "195949034701" }), "phone-apple-iphone-15-128");
+  assert.equal(getCanonicalProductKey({ name: "Celular iPhone 15 128gb", brand: "Apple" }), "phone-apple-iphone-15-128");
+});
+
+test("celular: capacidad en formato '256/8gb' (gb solo en la RAM) se detecta", () => {
+  // Título real de Carrefour electro: "Edge 50 FUSION 5g 256/8gb" → norm "256 8gb".
+  const key = getCanonicalProductKey({ name: "Celular Motorola Moto Edge 50 FUSION 5g 256/8gb", brand: "Motorola" });
+  assert.equal(key, "phone-motorola-edge-50-fusion-256");
+});
+
+test("celular sin capacidad confiable: cae al EAN (no inventa clave de modelo)", () => {
+  // Título real de Cetrogar: trae RAM (6GB) pero no almacenamiento.
+  const key = getCanonicalProductKey({ name: "Celular Xiaomi Redmi Note 13 6.6'' 6GB negro", brand: "Xiaomi", ean: "6941812764015" });
+  assert.equal(key, "ean-6941812764015");
+});
+
+test("accesorio de celular NO recibe clave de teléfono", () => {
+  assert.equal(getPhoneCanonicalKey({ name: "Funda para Samsung Galaxy A15 5G flores", brand: "Samsung" }), null);
+  assert.equal(getPhoneCanonicalKey({ name: "Bandeja de tarjeta SIM para Samsung Galaxy A15 5G", brand: "Samsung" }), null);
+  assert.equal(getPhoneCanonicalKey({ name: "Smartwatch Samsung Galaxy Watch8 128GB", brand: "Samsung" }), null);
+});
+
+test("TV Samsung con EAN sigue agrupando por EAN (no es teléfono)", () => {
+  const key = getCanonicalProductKey({ name: "Smart TV LED 50'' Samsung Crystal UHD 4K U8000F", brand: "Samsung", ean: "8806097300984" });
+  assert.equal(key, "ean-8806097300984");
 });
 
 test("devuelve null cuando no hay SKU alfanumérico confiable", () => {
