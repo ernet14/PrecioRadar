@@ -51,8 +51,13 @@ contra nada — y un comparador sin comparación no entrega su valor central.
 - **Higiene** ✅: el cron ahora marca `available=false` las ofertas de tiendas con bloqueo
   permanente (`provider.blocked`) en vez de saltearlas; `scripts/cleanup-blocked-offers.ts`
   limpió las existentes (46 Frávega + 2 ML).
+- **Descubrimiento sobre catálogo existente** ✅: `scripts/densify-existing.ts` toma cada
+  producto con oferta en 1 sola tienda + clave canónica, re-busca su nombre en las otras VTEX
+  y persiste las ofertas cuya clave coincide exactamente (match seguro por EAN/SKU/phone-key).
+  Ataca la causa raíz (catálogo sembrado por tienda sin solape) y escala. Idempotente.
 - **Medición**: `scripts/measure-comparables.ts` (reusa `getScorecardHeadline`).
-  `comparableRate` honesto pasó de **8% (sucio) → 14% (40 comparables / 291 con ofertas)**.
+  `comparableRate` honesto: **8% (sucio) → 14% (seed+higiene) → 20% (61 comparables / 298 con
+  ofertas, tras descubrimiento)**.
 - Telcos (Movistar/Claro/Personal): **descartadas** — Movistar no es VTEX (devolvió HTML) y
   los celulares ya comparan en las VTEX de electro.
 - **Próximo**: seguir sumando modelos electro/EAN de alto solape (TVs/electro agrupan 4-6
