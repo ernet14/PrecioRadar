@@ -68,6 +68,14 @@ contra nada — y un comparador sin comparación no entrega su valor central.
   dio **0 nuevos** comparables — los 124 productos de 1 sola tienda restantes son modelos
   discontinuados/exclusivos que no existen en otras VTEX. Subir el rate ahora depende de
   **sembrar modelos vigentes de alto solape** (electro/TV), no de re-descubrir lo viejo.
+- **Pipeline automático de densificación** ✅ (2026-05-24): `scripts/auto-densify.ts` descubre
+  candidatos en VTEX activas, agrupa por clave canónica, bloquea grupos sospechosos por
+  dispersión de precio, mide comparabilidad y reporta precios basura. Dry-run por defecto;
+  `--apply` persiste solo grupos seguros.
+- **Apply automático ejecutado** ✅ (2026-05-24): `auto-densify --apply` persistió grupos
+  seguros adicionales y dejó bloqueado 1 grupo sospechoso por dispersión x4.75. Resultado:
+  **comparableRate 26% → 34%** (92 comparables / 271 con ofertas vivas). Auditoría limpia:
+  0 sospechosos en DB y 0 precios caros rotos bajo $10k.
 - **Segunda tanda de seed** (2026-05-23): +5 modelos vigentes — TVs entrada (Crystal UHD 50/43
   DU7000) y **primera línea blanca** (heladera Samsung RT38, microondas BGH B223D, lavarropas
   Samsung WW90), todos agrupando por EAN súper+electro. **comparableRate 25% → 26%**
@@ -92,7 +100,13 @@ Compone con el tiempo igual que el `PriceHistory`. Más valioso que features nue
   `listRealProductsByCategory` (mismos filtros de indexabilidad que el sitemap) en vez del
   catálogo mock; cae al mock solo si la categoría aún no tiene dataset real. Metadata,
   contador y JSON-LD `CollectionPage` ahora reflejan precios/ofertas reales; badge "N tiendas"
-  + conteo de comparables en la cabecera. `revalidate=3600`.
+  + conteo de comparables en la cabecera. `revalidate=3600`. El 2026-05-24 se sumó
+  normalización feed→taxonomía curada en lectura, para que slugs VTEX crudos como
+  `tv-y-video` / `electro-y-tecnologia` alimenten páginas curadas cuando el nombre permite
+  clasificar sin ambigüedad.
+- **Links internos y schema priorizando comparables** ✅ (2026-05-24): los similares en
+  `/producto/[slug]` ahora salen de la categoría curada y priorizan productos comparables;
+  `/categoria/[slug]` suma `ItemList` en JSON-LD con `AggregateOffer` cuando hay 2+ tiendas.
 
 ### Fase 3+ — Índice de inflación / capa de datos B2B (motor iniciado 2026-05-23)
 Índice de precios/inflación público + radar dólar pass-through, sobre el dataset VTEX
@@ -108,8 +122,9 @@ acumulado. Recién acá el cobro B2B tiene algo único que vender.
   que el índice es casi plano (base 100 → ~99) y NO mide inflación todavía. Compone solo con el
   cron diario. **Página pública diferida** hasta tener ~30+ días de serie (evitar publicar un
   índice engañoso); mientras tanto vive en el admin como "construyendo serie".
-- **Índice por categoría bloqueado** por la taxonomía cruda del feed (ver
-  [aprendizajes](../memory/aprendizajes.md) → "taxonomía"): falta mapear feed→taxonomía curada.
+- **Índice por categoría destrabado en código** (2026-05-24): `computePriceIndex({categorySlug})`
+  normaliza la categoría cruda con slug + nombre del producto antes de segmentar. Falta medir
+  con DB real si la cobertura por categoría ya es suficiente para publicar.
 - Pendiente Fase 3: radar dólar pass-through, página pública del índice, segmentación por
   categoría real.
 

@@ -13,6 +13,7 @@
 // Honesto por diseño: con pocos días el índice es casi plano; gana sentido a medida
 // que el cron diario acumula serie. `days`/`productsTracked` exponen la madurez.
 import { getPrismaClient } from "@/lib/prisma";
+import { normalizeCategorySlug } from "@/data/categories";
 
 export type PriceIndexPoint = {
   date: string; // YYYY-MM-DD
@@ -30,7 +31,13 @@ export type PriceIndexResult = {
   days: number;
 };
 
-type Row = { product_id: string; day: Date; median_price: unknown };
+type Row = {
+  category_slug: string;
+  median_price: unknown;
+  product_id: string;
+  product_name: string;
+  day: Date;
+};
 
 function toDayKey(day: Date): string {
   return new Date(day).toISOString().split("T")[0];
@@ -57,6 +64,8 @@ export async function computePriceIndex(opts?: {
   try {
     const rows = await prisma.$queryRaw<Row[]>`
       SELECT ph."productId" AS product_id,
+             pr.name AS product_name,
+             c.slug AS category_slug,
              DATE(ph."recordedAt") AS day,
              percentile_cont(0.5) WITHIN GROUP (ORDER BY ph.price) AS median_price
       FROM "PriceHistory" ph
@@ -69,16 +78,21 @@ export async function computePriceIndex(opts?: {
         AND s."deletedAt" IS NULL
         AND s."isDemo" = false
         AND s.active = true
-        AND (${categorySlug}::text IS NULL OR c.slug = ${categorySlug})
-      GROUP BY ph."productId", DATE(ph."recordedAt")
+      GROUP BY ph."productId", pr.name, c.slug, DATE(ph."recordedAt")
       ORDER BY day ASC`;
 
-    if (rows.length === 0) return EMPTY;
+    const filteredRows = categorySlug
+      ? rows.filter((row) =>
+          normalizeCategorySlug({ name: row.product_name, slug: row.category_slug }) === categorySlug,
+        )
+      : rows;
+
+    if (filteredRows.length === 0) return EMPTY;
 
     // day -> (productId -> precio mediano)
     const byDay = new Map<string, Map<string, number>>();
     const products = new Set<string>();
-    for (const row of rows) {
+    for (const row of filteredRows) {
       const price = Number(row.median_price);
       if (!Number.isFinite(price) || price <= 0) continue;
       const key = toDayKey(row.day);

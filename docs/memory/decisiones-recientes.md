@@ -4,6 +4,24 @@
 > proyecto versionado en el repo (distinto de la memoria cross-sesión del agente, que vive
 > fuera del repo).
 
+## 2026-05-24 — SEO interno prioriza comparables
+- En categorías, el schema `ItemList` expone `AggregateOffer` cuando un producto compara en
+  varias tiendas. En producto, los similares salen de la categoría curada y se ordenan poniendo
+  comparables primero.
+
+## 2026-05-24 — Densificación automática con gate conservador
+- `scripts/auto-densify.ts` reemplaza el ciclo manual de buscar modelos, aplicar, medir y
+  auditar. El modo `--apply` persiste solo grupos nuevos no sospechosos; los de dispersión alta
+  quedan bloqueados salvo `--include-suspects` explícito.
+- Primer apply completo: comparableRate **34%** (92/271), con 1 grupo bloqueado por dispersión
+  alta y auditoría DB limpia.
+
+## 2026-05-24 — Taxonomía curada sin migración inmediata
+- Para destrabar SEO por categoría e índice segmentado, las categorías crudas VTEX se
+  normalizan en lectura/escritura con `normalizeCategorySlug(slug + nombre)`: las páginas e
+  índice incluyen aliases existentes, pero los slugs ambiguos quedan crudos si el nombre no
+  alcanza para clasificarlos. No se migra la DB todavía.
+
 ## 2026-05-22 — Reposicionamiento a capa de datos
 - PrecioRadar se reposiciona de "comparador" a **capa de datos de precios** (índice de
   inflación). El activo es la serie `PriceHistory`. Ver [negocio](../contexto/negocio.md).

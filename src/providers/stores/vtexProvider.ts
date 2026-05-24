@@ -1,4 +1,5 @@
 import { normalizeProductName, slugify } from "@/lib/utils";
+import { normalizeCategorySlug } from "@/data/categories";
 import {
   isCircuitOpen,
   recordCircuitFailure,
@@ -98,7 +99,11 @@ function getCategorySlug(product: VtexProduct): string | null {
   if (typeof first !== "string") return null;
   // VTEX entrega "/Celulares/Accesorios.../" — usamos el primer segmento.
   const segment = first.split("/").filter(Boolean)[0];
-  return segment ? slugify(segment) : null;
+  const rawSlug = segment ? slugify(segment) : null;
+  return normalizeCategorySlug({
+    name: typeof product.productName === "string" ? product.productName : null,
+    slug: rawSlug,
+  });
 }
 
 function extractProductId(url: string): string | null {

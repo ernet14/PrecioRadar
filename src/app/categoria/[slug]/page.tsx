@@ -55,13 +55,14 @@ export async function generateMetadata({
 
   const { products } = await getCategoryProducts(slug);
   const productCount = products.length;
+  const comparableCount = products.filter(isComparable).length;
   const minPrice = products.length
     ? Math.min(...products.map((product) => product.price))
     : null;
 
   const title = `${descriptor.name} — Comparador de precios`;
   const description = minPrice
-    ? `${descriptor.description} Desde ${formatCurrencyARS(minPrice)} en ${productCount} producto${productCount === 1 ? "" : "s"}.`
+    ? `${descriptor.description} Desde ${formatCurrencyARS(minPrice)} en ${productCount} producto${productCount === 1 ? "" : "s"}${comparableCount > 0 ? `, con ${comparableCount} comparado${comparableCount === 1 ? "" : "s"} en varias tiendas` : ""}.`
     : descriptor.description;
   const canonical = getAbsoluteUrl(`/categoria/${slug}`);
 
@@ -122,6 +123,31 @@ export default async function CategoriaPage({ params }: CategoriaPageProps) {
         price: String(product.price),
       },
     })),
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: products.slice(0, 20).map((product, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: getAbsoluteUrl(`/producto/${product.slug}`),
+        item: {
+          "@type": "Product",
+          name: product.name,
+          url: getAbsoluteUrl(`/producto/${product.slug}`),
+          offers: isComparable(product)
+            ? {
+                "@type": "AggregateOffer",
+                lowPrice: String(product.price),
+                offerCount: product.storeCount,
+                priceCurrency: "ARS",
+              }
+            : {
+                "@type": "Offer",
+                priceCurrency: "ARS",
+                price: String(product.price),
+              },
+        },
+      })),
+    },
   };
 
   const breadcrumbSchema = {

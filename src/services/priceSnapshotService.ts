@@ -3,6 +3,7 @@ import { logger } from "@/lib/logger";
 import { providerByStoreSlug } from "@/providers/stores";
 import type { ProviderProduct } from "@/providers/stores/types";
 import { getCanonicalProductKey, slugify } from "@/lib/utils";
+import { normalizeCategorySlug } from "@/data/categories";
 
 export type SnapshotResult = {
   status: "completed" | "database_unavailable" | "error" | "no_offers";
@@ -178,7 +179,10 @@ export async function persistProductOfferView(offer: ProviderProduct): Promise<v
 
     if (store.deletedAt) return;
 
-    const categorySlug = offer.categorySlug ?? "general";
+    const categorySlug = normalizeCategorySlug({
+      name: offer.name,
+      slug: offer.categorySlug,
+    }) ?? "general";
     const category = await ensureCategory(prisma, categorySlug, categorySlug);
 
     if (category.deletedAt) return;

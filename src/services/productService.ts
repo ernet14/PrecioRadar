@@ -11,6 +11,7 @@ import { getPurchaseRecommendation } from "@/services/recommendationService";
 import { detectDealQuality, type DealQuality } from "@/services/fakeDiscountService";
 import { getPrismaClient } from "@/lib/prisma";
 import { persistProductOfferView } from "@/services/priceSnapshotService";
+import { getCategoryQuerySlugs, normalizeCategorySlug } from "@/data/categories";
 
 export type ProductDetail = {
   slug: string;
@@ -38,6 +39,8 @@ export type ProductSummary = {
   price: number;
   storeName: string;
   recommendationLabel: string;
+  comparable?: boolean;
+  storeCount?: number;
 };
 
 function getProductSlug(product: ProviderProduct) {
@@ -170,16 +173,18 @@ export async function listRealProductsByCategory(
     available: true,
     store: { deletedAt: null, isDemo: false, active: true },
   };
+  const categorySlugs = getCategoryQuerySlugs(categorySlug);
 
   try {
     const products = await prisma.product.findMany({
       where: {
-        category: { slug: categorySlug },
+        category: { slug: { in: categorySlugs } },
         deletedAt: null,
         isDemo: false,
         offers: { some: liveOffer },
       },
       include: {
+        category: true,
         offers: {
           where: liveOffer,
           include: { store: true },
@@ -190,6 +195,9 @@ export async function listRealProductsByCategory(
     });
 
     return products
+      .filter((product) =>
+        normalizeCategorySlug({ name: product.name, slug: product.category.slug }) === categorySlug,
+      )
       .map((product) => {
         const storeCount = new Set(
           product.offers.map((offer) => offer.storeId),
@@ -383,37 +391,63 @@ function dbToProviderProduct(args: {
 
 async function getRealSimilarProducts(
   prisma: NonNullable<ReturnType<typeof getPrismaClient>>,
-  product: { id: string; categoryId: string },
+  product: { id: string },
+  categorySlug: string | null,
 ): Promise<ProductSummary[]> {
+  const categorySlugs = categorySlug ? getCategoryQuerySlugs(categorySlug) : [];
+  const liveOffer = {
+    isDemo: false,
+    available: true,
+    store: { deletedAt: null, isDemo: false, active: true },
+  };
   const others = await prisma.product.findMany({
     where: {
-      categoryId: product.categoryId,
+      ...(categorySlugs.length > 0
+        ? { category: { slug: { in: categorySlugs } } }
+        : {}),
       deletedAt: null,
       isDemo: false,
       id: { not: product.id },
+      offers: { some: liveOffer },
     },
     include: {
+      category: true,
       offers: {
-        where: { isDemo: false, available: true },
+        where: liveOffer,
         orderBy: { price: "asc" },
-        take: 1,
         include: { store: true },
       },
     },
-    take: 12,
+    take: 40,
   });
 
   return others
-    .filter((candidate) => candidate.offers.length > 0)
-    .slice(0, 4)
-    .map((candidate) => ({
-      slug: candidate.slug,
-      name: candidate.name,
-      imageUrl: candidate.imageUrl,
-      price: Number(candidate.offers[0].price),
-      storeName: candidate.offers[0].store.name,
-      recommendationLabel: "Sin historial verificado",
-    }));
+    .filter((candidate) =>
+      categorySlug
+        ? normalizeCategorySlug({ name: candidate.name, slug: candidate.category.slug }) === categorySlug
+        : true,
+    )
+    .map((candidate) => {
+      const storeCount = new Set(candidate.offers.map((offer) => offer.storeId)).size;
+      const comparable = storeCount >= 2;
+      return {
+        slug: candidate.slug,
+        name: candidate.name,
+        imageUrl: candidate.imageUrl,
+        price: Number(candidate.offers[0].price),
+        storeName: candidate.offers[0].store.name,
+        recommendationLabel: comparable
+          ? `Comparado en ${storeCount} tiendas`
+          : "Precio de 1 tienda",
+        comparable,
+        storeCount,
+      };
+    })
+    .sort((left, right) => {
+      if (left.comparable !== right.comparable) return left.comparable ? -1 : 1;
+      return left.price - right.price;
+    })
+    .slice(0, 4);
 }
 
 async function getRealProductDetailBySlug(
@@ -438,7 +472,10 @@ async function getRealProductDetailBySlug(
 
     if (liveOffers.length === 0) return null;
 
-    const categorySlug = product.category?.slug ?? null;
+    const categorySlug = normalizeCategorySlug({
+      name: product.name,
+      slug: product.category?.slug ?? null,
+    });
     const offers = sortOffers(
       liveOffers.map((offer) =>
         dbToProviderProduct({ product, categorySlug, offer, store: offer.store }),
@@ -458,7 +495,7 @@ async function getRealProductDetailBySlug(
       history: priceHistory,
       currentPrice: bestOffer.price,
     });
-    const similarProducts = await getRealSimilarProducts(prisma, product);
+    const similarProducts = await getRealSimilarProducts(prisma, product, categorySlug);
 
     return {
       slug: product.slug,

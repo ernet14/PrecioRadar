@@ -406,6 +406,11 @@ function SimilarProductCard({ product }: { product: ProductSummary }) {
         <ProductImage imageUrl={product.imageUrl} name={product.name} size="small" />
         </div>
         <div className="p-4">
+          {product.comparable && product.storeCount ? (
+            <span className="mb-2 inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100">
+              {product.storeCount} tiendas
+            </span>
+          ) : null}
           <h3 className="line-clamp-2 font-semibold leading-6 text-slate-950">
             {product.name}
           </h3>

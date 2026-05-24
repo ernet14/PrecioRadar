@@ -35,9 +35,9 @@
   `electro-y-tecnologia`…), fragmentada y por tienda. Consecuencias: (1) `/categoria/televisores`
   y otras curadas **caen al mock** porque no hay slug real que matchee; (2) el índice por
   categoría (`computePriceIndex({categorySlug})`) devuelve 0 salvo coincidencias sueltas
-  (`celulares`, `electrodomesticos`, `audio`, `herramientas`). Falta un **mapa feed→taxonomía
-  curada** (normalización de categorías) — tarea aparte, habilita SEO por categoría real + índice
-  segmentado.
+  (`celulares`, `electrodomesticos`, `audio`, `herramientas`). El 2026-05-24 se resolvió en
+  código con `normalizeCategorySlug(slug + nombre)`: los slugs ambiguos quedan crudos si el
+  nombre no alcanza para clasificarlos, para evitar meter productos en categorías falsas.
 - El veredicto de oferta tiene **una sola fuente de verdad**: `detectDealQuality`. No
   duplicar esa lógica; componerla con `verdictService`.
 

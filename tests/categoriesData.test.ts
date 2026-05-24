@@ -2,7 +2,9 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   getCategoryDescriptorBySlug,
+  getCategoryQuerySlugs,
   mvpCategoryDescriptors,
+  normalizeCategorySlug,
 } from "../src/data/categories";
 
 test("category descriptors have unique slugs", () => {
@@ -40,4 +42,36 @@ test("getCategoryDescriptorBySlug finds known slug", () => {
 
 test("getCategoryDescriptorBySlug returns null for unknown slug", () => {
   assert.equal(getCategoryDescriptorBySlug("inexistente-xyz"), null);
+});
+
+test("normalizeCategorySlug maps raw VTEX TV categories by product name", () => {
+  assert.equal(
+    normalizeCategorySlug({
+      name: "Samsung Smart TV QLED 55 Q6FAA 4K",
+      slug: "audio-tv-y-video",
+    }),
+    "televisores",
+  );
+});
+
+test("normalizeCategorySlug maps raw electro products by product name", () => {
+  assert.equal(
+    normalizeCategorySlug({
+      name: "Heladera Samsung No Frost RT38",
+      slug: "electro-y-tecnologia",
+    }),
+    "electrodomesticos",
+  );
+});
+
+test("normalizeCategorySlug keeps broad raw categories when product name is ambiguous", () => {
+  assert.equal(
+    normalizeCategorySlug({ name: "Producto generico", slug: "tecnologia" }),
+    "tecnologia",
+  );
+});
+
+test("getCategoryQuerySlugs includes raw aliases for curated category pages", () => {
+  assert.ok(getCategoryQuerySlugs("televisores").includes("tv-y-video"));
+  assert.ok(getCategoryQuerySlugs("electrodomesticos").includes("electro-y-tecnologia"));
 });

@@ -11,6 +11,7 @@ import {
   normalizeProductName,
   slugify,
 } from "@/lib/utils";
+import { normalizeCategorySlug } from "@/data/categories";
 import type {
   InputType,
   MatchType,
@@ -215,7 +216,9 @@ function getRelatedModelMatchScore(
     (token) => /^a\d{2}$/i.test(token),
   );
 
-  if (!queryGalaxyModel || product.categorySlug !== "celulares") {
+  const categorySlug = normalizeCategorySlug({ name: product.name, slug: product.categorySlug });
+
+  if (!queryGalaxyModel || categorySlug !== "celulares") {
     return 0;
   }
 
@@ -363,7 +366,7 @@ function providerProductToSearchResultItem(
     slug: productSlug,
     brand: product.brand,
     model: product.model,
-    categoryId: product.categorySlug ?? "demo",
+    categoryId: normalizeCategorySlug({ name: product.name, slug: product.categorySlug }) ?? "demo",
     imageUrl: product.imageUrl,
     normalizedName,
     isDemo: product.isDemo,
