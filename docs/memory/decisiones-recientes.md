@@ -8,6 +8,8 @@
 - El radar dólar v0 no descarga cotizaciones automáticamente: `measure-pass-through.ts` exige
   CSV `date,rate`. Motivo: la fuente de dólar debe quedar explícita y reproducible antes de
   mezclarla con el índice propio o usarla en B2B.
+- Fuente base elegida: dólar Banco Nación venta, exportado con `fetch-bna-dollar.ts` desde el
+  histórico oficial de BNA. Los días sin cotización se completan con carry-forward por defecto.
 
 ## 2026-05-24 — Índice público sigue bloqueado por madurez temporal
 - `scripts/measure-price-index.ts` mide el índice por categoría. La cobertura ya es útil en

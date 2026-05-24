@@ -135,6 +135,10 @@ acumulado. Recién acá el cobro B2B tiene algo único que vender.
   por lags 0/1/3/7/14 días. `scripts/measure-pass-through.ts` es read-only y exige fuente explícita
   para mantener reproducibilidad. No se publica UI: con 4-5 días de historia solo sirve como radar
   interno.
+- **Fuente BNA para dólar oficial** ✅ (2026-05-24): `scripts/fetch-bna-dollar.ts` exporta
+  dólar Banco Nación **venta** desde el histórico oficial de BNA a CSV compatible con el radar.
+  Completa días sin cotización (domingos/feriados) con carry-forward por defecto; se puede
+  desactivar con `--no-carry-forward`.
 - Pendiente Fase 3: página pública del índice, página pública del radar dólar y empaquetado B2B
   cuando haya 30+ días de serie.
 
