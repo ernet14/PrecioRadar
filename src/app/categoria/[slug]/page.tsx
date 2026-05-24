@@ -9,15 +9,36 @@ import {
   mvpCategoryDescriptors,
 } from "@/data/categories";
 import { formatCurrencyARS } from "@/lib/utils";
-import { listMockProductsByCategory } from "@/services/productService";
+import {
+  listMockProductsByCategory,
+  listRealProductsByCategory,
+  type CategoryProduct,
+  type ProductSummary,
+} from "@/services/productService";
 import { getAbsoluteUrl, getSiteUrl } from "@/lib/seo/site";
 
 type CategoriaPageProps = {
   params: Promise<{ slug: string }>;
 };
 
+export const revalidate = 3600;
+
 export function generateStaticParams() {
   return mvpCategoryDescriptors.map((descriptor) => ({ slug: descriptor.slug }));
+}
+
+// Productos reales indexables si existen; si no, catálogo mock (categoría aún sin
+// dataset real). El flag distingue para metadata/JSON-LD honestos.
+async function getCategoryProducts(
+  slug: string,
+): Promise<{ products: ProductSummary[]; isReal: boolean }> {
+  const real = await listRealProductsByCategory(slug);
+  if (real.length > 0) return { products: real, isReal: true };
+  return { products: listMockProductsByCategory(slug), isReal: false };
+}
+
+function isComparable(product: ProductSummary): product is CategoryProduct {
+  return (product as CategoryProduct).comparable === true;
 }
 
 export async function generateMetadata({
@@ -32,7 +53,7 @@ export async function generateMetadata({
     return { title: "Categoría no encontrada" };
   }
 
-  const products = listMockProductsByCategory(slug);
+  const { products } = await getCategoryProducts(slug);
   const productCount = products.length;
   const minPrice = products.length
     ? Math.min(...products.map((product) => product.price))
@@ -40,7 +61,7 @@ export async function generateMetadata({
 
   const title = `${descriptor.name} — Comparador de precios`;
   const description = minPrice
-    ? `${descriptor.description} Desde ${formatCurrencyARS(minPrice)} en ${productCount} producto${productCount === 1 ? "" : "s"} comparados.`
+    ? `${descriptor.description} Desde ${formatCurrencyARS(minPrice)} en ${productCount} producto${productCount === 1 ? "" : "s"}.`
     : descriptor.description;
   const canonical = getAbsoluteUrl(`/categoria/${slug}`);
 
@@ -72,10 +93,11 @@ export default async function CategoriaPage({ params }: CategoriaPageProps) {
     notFound();
   }
 
-  const products = listMockProductsByCategory(slug);
+  const { products } = await getCategoryProducts(slug);
   const minPrice = products.length
     ? Math.min(...products.map((product) => product.price))
     : null;
+  const comparableCount = products.filter(isComparable).length;
   const canonical = getAbsoluteUrl(`/categoria/${slug}`);
 
   const collectionSchema = {
@@ -140,8 +162,11 @@ export default async function CategoriaPage({ params }: CategoriaPageProps) {
           </p>
           {minPrice ? (
             <p className="mt-2 text-sm font-semibold text-slate-700">
-              {products.length} producto{products.length === 1 ? "" : "s"} comparados · Desde{" "}
-              {formatCurrencyARS(minPrice)}
+              {products.length} producto{products.length === 1 ? "" : "s"}
+              {comparableCount > 0
+                ? ` · ${comparableCount} comparado${comparableCount === 1 ? "" : "s"} en 2+ tiendas`
+                : ""}{" "}
+              · Desde {formatCurrencyARS(minPrice)}
             </p>
           ) : null}
         </section>
@@ -151,6 +176,11 @@ export default async function CategoriaPage({ params }: CategoriaPageProps) {
             {products.map((product) => (
               <Link key={product.slug} href={`/producto/${product.slug}`}>
                 <Card className="h-full p-5 transition hover:border-blue-300 hover:shadow-[0_18px_45px_rgba(15,23,42,0.08)]">
+                  {isComparable(product) ? (
+                    <span className="mb-2 inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100">
+                      {product.storeCount} tiendas
+                    </span>
+                  ) : null}
                   <h2 className="line-clamp-2 text-base font-semibold leading-6 text-slate-950">
                     {product.name}
                   </h2>

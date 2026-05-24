@@ -1,5 +1,6 @@
 import type { ProductDetail } from "@/services/productService";
 import { getAbsoluteUrl, getSiteUrl } from "@/lib/seo/site";
+import { getCategoryDescriptorBySlug } from "@/data/categories";
 
 const siteUrl = getSiteUrl();
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
@@ -103,6 +104,15 @@ export function buildProductJsonLd(product: ProductDetail, reviewData?: ReviewDa
           },
   };
 
+  // Jerarquía real: Inicio → Categoría → Producto. Si no hay categoría conocida,
+  // cae a "Buscar" como nodo intermedio.
+  const category = product.categorySlug
+    ? getCategoryDescriptorBySlug(product.categorySlug)
+    : null;
+  const middleCrumb = category
+    ? { name: category.name, item: getAbsoluteUrl(`/categoria/${category.slug}`) }
+    : { name: "Buscar", item: getAbsoluteUrl("/buscar") };
+
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -116,8 +126,8 @@ export function buildProductJsonLd(product: ProductDetail, reviewData?: ReviewDa
       {
         "@type": "ListItem",
         position: 2,
-        name: "Buscar",
-        item: getAbsoluteUrl("/buscar"),
+        name: middleCrumb.name,
+        item: middleCrumb.item,
       },
       {
         "@type": "ListItem",

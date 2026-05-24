@@ -151,6 +151,74 @@ export function listMockProductsByCategory(categorySlug: string): ProductSummary
     .sort((left, right) => left.price - right.price);
 }
 
+export type CategoryProduct = ProductSummary & {
+  storeCount: number;
+  comparable: boolean;
+};
+
+// Productos REALES indexables de una categoría (mismos filtros que el sitemap:
+// no demo, no borrados, oferta viva, tienda activa). `comparable` = 2+ tiendas.
+// Devuelve [] si no hay DB (build sin conexión) → la página cae al catálogo mock.
+export async function listRealProductsByCategory(
+  categorySlug: string,
+): Promise<CategoryProduct[]> {
+  const prisma = getPrismaClient();
+  if (!prisma) return [];
+
+  const liveOffer = {
+    isDemo: false,
+    available: true,
+    store: { deletedAt: null, isDemo: false, active: true },
+  };
+
+  try {
+    const products = await prisma.product.findMany({
+      where: {
+        category: { slug: categorySlug },
+        deletedAt: null,
+        isDemo: false,
+        offers: { some: liveOffer },
+      },
+      include: {
+        offers: {
+          where: liveOffer,
+          include: { store: true },
+          orderBy: { price: "asc" },
+        },
+      },
+      take: 60,
+    });
+
+    return products
+      .map((product) => {
+        const storeCount = new Set(
+          product.offers.map((offer) => offer.storeId),
+        ).size;
+        const comparable = storeCount >= 2;
+        return {
+          slug: product.slug,
+          name: product.name,
+          imageUrl: product.imageUrl,
+          price: Number(product.offers[0].price),
+          storeName: product.offers[0].store.name,
+          recommendationLabel: comparable
+            ? `Comparado en ${storeCount} tiendas`
+            : "Precio de 1 tienda",
+          storeCount,
+          comparable,
+        };
+      })
+      .sort((left, right) => {
+        if (left.comparable !== right.comparable) {
+          return left.comparable ? -1 : 1;
+        }
+        return left.price - right.price;
+      });
+  } catch {
+    return [];
+  }
+}
+
 export function getMockProductDetailBySlug(
   slug: string,
 ): ProductDetail | null {
