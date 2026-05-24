@@ -238,7 +238,7 @@ export default async function Home() {
                     aria-hidden
                     className="inline-block size-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.85)]"
                   />
-                  Argentina · ARS · Precios y promos verificables
+                  Argentina · ARS · Beta en construcción
                 </Badge>
               </div>
               <h1 className="hero-fade-in hero-fade-in-delay-1 mt-6 max-w-4xl text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-[3.5rem] lg:leading-[1.05]">
@@ -248,9 +248,9 @@ export default async function Home() {
                 </span>
               </h1>
               <p className="hero-fade-in hero-fade-in-delay-2 mt-5 max-w-2xl text-lg leading-8 text-slate-300">
-                Mostramos precios de fuentes integradas, historial y alertas
-                para decidir con más contexto. Las promos bancarias se publican
-                solo cuando tienen fuente y vigencia verificable.
+                Estamos construyendo un comparador con precios de fuentes
+                integradas, historial y alertas. Las promos bancarias se
+                publican solo cuando tienen fuente y vigencia verificable.
               </p>
 
               <div className="hero-fade-in hero-fade-in-delay-3">

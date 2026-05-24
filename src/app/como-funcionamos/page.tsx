@@ -63,7 +63,7 @@ export default function ComoFuncionamosPage() {
     <LegalPage
       badge="Transparencia"
       title="Cómo funcionamos"
-      description="Esta página explica de dónde salen los precios que mostramos, cómo construimos el historial y por qué a veces decimos 'Sin historial verificado' en vez de inventar una recomendación."
+      description="PrecioRadar está en beta y en construcción. Esta página explica de dónde salen los precios que mostramos, cómo construimos el historial y por qué a veces decimos 'Sin historial verificado' en vez de inventar una recomendación."
       sections={sections}
     />
   );

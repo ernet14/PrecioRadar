@@ -56,7 +56,7 @@ export default async function OgImage({ params }: Props) {
               fontWeight: 600,
             }}
           >
-            Argentina · ARS · Historial real
+            Argentina · ARS · Beta en construcción
           </div>
         </div>
 

@@ -12,10 +12,10 @@ export function BetaBanner() {
           />
           <span>
             <span className="font-semibold text-slate-950">
-              Comprá con más contexto.
+              PrecioRadar está en beta.
             </span>{" "}
-            Revisamos precios, historial y promos vigentes de fuentes
-            integradas antes de recomendar.
+            Estamos construyendo el comparador: mostramos fuentes verificables,
+            historial cuando existe y datos demo identificados.
           </span>
         </p>
         <Link
