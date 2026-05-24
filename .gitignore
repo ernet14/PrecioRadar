@@ -59,5 +59,10 @@ node_modules/
 .agents/
 skills-lock.json
 
+# Claude Code: config local (no compartible) + worktrees de agentes (regenerables).
+# .claude/settings.json SÍ se versiona (hooks/permisos del proyecto).
+.claude/settings.local.json
+.claude/worktrees/
+
 .vercel
 .env*.local
