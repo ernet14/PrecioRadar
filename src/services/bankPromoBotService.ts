@@ -1,6 +1,6 @@
 import { getPrismaClient } from "@/lib/prisma";
 import { logger } from "@/lib/logger";
-import { startOfDay } from "@/services/bankPromoService";
+import { endOfDay, startOfDay } from "@/services/bankPromoService";
 import type { BankPromo } from "@/generated/prisma/client";
 import { fetchBankPromoText, isAllowedBankUrl } from "@/services/bankPromoFetcher";
 import { parseBankPromoText } from "@/services/bankPromoParser";
@@ -8,7 +8,11 @@ import { commercialEvents, type CommercialEvent } from "@/data/commercialEvents"
 
 export type ImportBankPromosResult =
   | {
+      activeCount: number;
       createdCount: number;
+      deactivatedCount: number;
+      deletedCount: number;
+      deletedEntities: string[];
       reviewCount: number;
       skippedCount: number;
       sourceCount: number;
@@ -363,6 +367,51 @@ export function buildBankPromoImportCandidate({
   };
 }
 
+// Limpieza automatica del catalogo del bot (solo promos con sourceUrl, nunca las
+// cargadas a mano). Borra las vencidas (el bot puede re-importarlas si vuelven a
+// estar vigentes) y despublica las que todavia no arrancaron, para que no queden
+// "Publicada" pero invisibles en /promos-hoy. Devuelve que borro y que quedo
+// activo, para que se vea en el historial.
+async function pruneStaleBotPromos(
+  prisma: NonNullable<ReturnType<typeof getPrismaClient>>,
+  now: Date,
+): Promise<{
+  activeCount: number;
+  deactivatedCount: number;
+  deletedCount: number;
+  deletedEntities: string[];
+}> {
+  const today = startOfDay(now);
+  const todayEnd = endOfDay(now);
+
+  const expired = await prisma.bankPromo.findMany({
+    where: { sourceUrl: { not: null }, validUntil: { lt: today } },
+    select: { entity: true, id: true },
+  });
+
+  if (expired.length > 0) {
+    await prisma.bankPromo.deleteMany({
+      where: { id: { in: expired.map((promo) => promo.id) } },
+    });
+  }
+
+  const deactivated = await prisma.bankPromo.updateMany({
+    where: { sourceUrl: { not: null }, active: true, validFrom: { gt: todayEnd } },
+    data: { active: false },
+  });
+
+  const activeCount = await prisma.bankPromo.count({
+    where: { sourceUrl: { not: null }, active: true },
+  });
+
+  return {
+    activeCount,
+    deactivatedCount: deactivated.count,
+    deletedCount: expired.length,
+    deletedEntities: expired.map((promo) => promo.entity),
+  };
+}
+
 async function logBankPromoBotRun(
   prisma: NonNullable<ReturnType<typeof getPrismaClient>>,
   result: Exclude<ImportBankPromosResult, { status: "database_unavailable" }>,
@@ -370,9 +419,17 @@ async function logBankPromoBotRun(
   try {
     const status =
       result.status === "imported" && result.skippedCount > 0 ? "warn" : "ok";
+    const cleanup =
+      result.status === "imported"
+        ? ` Limpieza: ${result.deletedCount} vencidas borradas${
+            result.deletedEntities.length > 0
+              ? ` (${result.deletedEntities.join(", ")})`
+              : ""
+          }, ${result.deactivatedCount} futuras pausadas. Activas ahora: ${result.activeCount}.`
+        : "";
     const summary =
       result.status === "imported"
-        ? `Bot promos bancarias: ${result.createdCount} creadas, ${result.updatedCount} actualizadas, ${result.verifiedCount} verificadas, ${result.reviewCount} en revision, ${result.skippedCount} omitidas.`
+        ? `Bot promos bancarias: ${result.createdCount} creadas, ${result.updatedCount} actualizadas, ${result.verifiedCount} verificadas, ${result.reviewCount} en revision, ${result.skippedCount} omitidas.${cleanup}`
         : "Bot promos bancarias: error inesperado.";
 
     await prisma.systemHealthLog.create({
@@ -406,19 +463,6 @@ export async function importBankPromosFromConfiguredSources(
   }
 
   const sources = await getConfiguredBankPromoSources(prisma);
-  if (sources.length === 0) {
-    const result = {
-      createdCount: 0,
-      reviewCount: 0,
-      skippedCount: 0,
-      sourceCount: 0,
-      status: "imported",
-      updatedCount: 0,
-      verifiedCount: 0,
-    } as const;
-    await logBankPromoBotRun(prisma, result);
-    return result;
-  }
 
   let createdCount = 0;
   let reviewCount = 0;
@@ -498,8 +542,14 @@ export async function importBankPromosFromConfiguredSources(
       );
     }
 
+    const pruned = await pruneStaleBotPromos(prisma, now);
+
     const result = {
+      activeCount: pruned.activeCount,
       createdCount,
+      deactivatedCount: pruned.deactivatedCount,
+      deletedCount: pruned.deletedCount,
+      deletedEntities: pruned.deletedEntities,
       reviewCount,
       skippedCount,
       sourceCount: sources.length,
