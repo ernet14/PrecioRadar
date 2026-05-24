@@ -532,6 +532,34 @@ model SystemHealthLog {
   @@index([createdAt])
 }
 
+model DataRadarSnapshot {
+  id                  String   @id @default(uuid()) @db.Uuid
+  source              String   @default("bna")
+  scope               String
+  categorySlug        String?
+  snapshotDate        DateTime @db.Date
+  generatedAt         DateTime @default(now())
+  status              String
+  priceBaseDate       DateTime? @db.Date
+  priceLatestDate     DateTime? @db.Date
+  priceDays           Int      @default(0)
+  productsTracked     Int      @default(0)
+  priceLatestIndex    Float?
+  priceTotalChangePct Float?
+  fxFromDate          DateTime? @db.Date
+  fxToDate            DateTime? @db.Date
+  fxRates             Int      @default(0)
+  fxCarried           Int      @default(0)
+  betaLag0            Float?
+  correlationLag0     Float?
+  payload             Json
+
+  @@unique([source, scope, snapshotDate])
+  @@index([source, snapshotDate])
+  @@index([scope, snapshotDate])
+  @@index([status, snapshotDate])
+}
+
 model BankPromo {
   id          String    @id @default(uuid()) @db.Uuid
   entity      String

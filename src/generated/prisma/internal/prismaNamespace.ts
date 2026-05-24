@@ -409,6 +409,7 @@ export const ModelName = {
   AnalyticsEvent: 'AnalyticsEvent',
   MercadoLibreAuth: 'MercadoLibreAuth',
   SystemHealthLog: 'SystemHealthLog',
+  DataRadarSnapshot: 'DataRadarSnapshot',
   BankPromo: 'BankPromo',
   BankPromoBotSource: 'BankPromoBotSource',
   ApiKey: 'ApiKey'
@@ -427,7 +428,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "productImportDraft" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "productReview" | "productVote" | "pushSubscription" | "affiliateLink" | "searchLog" | "providerLog" | "scrapeJob" | "auditLog" | "mercadoLibreCache" | "productReport" | "newsletterSubscription" | "analyticsEvent" | "mercadoLibreAuth" | "systemHealthLog" | "bankPromo" | "bankPromoBotSource" | "apiKey"
+    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "productImportDraft" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "productReview" | "productVote" | "pushSubscription" | "affiliateLink" | "searchLog" | "providerLog" | "scrapeJob" | "auditLog" | "mercadoLibreCache" | "productReport" | "newsletterSubscription" | "analyticsEvent" | "mercadoLibreAuth" | "systemHealthLog" | "dataRadarSnapshot" | "bankPromo" | "bankPromoBotSource" | "apiKey"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2281,6 +2282,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    DataRadarSnapshot: {
+      payload: Prisma.$DataRadarSnapshotPayload<ExtArgs>
+      fields: Prisma.DataRadarSnapshotFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DataRadarSnapshotFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataRadarSnapshotPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DataRadarSnapshotFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataRadarSnapshotPayload>
+        }
+        findFirst: {
+          args: Prisma.DataRadarSnapshotFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataRadarSnapshotPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DataRadarSnapshotFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataRadarSnapshotPayload>
+        }
+        findMany: {
+          args: Prisma.DataRadarSnapshotFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataRadarSnapshotPayload>[]
+        }
+        create: {
+          args: Prisma.DataRadarSnapshotCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataRadarSnapshotPayload>
+        }
+        createMany: {
+          args: Prisma.DataRadarSnapshotCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DataRadarSnapshotCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataRadarSnapshotPayload>[]
+        }
+        delete: {
+          args: Prisma.DataRadarSnapshotDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataRadarSnapshotPayload>
+        }
+        update: {
+          args: Prisma.DataRadarSnapshotUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataRadarSnapshotPayload>
+        }
+        deleteMany: {
+          args: Prisma.DataRadarSnapshotDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DataRadarSnapshotUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DataRadarSnapshotUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataRadarSnapshotPayload>[]
+        }
+        upsert: {
+          args: Prisma.DataRadarSnapshotUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataRadarSnapshotPayload>
+        }
+        aggregate: {
+          args: Prisma.DataRadarSnapshotAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDataRadarSnapshot>
+        }
+        groupBy: {
+          args: Prisma.DataRadarSnapshotGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DataRadarSnapshotGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DataRadarSnapshotCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DataRadarSnapshotCountAggregateOutputType> | number
+        }
+      }
+    }
     BankPromo: {
       payload: Prisma.$BankPromoPayload<ExtArgs>
       fields: Prisma.BankPromoFieldRefs
@@ -2939,6 +3014,32 @@ export const SystemHealthLogScalarFieldEnum = {
 export type SystemHealthLogScalarFieldEnum = (typeof SystemHealthLogScalarFieldEnum)[keyof typeof SystemHealthLogScalarFieldEnum]
 
 
+export const DataRadarSnapshotScalarFieldEnum = {
+  id: 'id',
+  source: 'source',
+  scope: 'scope',
+  categorySlug: 'categorySlug',
+  snapshotDate: 'snapshotDate',
+  generatedAt: 'generatedAt',
+  status: 'status',
+  priceBaseDate: 'priceBaseDate',
+  priceLatestDate: 'priceLatestDate',
+  priceDays: 'priceDays',
+  productsTracked: 'productsTracked',
+  priceLatestIndex: 'priceLatestIndex',
+  priceTotalChangePct: 'priceTotalChangePct',
+  fxFromDate: 'fxFromDate',
+  fxToDate: 'fxToDate',
+  fxRates: 'fxRates',
+  fxCarried: 'fxCarried',
+  betaLag0: 'betaLag0',
+  correlationLag0: 'correlationLag0',
+  payload: 'payload'
+} as const
+
+export type DataRadarSnapshotScalarFieldEnum = (typeof DataRadarSnapshotScalarFieldEnum)[keyof typeof DataRadarSnapshotScalarFieldEnum]
+
+
 export const BankPromoScalarFieldEnum = {
   id: 'id',
   entity: 'entity',
@@ -3197,20 +3298,6 @@ export type ListEnumReportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
 
 
 /**
- * Reference to a field of type 'ApiTier'
- */
-export type EnumApiTierFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApiTier'>
-    
-
-
-/**
- * Reference to a field of type 'ApiTier[]'
- */
-export type ListEnumApiTierFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApiTier[]'>
-    
-
-
-/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -3221,6 +3308,20 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
  * Reference to a field of type 'Float[]'
  */
 export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ApiTier'
+ */
+export type EnumApiTierFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApiTier'>
+    
+
+
+/**
+ * Reference to a field of type 'ApiTier[]'
+ */
+export type ListEnumApiTierFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApiTier[]'>
     
 
 /**
@@ -3358,6 +3459,7 @@ export type GlobalOmitConfig = {
   analyticsEvent?: Prisma.AnalyticsEventOmit
   mercadoLibreAuth?: Prisma.MercadoLibreAuthOmit
   systemHealthLog?: Prisma.SystemHealthLogOmit
+  dataRadarSnapshot?: Prisma.DataRadarSnapshotOmit
   bankPromo?: Prisma.BankPromoOmit
   bankPromoBotSource?: Prisma.BankPromoBotSourceOmit
   apiKey?: Prisma.ApiKeyOmit

@@ -143,6 +143,11 @@ export type MercadoLibreAuth = Prisma.MercadoLibreAuthModel
  */
 export type SystemHealthLog = Prisma.SystemHealthLogModel
 /**
+ * Model DataRadarSnapshot
+ * 
+ */
+export type DataRadarSnapshot = Prisma.DataRadarSnapshotModel
+/**
  * Model BankPromo
  * 
  */

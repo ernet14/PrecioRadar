@@ -12,8 +12,8 @@
 3. **Radar de devaluación / pass-through al dólar**: v0 interno listo con CSV explícito
    (`scripts/measure-pass-through.ts`), fuente base BNA venta (`scripts/fetch-bna-dollar.ts`),
    corrida operativa (`scripts/run-data-radar.ts`), cron interno (`/api/internal/data-radar`) y
-   tarjeta interna en `/admin/monitor`. Pendiente: sumar blue/MEP como series separadas,
-   snapshot DB, 30+ días de serie y página pública/B2B.
+   snapshots DB (`DataRadarSnapshot`). Pendiente: sumar blue/MEP como series separadas, 30+
+   días de serie y página pública/B2B.
 4. **Minería de la API de Preguntas**: agregar con IA las dudas reales de compra → guías y
    FAQs honestas (defensa del consumidor + SEO de cola larga).
 5. **Canasta familiar / costo de vida del hogar**: "¿cuánto subió MI canasta?". Retención

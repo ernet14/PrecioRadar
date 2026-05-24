@@ -76,6 +76,7 @@ export const ModelName = {
   AnalyticsEvent: 'AnalyticsEvent',
   MercadoLibreAuth: 'MercadoLibreAuth',
   SystemHealthLog: 'SystemHealthLog',
+  DataRadarSnapshot: 'DataRadarSnapshot',
   BankPromo: 'BankPromo',
   BankPromoBotSource: 'BankPromoBotSource',
   ApiKey: 'ApiKey'
@@ -492,6 +493,32 @@ export const SystemHealthLogScalarFieldEnum = {
 } as const
 
 export type SystemHealthLogScalarFieldEnum = (typeof SystemHealthLogScalarFieldEnum)[keyof typeof SystemHealthLogScalarFieldEnum]
+
+
+export const DataRadarSnapshotScalarFieldEnum = {
+  id: 'id',
+  source: 'source',
+  scope: 'scope',
+  categorySlug: 'categorySlug',
+  snapshotDate: 'snapshotDate',
+  generatedAt: 'generatedAt',
+  status: 'status',
+  priceBaseDate: 'priceBaseDate',
+  priceLatestDate: 'priceLatestDate',
+  priceDays: 'priceDays',
+  productsTracked: 'productsTracked',
+  priceLatestIndex: 'priceLatestIndex',
+  priceTotalChangePct: 'priceTotalChangePct',
+  fxFromDate: 'fxFromDate',
+  fxToDate: 'fxToDate',
+  fxRates: 'fxRates',
+  fxCarried: 'fxCarried',
+  betaLag0: 'betaLag0',
+  correlationLag0: 'correlationLag0',
+  payload: 'payload'
+} as const
+
+export type DataRadarSnapshotScalarFieldEnum = (typeof DataRadarSnapshotScalarFieldEnum)[keyof typeof DataRadarSnapshotScalarFieldEnum]
 
 
 export const BankPromoScalarFieldEnum = {

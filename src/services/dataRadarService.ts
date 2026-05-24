@@ -1,4 +1,5 @@
 import { mvpCategoryDescriptors } from "@/data/categories";
+import { getPrismaClient } from "@/lib/prisma";
 import { fetchBnaDollarSeries, type BnaDollarSeriesResult } from "@/services/bnaDollarService";
 import { computePassThrough, type PassThroughResult } from "@/services/passThroughService";
 import { computePriceIndex, type PriceIndexResult } from "@/services/priceIndexService";
@@ -28,10 +29,22 @@ export type DataRadarRunResult = {
   status: "ready" | "no_fx_data" | "no_price_history";
 };
 
+export type DataRadarPersistenceResult =
+  | { snapshotDate: string; snapshots: number; status: "stored" }
+  | { status: "database_unavailable" };
+
 function addDays(date: string, days: number) {
   const ms = Date.parse(`${date}T00:00:00.000Z`);
   if (!Number.isFinite(ms)) return null;
   return new Date(ms + days * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+}
+
+function dateOnly(value: string) {
+  return value.slice(0, 10);
+}
+
+function nullableDate(value: string | null | undefined) {
+  return value ? dateOnly(value) : null;
 }
 
 function minIsoDate(dates: string[]) {
@@ -85,6 +98,14 @@ export async function computeBnaDataRadar(
   return computeBnaDataRadarWithFx(priceIndex, fx, from, lags);
 }
 
+function scopeStatus(scope: DataRadarScopeResult) {
+  if (!scope.index.baseDate || scope.index.points.length === 0) return "no_price_history";
+  if (!scope.radar) return "no_radar";
+  return scope.radar.passThrough.lags.some((lag) => lag.status === "ready")
+    ? "ready"
+    : "insufficient_data";
+}
+
 export async function runBnaDataRadar(opts?: { lags?: number[] }): Promise<DataRadarRunResult> {
   const lags = opts?.lags ?? DEFAULT_LAGS;
   const maxLag = Math.max(...lags, 0);
@@ -131,4 +152,136 @@ export async function runBnaDataRadar(opts?: { lags?: number[] }): Promise<DataR
     source: "bna",
     status,
   };
+}
+
+async function ensureDataRadarSnapshotTable() {
+  const prisma = getPrismaClient();
+  if (!prisma) return null;
+
+  await prisma.$executeRaw`
+    CREATE TABLE IF NOT EXISTS "DataRadarSnapshot" (
+      "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+      "source" TEXT NOT NULL DEFAULT 'bna',
+      "scope" TEXT NOT NULL,
+      "categorySlug" TEXT,
+      "snapshotDate" DATE NOT NULL,
+      "generatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      "status" TEXT NOT NULL,
+      "priceBaseDate" DATE,
+      "priceLatestDate" DATE,
+      "priceDays" INTEGER NOT NULL DEFAULT 0,
+      "productsTracked" INTEGER NOT NULL DEFAULT 0,
+      "priceLatestIndex" DOUBLE PRECISION,
+      "priceTotalChangePct" DOUBLE PRECISION,
+      "fxFromDate" DATE,
+      "fxToDate" DATE,
+      "fxRates" INTEGER NOT NULL DEFAULT 0,
+      "fxCarried" INTEGER NOT NULL DEFAULT 0,
+      "betaLag0" DOUBLE PRECISION,
+      "correlationLag0" DOUBLE PRECISION,
+      "payload" JSONB NOT NULL,
+
+      CONSTRAINT "DataRadarSnapshot_pkey" PRIMARY KEY ("id")
+    )`;
+  await prisma.$executeRaw`
+    CREATE UNIQUE INDEX IF NOT EXISTS "DataRadarSnapshot_source_scope_snapshotDate_key"
+      ON "DataRadarSnapshot"("source", "scope", "snapshotDate")`;
+  await prisma.$executeRaw`
+    CREATE INDEX IF NOT EXISTS "DataRadarSnapshot_source_snapshotDate_idx"
+      ON "DataRadarSnapshot"("source", "snapshotDate")`;
+  await prisma.$executeRaw`
+    CREATE INDEX IF NOT EXISTS "DataRadarSnapshot_scope_snapshotDate_idx"
+      ON "DataRadarSnapshot"("scope", "snapshotDate")`;
+  await prisma.$executeRaw`
+    CREATE INDEX IF NOT EXISTS "DataRadarSnapshot_status_snapshotDate_idx"
+      ON "DataRadarSnapshot"("status", "snapshotDate")`;
+
+  return prisma;
+}
+
+export async function persistBnaDataRadarSnapshots(
+  run: DataRadarRunResult,
+): Promise<DataRadarPersistenceResult> {
+  const prisma = await ensureDataRadarSnapshotTable();
+  if (!prisma) return { status: "database_unavailable" };
+
+  const snapshotDate = dateOnly(run.generatedAt);
+  const generatedAt = run.generatedAt;
+  let snapshots = 0;
+
+  for (const scope of run.scopes) {
+    const lag0 = scope.radar?.passThrough.lags.find((lag) => lag.lagDays === 0);
+    const status = scopeStatus(scope);
+    const payload = JSON.stringify({
+      generatedAt: run.generatedAt,
+      runStatus: run.status,
+      scope,
+      source: run.source,
+    });
+
+    await prisma.$executeRaw`
+      INSERT INTO "DataRadarSnapshot" (
+        "source",
+        "scope",
+        "categorySlug",
+        "snapshotDate",
+        "generatedAt",
+        "status",
+        "priceBaseDate",
+        "priceLatestDate",
+        "priceDays",
+        "productsTracked",
+        "priceLatestIndex",
+        "priceTotalChangePct",
+        "fxFromDate",
+        "fxToDate",
+        "fxRates",
+        "fxCarried",
+        "betaLag0",
+        "correlationLag0",
+        "payload"
+      )
+      VALUES (
+        ${run.source},
+        ${scope.label},
+        ${scope.categorySlug},
+        ${snapshotDate}::date,
+        ${generatedAt}::timestamp,
+        ${status},
+        ${nullableDate(scope.index.baseDate)}::date,
+        ${nullableDate(scope.index.latestDate)}::date,
+        ${scope.index.days},
+        ${scope.index.productsTracked},
+        ${scope.index.latestIndex},
+        ${scope.index.totalChangePct},
+        ${nullableDate(scope.radar?.from)}::date,
+        ${nullableDate(scope.radar?.to)}::date,
+        ${scope.radar?.fx.rates.length ?? 0},
+        ${scope.radar?.fx.carried ?? 0},
+        ${lag0?.beta ?? null},
+        ${lag0?.correlation ?? null},
+        ${payload}::jsonb
+      )
+      ON CONFLICT ("source", "scope", "snapshotDate")
+      DO UPDATE SET
+        "categorySlug" = EXCLUDED."categorySlug",
+        "generatedAt" = EXCLUDED."generatedAt",
+        "status" = EXCLUDED."status",
+        "priceBaseDate" = EXCLUDED."priceBaseDate",
+        "priceLatestDate" = EXCLUDED."priceLatestDate",
+        "priceDays" = EXCLUDED."priceDays",
+        "productsTracked" = EXCLUDED."productsTracked",
+        "priceLatestIndex" = EXCLUDED."priceLatestIndex",
+        "priceTotalChangePct" = EXCLUDED."priceTotalChangePct",
+        "fxFromDate" = EXCLUDED."fxFromDate",
+        "fxToDate" = EXCLUDED."fxToDate",
+        "fxRates" = EXCLUDED."fxRates",
+        "fxCarried" = EXCLUDED."fxCarried",
+        "betaLag0" = EXCLUDED."betaLag0",
+        "correlationLag0" = EXCLUDED."correlationLag0",
+        "payload" = EXCLUDED."payload"`;
+    snapshots++;
+  }
+
+  return { snapshotDate, snapshots, status: "stored" };
 }
