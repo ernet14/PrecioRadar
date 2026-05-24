@@ -3,6 +3,8 @@ import { Container } from "@/components/layout/Container";
 import { Card } from "@/components/ui/Card";
 import { getMonitorData, type MonitorEvent, type MonitorJob } from "@/services/monitorService";
 import { computePriceIndex, type PriceIndexResult } from "@/services/priceIndexService";
+import { computeBnaDataRadar, type DataRadarResult } from "@/services/dataRadarService";
+import type { PassThroughLagResult } from "@/services/passThroughService";
 import { LiveMonitorControls } from "./LiveMonitorControls";
 
 export const metadata: Metadata = { title: "Monitor del bot", robots: { index: false, follow: false } };
@@ -142,8 +144,72 @@ function PriceIndexCard({ index }: { index: PriceIndexResult }) {
   );
 }
 
+function fmtSigned(value: number | null, suffix = "") {
+  if (value === null) return "—";
+  return `${value > 0 ? "+" : ""}${value}${suffix}`;
+}
+
+function RadarLagLine({ lag }: { lag: PassThroughLagResult }) {
+  const betaTone =
+    lag.beta === null ? "text-slate-500" :
+    lag.beta > 0 ? "text-rose-700" : "text-emerald-700";
+
+  return (
+    <div className="grid grid-cols-[56px_1fr_1fr_1fr] gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs">
+      <span className="font-semibold text-slate-700">lag {lag.lagDays}d</span>
+      <span className="text-slate-600">n={lag.matchedDays}</span>
+      <span className={betaTone}>beta {fmtSigned(lag.beta)}</span>
+      <span className="text-slate-500">corr {fmtSigned(lag.correlation)}</span>
+    </div>
+  );
+}
+
+function BnaRadarCard({ radar }: { radar: DataRadarResult | null }) {
+  if (!radar) {
+    return (
+      <Card className="border-slate-200 p-5">
+        <h2 className="text-base font-semibold text-slate-950">Radar dólar interno</h2>
+        <p className="mt-2 rounded-lg border border-dashed border-slate-200 bg-slate-50 p-3 text-xs text-slate-500">
+          Sin índice suficiente para cruzar contra Banco Nación.
+        </p>
+      </Card>
+    );
+  }
+
+  const primary = radar.passThrough.lags.find((lag) => lag.lagDays === 0) ?? radar.passThrough.lags[0];
+
+  return (
+    <Card className="border-slate-200 p-5">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-base font-semibold text-slate-950">Radar dólar interno</h2>
+        <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800">
+          no público
+        </span>
+      </div>
+      <p className="mt-1 text-xs text-slate-500">
+        Fuente: Banco Nación venta. Serie {radar.from}..{radar.to}; {radar.fx.rates.length} cotizaciones.
+        {radar.fx.carried > 0 ? ` ${radar.fx.carried} día(s) completado(s) por carry-forward.` : ""}
+      </p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+        <StatTile label="Precio vs BNA (lag 0)" value={fmtSigned(primary?.beta ?? null)} tone="neutral" />
+        <StatTile label="Cambio precio" value={fmtSigned(primary?.priceChangePct ?? null, "%")} tone="neutral" />
+        <StatTile label="Cambio BNA" value={fmtSigned(primary?.fxChangePct ?? null, "%")} tone="neutral" />
+      </div>
+      <div className="mt-4 space-y-2">
+        {radar.passThrough.lags.map((lag) => (
+          <RadarLagLine key={lag.lagDays} lag={lag} />
+        ))}
+      </div>
+      <p className="mt-3 text-xs leading-5 text-slate-500">
+        Con menos de 30 días de índice, esto es solo señal operativa: no usar como conclusión pública.
+      </p>
+    </Card>
+  );
+}
+
 export default async function MonitorPage() {
   const [data, priceIndex] = await Promise.all([getMonitorData(), computePriceIndex()]);
+  const bnaRadar = await computeBnaDataRadar(priceIndex);
 
   if (!data) {
     return (
@@ -225,7 +291,10 @@ export default async function MonitorPage() {
           </Card>
         </section>
 
-        <PriceIndexCard index={priceIndex} />
+        <section className="grid gap-4 lg:grid-cols-2">
+          <PriceIndexCard index={priceIndex} />
+          <BnaRadarCard radar={bnaRadar} />
+        </section>
 
         <Card className="border-slate-200 p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">

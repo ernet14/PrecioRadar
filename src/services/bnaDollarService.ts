@@ -5,6 +5,12 @@ export type BnaDollarRate = {
   source: "bna";
 };
 
+export type BnaDollarSeriesResult = {
+  carried: number;
+  missing: string[];
+  rates: BnaDollarRate[];
+};
+
 const BNA_HISTORICAL_URL = "https://www.bna.com.ar/Cotizador/HistoricoPrincipales";
 
 function toBnaDate(date: string) {
@@ -64,6 +70,10 @@ export function eachIsoDate(from: string, to: string): string[] {
   return dates;
 }
 
+function withDate(rate: BnaDollarRate, date: string): BnaDollarRate {
+  return { ...rate, date };
+}
+
 export async function fetchBnaDollarRate(date: string): Promise<BnaDollarRate | null> {
   const response = await fetch(buildBnaHistoricalUrl(date), {
     headers: {
@@ -74,4 +84,31 @@ export async function fetchBnaDollarRate(date: string): Promise<BnaDollarRate | 
 
   if (!response.ok) return null;
   return parseBnaDollarHistoricalHtml(await response.text(), date);
+}
+
+export async function fetchBnaDollarSeries(
+  from: string,
+  to: string,
+  opts?: { carryForward?: boolean },
+): Promise<BnaDollarSeriesResult> {
+  const carryForward = opts?.carryForward ?? true;
+  const rates: BnaDollarRate[] = [];
+  const missing: string[] = [];
+  let carried = 0;
+  let lastRate: BnaDollarRate | null = null;
+
+  for (const date of eachIsoDate(from, to)) {
+    const rate = await fetchBnaDollarRate(date);
+    if (rate) {
+      rates.push(rate);
+      lastRate = rate;
+    } else if (carryForward && lastRate) {
+      rates.push(withDate(lastRate, date));
+      carried++;
+    } else {
+      missing.push(date);
+    }
+  }
+
+  return { carried, missing, rates };
 }

@@ -4,6 +4,11 @@
 > proyecto versionado en el repo (distinto de la memoria cross-sesión del agente, que vive
 > fuera del repo).
 
+## 2026-05-24 — Radar BNA queda interno hasta madurar
+- `scripts/run-data-radar.ts` y `/admin/monitor` cruzan el índice con dólar Banco Nación venta
+  para operación diaria, pero la señal queda marcada como interna/no pública hasta tener 30+
+  días de `PriceHistory`.
+
 ## 2026-05-24 — Radar dólar pass-through reproducible
 - El radar dólar v0 no descarga cotizaciones automáticamente: `measure-pass-through.ts` exige
   CSV `date,rate`. Motivo: la fuente de dólar debe quedar explícita y reproducible antes de

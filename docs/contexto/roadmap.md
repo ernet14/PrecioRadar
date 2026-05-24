@@ -139,6 +139,9 @@ acumulado. Recién acá el cobro B2B tiene algo único que vender.
   dólar Banco Nación **venta** desde el histórico oficial de BNA a CSV compatible con el radar.
   Completa días sin cotización (domingos/feriados) con carry-forward por defecto; se puede
   desactivar con `--no-carry-forward`.
+- **Corrida operativa + admin interno** ✅ (2026-05-24): `scripts/run-data-radar.ts` corre en
+  una sola salida índice + BNA venta + pass-through para total/categorías, y `/admin/monitor`
+  muestra una tarjeta interna "no público". Sigue bloqueado para UI pública hasta 30+ días.
 - Pendiente Fase 3: página pública del índice, página pública del radar dólar y empaquetado B2B
   cuando haya 30+ días de serie.
 

@@ -11,8 +11,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 import {
-  eachIsoDate,
-  fetchBnaDollarRate,
+  fetchBnaDollarSeries,
   type BnaDollarRate,
 } from "../src/services/bnaDollarService";
 
@@ -35,57 +34,35 @@ function csv(rates: BnaDollarRate[]) {
   return `${lines.join("\n")}\n`;
 }
 
-function withDate(rate: BnaDollarRate, date: string): BnaDollarRate {
-  return { ...rate, date };
-}
-
 async function main() {
   const to = getArg("--to") ?? todayIso();
   const from = getArg("--from") ?? to;
   const out = getArg("--out");
   const carryForward = !process.argv.includes("--no-carry-forward");
-  const dates = eachIsoDate(from, to);
 
-  if (dates.length === 0) {
+  const result = await fetchBnaDollarSeries(from, to, { carryForward });
+  if (result.rates.length === 0 && result.missing.length === 0) {
     throw new Error("Rango inválido. Usar --from YYYY-MM-DD --to YYYY-MM-DD.");
   }
 
-  const rates: BnaDollarRate[] = [];
-  const missing: string[] = [];
-  let carried = 0;
-  let lastRate: BnaDollarRate | null = null;
-
-  for (const date of dates) {
-    const rate = await fetchBnaDollarRate(date);
-    if (rate) {
-      rates.push(rate);
-      lastRate = rate;
-    } else if (carryForward && lastRate) {
-      rates.push(withDate(lastRate, date));
-      carried++;
-    } else {
-      missing.push(date);
-    }
-  }
-
-  if (rates.length === 0) {
+  if (result.rates.length === 0) {
     throw new Error("BNA no devolvió cotizaciones para el rango pedido.");
   }
 
-  const output = csv(rates);
+  const output = csv(result.rates);
   if (out) {
     await mkdir(dirname(out), { recursive: true });
     await writeFile(out, output, "utf8");
-    console.log(`Escrito ${out}: ${rates.length} cotizaciones BNA venta${carryForward ? " (con carry-forward)" : ""}.`);
+    console.log(`Escrito ${out}: ${result.rates.length} cotizaciones BNA venta${carryForward ? " (con carry-forward)" : ""}.`);
   } else {
     process.stdout.write(output);
   }
 
-  if (missing.length > 0) {
-    console.error(`Sin dato BNA para ${missing.length} fecha(s): ${missing.join(", ")}`);
+  if (result.missing.length > 0) {
+    console.error(`Sin dato BNA para ${result.missing.length} fecha(s): ${result.missing.join(", ")}`);
   }
-  if (carryForward) {
-    if (carried > 0) console.error(`Fechas completadas con última cotización disponible: ${carried}`);
+  if (carryForward && result.carried > 0) {
+    console.error(`Fechas completadas con última cotización disponible: ${result.carried}`);
   }
 }
 

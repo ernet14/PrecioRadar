@@ -10,7 +10,8 @@
 2. **Extensión CamelCamelCamel-ML** (primer producto, Fase 1): historial real + veredicto de
    oferta trucha en cualquier publicación de ML. Crece orgánico y captura datos.
 3. **Radar de devaluación / pass-through al dólar**: v0 interno listo con CSV explícito
-   (`scripts/measure-pass-through.ts`) y fuente base BNA venta (`scripts/fetch-bna-dollar.ts`).
+   (`scripts/measure-pass-through.ts`), fuente base BNA venta (`scripts/fetch-bna-dollar.ts`),
+   corrida operativa (`scripts/run-data-radar.ts`) y tarjeta interna en `/admin/monitor`.
    Pendiente: sumar blue/MEP como series separadas, 30+ días de serie y página pública/B2B.
 4. **Minería de la API de Preguntas**: agregar con IA las dudas reales de compra → guías y
    FAQs honestas (defensa del consumidor + SEO de cola larga).
