@@ -125,6 +125,11 @@ acumulado. Recién acá el cobro B2B tiene algo único que vender.
 - **Índice por categoría destrabado en código** (2026-05-24): `computePriceIndex({categorySlug})`
   normaliza la categoría cruda con slug + nombre del producto antes de segmentar. Falta medir
   con DB real si la cobertura por categoría ya es suficiente para publicar.
+- **Medición por categoría** ✅ (2026-05-24): `scripts/measure-price-index.ts` mide madurez por
+  categoría con gate público conservador (30+ días, 30+ productos, sample latest 20+). Foto
+  actual: total 5 días / 320 productos / sample 213; celulares 5d / 71 / 62; televisores
+  4d / 45 / 27; electrodomésticos 4d / 64 / 20. **Ninguna categoría publicable todavía por
+  falta de días**, no por falta de código.
 - Pendiente Fase 3: radar dólar pass-through, página pública del índice, segmentación por
   categoría real.
 

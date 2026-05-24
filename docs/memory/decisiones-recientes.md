@@ -4,6 +4,11 @@
 > proyecto versionado en el repo (distinto de la memoria cross-sesión del agente, que vive
 > fuera del repo).
 
+## 2026-05-24 — Índice público sigue bloqueado por madurez temporal
+- `scripts/measure-price-index.ts` mide el índice por categoría. La cobertura ya es útil en
+  celulares/TV/electro, pero la serie tiene solo 4-5 días; la página pública queda diferida hasta
+  30+ días para no mostrar inflación engañosa.
+
 ## 2026-05-24 — SEO interno prioriza comparables
 - En categorías, el schema `ItemList` expone `AggregateOffer` cuando un producto compara en
   varias tiendas. En producto, los similares salen de la categoría curada y se ordenan poniendo
