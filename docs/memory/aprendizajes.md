@@ -41,6 +41,22 @@
 - El veredicto de oferta tiene **una sola fuente de verdad**: `detectDealQuality`. No
   duplicar esa lógica; componerla con `verdictService`.
 
+## Promos bancarias (bot)
+- **El allowlist de hosts vive en `bankPromoFetcher.ts` (`BANK_PROMO_HOSTS`)**, no en config.
+  Una `BankPromoBotSource` cuyo host no esté ahí se saltea (`not_allowed`). Bancos/billeteras
+  cargados; comercios (Carrefour, Coto, etc.) NO — el modelo es entidad=banco.
+- **El bot AUTOPUBLICA si el parser detecta una fecha de vigencia** ("verificada" =
+  `isVerifiedCurrentPromo`, que solo exige `validUntil`). NO valida que sea una promo real.
+  Las páginas de banco/billetera son **SPA**: el fetch solo agarra meta-descripciones / texto
+  genérico de landing, y el parser sacó cuotas+fecha de ahí → publicó **basura** (discountPct 0,
+  `notes` = boilerplate scrapeado). Probado 2026-05-24 con 7 landing canónicas: 4 dieron
+  404/timeout/SPA y 2 autopublicaron ruido.
+- **`/api/internal/evaluate-bank-promos` (cron) corre el import**: pausar promos a mano NO
+  alcanza, el cron las **republica**. Hay que pausar la **fuente** (`BankPromoBotSource.active=false`)
+  o arreglar la URL. Conclusión: el flujo sirve con **deep-links que exponen texto** o **pegando
+  el texto** (parser sobre texto), no con landing SPA. El gate de autopublicación es demasiado
+  laxo (mejora pendiente: exigir descuento/cuotas reales + entidad, no solo fecha).
+
 ## Infra / operación
 - **Prisma:** nunca `migrate dev/reset` contra Supabase prod. SQL manual +
   `migrate resolve`.
