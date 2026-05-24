@@ -8,6 +8,8 @@
 - `scripts/run-data-radar.ts` y `/admin/monitor` cruzan el índice con dólar Banco Nación venta
   para operación diaria, pero la señal queda marcada como interna/no pública hasta tener 30+
   días de `PriceHistory`.
+- Se agrega `/api/internal/data-radar` como cron diario protegido; por ahora produce JSON en
+  logs/monitoring y evita migración/snapshot DB hasta que la serie tenga madurez.
 
 ## 2026-05-24 — Radar dólar pass-through reproducible
 - El radar dólar v0 no descarga cotizaciones automáticamente: `measure-pass-through.ts` exige

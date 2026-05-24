@@ -142,6 +142,9 @@ acumulado. Recién acá el cobro B2B tiene algo único que vender.
 - **Corrida operativa + admin interno** ✅ (2026-05-24): `scripts/run-data-radar.ts` corre en
   una sola salida índice + BNA venta + pass-through para total/categorías, y `/admin/monitor`
   muestra una tarjeta interna "no público". Sigue bloqueado para UI pública hasta 30+ días.
+- **Cron interno del radar** ✅ (2026-05-24): `/api/internal/data-radar` corre diario por
+  Vercel Cron (`0 11 * * *` UTC), protegido por `CRON_SECRET`. Calcula y devuelve JSON para
+  logs/monitoring; no guarda snapshot en DB todavía.
 - Pendiente Fase 3: página pública del índice, página pública del radar dólar y empaquetado B2B
   cuando haya 30+ días de serie.
 
