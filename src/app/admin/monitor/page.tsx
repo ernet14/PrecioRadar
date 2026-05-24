@@ -540,8 +540,8 @@ export default async function MonitorPage() {
           <BnaRadarCard radar={bnaRadar} />
         </section>
 
-        <DataRadarSnapshotsCard snapshots={radarSnapshots} />
         <DataRadarTotalTrendCard snapshots={totalRadarSnapshots} />
+        <DataRadarSnapshotsCard snapshots={radarSnapshots} />
 
         <Card className="border-slate-200 p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
