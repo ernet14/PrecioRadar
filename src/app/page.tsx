@@ -123,12 +123,10 @@ export default async function Home() {
   const heroProduct = featuredProducts[0];
   const heroPeerProducts = featuredProducts.slice(1, 4);
   const sourceIsReal = featured.source === "mercadolibre";
-  const featuredBadgeLabel = sourceIsReal
-    ? "MercadoLibre · datos reales"
-    : "Catálogo demo";
+  const featuredBadgeLabel = sourceIsReal ? "Datos reales" : "Catálogo demo";
   const featuredCopy = sourceIsReal
-    ? "Productos populares con precios reales obtenidos hoy desde MercadoLibre. Tocá una card para ver el detalle de comparación."
-    : "Catálogo de demostración mientras sumamos tiendas reales. Las búsquedas en MercadoLibre ya devuelven precios actuales.";
+    ? "Productos populares con precios actuales de fuentes integradas. Tocá una card para ver el detalle de comparación."
+    : "Catálogo de demostración mientras sumamos más fuentes reales. Los datos demo quedan identificados.";
 
   return (
     <main className="bg-section-soft text-slate-950">
@@ -240,7 +238,7 @@ export default async function Home() {
                     aria-hidden
                     className="inline-block size-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.85)]"
                   />
-                  Argentina · ARS · Beta abierta
+                  Argentina · ARS · Precios y promos verificables
                 </Badge>
               </div>
               <h1 className="hero-fade-in hero-fade-in-delay-1 mt-6 max-w-4xl text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-[3.5rem] lg:leading-[1.05]">
@@ -250,9 +248,9 @@ export default async function Home() {
                 </span>
               </h1>
               <p className="hero-fade-in hero-fade-in-delay-2 mt-5 max-w-2xl text-lg leading-8 text-slate-300">
-                Comparamos precios reales de MercadoLibre y sumamos más tiendas
-                todas las semanas. Mostramos un catálogo demo identificado
-                mientras tanto.
+                Mostramos precios de fuentes integradas, historial y alertas
+                para decidir con más contexto. Las promos bancarias se publican
+                solo cuando tienen fuente y vigencia verificable.
               </p>
 
               <div className="hero-fade-in hero-fade-in-delay-3">
@@ -336,12 +334,12 @@ export default async function Home() {
                     </p>
                     <h2 className="mt-2 text-lg font-bold text-slate-950">
                       {sourceIsReal
-                        ? "Precios reales de MercadoLibre"
+                        ? "Precios reales disponibles"
                         : "Comparación clara por tienda"}
                     </h2>
                   </div>
                   <Badge variant={sourceIsReal ? "success" : "neutral"}>
-                    {sourceIsReal ? "MercadoLibre" : "Catálogo demo"}
+                    {sourceIsReal ? "Datos reales" : "Catálogo demo"}
                   </Badge>
                 </div>
                 <div className="mt-5 rounded-xl border border-indigo-100 bg-gradient-to-br from-indigo-50 via-white to-emerald-50 p-4">
@@ -552,7 +550,7 @@ export default async function Home() {
               className="inline-flex h-10 items-center justify-center rounded-lg border border-indigo-200 bg-white px-4 text-sm font-semibold text-indigo-700 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50"
               href="/buscar?q=galaxy+a55"
             >
-              Ver más en MercadoLibre →
+              Ver más productos →
             </Link>
           </div>
 

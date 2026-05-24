@@ -19,7 +19,7 @@ export default async function OgImage({ params }: Props) {
   const price = product
     ? formatCurrencyARS(product.bestOffer.price)
     : "Comparador de precios";
-  const storeName = product?.bestOffer.storeName ?? "MercadoLibre";
+  const storeName = product?.bestOffer.storeName ?? "Fuente integrada";
   const offersCount = product?.offers.length ?? 0;
 
   return new ImageResponse(
@@ -56,7 +56,7 @@ export default async function OgImage({ params }: Props) {
               fontWeight: 600,
             }}
           >
-            Beta abierta · Argentina · ARS
+            Argentina · ARS · Historial real
           </div>
         </div>
 

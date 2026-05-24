@@ -12,17 +12,17 @@ const sections = [
   {
     title: "De dónde sacamos los precios",
     body: [
-      "Hoy comparamos productos publicados en MercadoLibre Argentina usando su API oficial. Cada búsqueda real consulta la API en el momento y muestra el precio devuelto por la tienda.",
-      "Las cards de \"catálogo demo\" que aparecen en la home son un set fijo de productos de demostración para mostrar cómo se verá el comparador cuando sumemos más tiendas.",
-      "Los providers de Frávega, Musimundo, Cetrogar, Megatone, TiendaMia y Temu están planificados pero todavía no integrados; no aparecen como tiendas comparadas hasta que devuelvan datos reales.",
+      "Tomamos precios de fuentes integradas al sistema y los guardamos como ofertas asociadas a productos concretos. Cuando una fuente no responde o no podemos normalizarla, no la usamos para recomendar.",
+      "Las cards de catálogo demo, si aparecen, están identificadas como demo y no se mezclan con recomendaciones basadas en historial real.",
+      "Sumamos tiendas y proveedores de forma gradual. Una tienda aparece como comparable solo cuando la integración devuelve datos reales y verificables.",
     ],
   },
   {
     title: "Con qué frecuencia se actualizan",
     body: [
-      "Las búsquedas en MercadoLibre consultan la API en cada pedido del usuario, así que el precio mostrado es el del momento de la búsqueda.",
+      "El cron de precios actualiza ofertas reales de las fuentes activas y registra capturas para construir historial.",
       "El catálogo demo tiene precios fijos para mostrar el flujo del comparador y está identificado con badges \"Catálogo demo\" siempre que aparece.",
-      "Cuando habilitemos el cron de snapshots de precio (etapa siguiente del roadmap), vamos a guardar una captura cada 4 horas para construir el historial real.",
+      "Si un proveedor falla repetidamente, el monitor lo bloquea temporalmente para evitar mostrar datos rotos como si fueran actuales.",
     ],
   },
   {
@@ -36,9 +36,9 @@ const sections = [
   {
     title: "Qué tiendas están activas hoy",
     body: [
-      "Provider activo: MercadoLibre Argentina (vía API oficial con token OAuth).",
-      "Catálogo demo: productos fijos identificados con badge \"Catálogo demo\" que sirven para mostrar el flujo del comparador.",
-      "Próximamente: planeamos sumar tiendas de retail argentino (Frávega, Musimundo, Cetrogar, Megatone) y supermercados (Coto, Carrefour, Día, Jumbo). Las activamos cuando la integración esté validada, no antes.",
+      "Las tiendas activas son las que tienen provider real habilitado y pasan los controles del monitor.",
+      "Las promos bancarias se importan desde fuentes permitidas de bancos o billeteras y se publican solo si el bot detecta beneficio y vigencia vigente.",
+      "Las fuentes nuevas se activan desde el admin y quedan registradas con su último estado: publicada, en revisión, bloqueada o con error.",
     ],
   },
   {
@@ -46,7 +46,7 @@ const sections = [
     body: [
       "No mostramos recomendaciones de compra basadas en datos sintéticos. Si no hay historial real suficiente, decimos \"Sin historial verificado\" y dejamos la decisión al usuario.",
       "No marcamos como \"oferta\" un precio cuando no podemos validarlo contra historial real.",
-      "Si detectamos que un precio subió fuerte antes de un evento comercial (Hot Sale, CyberMonday), planeamos marcarlo como \"Oferta inflada\". Esta detección se activa cuando el historial real tenga la cobertura suficiente.",
+      "Si detectamos que un precio subió fuerte antes de un evento comercial (Hot Sale, CyberMonday), lo marcamos como riesgo de oferta inflada cuando el historial real tiene cobertura suficiente.",
     ],
   },
   {
@@ -63,7 +63,7 @@ export default function ComoFuncionamosPage() {
     <LegalPage
       badge="Transparencia"
       title="Cómo funcionamos"
-      description="PrecioRadar está en beta. Esta página explica de dónde salen los precios que mostramos, cómo construimos el historial y por qué a veces decimos 'Sin historial verificado' en vez de inventar una recomendación."
+      description="Esta página explica de dónde salen los precios que mostramos, cómo construimos el historial y por qué a veces decimos 'Sin historial verificado' en vez de inventar una recomendación."
       sections={sections}
     />
   );

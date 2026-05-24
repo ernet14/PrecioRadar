@@ -12,10 +12,10 @@ export function BetaBanner() {
           />
           <span>
             <span className="font-semibold text-slate-950">
-              PrecioRadar está en beta.
+              Comprá con más contexto.
             </span>{" "}
-            Comparamos precios reales de MercadoLibre y sumamos tiendas todas
-            las semanas.
+            Revisamos precios, historial y promos vigentes de fuentes
+            integradas antes de recomendar.
           </span>
         </p>
         <Link
