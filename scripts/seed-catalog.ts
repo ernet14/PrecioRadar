@@ -45,6 +45,13 @@ const MODELS: Model[] = [
   // Variantes de tamaño de familias ya validadas (agrupan por SKU/EAN igual que sus hermanas).
   { q: "Samsung Crystal UHD 75 U8000", must: ["75", "u8000"], not: ["soporte", "business", "43", "50", "55", "65"] },
   { q: "Samsung Smart TV QLED 55 Q6FAA", must: ["qn55q6faagczb"], not: ["soporte", "business"] },
+  // TVs entrada (Crystal UHD DU7000) — agrupan por EAN súper+electro.
+  { q: "Samsung Crystal UHD 50 DU7000", must: ["50", "du7000"], not: ["soporte", "business", "43", "55", "65"] },
+  { q: "Samsung Crystal UHD 43 DU7000", must: ["43", "du7000"], not: ["soporte", "business", "50", "55", "65"] },
+  // Primera línea blanca / electro: heladera, microondas, lavarropas (agrupan por EAN).
+  { q: "Heladera Samsung No Frost RT38", must: ["samsung", "rt38"], not: ["soporte", "funda"] },
+  { q: "Microondas BGH B223D", must: ["bgh", "b223d"], not: [] },
+  { q: "Lavarropas Samsung WW90", must: ["samsung", "ww90"], not: ["soporte"] },
 ];
 
 const normalize = (s: string) => normalizeProductName(s);
