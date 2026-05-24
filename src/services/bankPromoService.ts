@@ -70,6 +70,52 @@ export function isTodayEligible(promo: BankPromo): boolean {
   return isPromoEligibleOnDate(promo);
 }
 
+// Dominio oficial por entidad (entitySlug = slugifyEntity del parser). Sirve para
+// resolver el logo via favicon cuando la promo no trae sourceUrl propia.
+const ENTITY_DOMAINS: Record<string, string> = {
+  bbva: "bbva.com.ar",
+  "banco-nacion": "bna.com.ar",
+  "banco-galicia": "galicia.com.ar",
+  "banco-macro": "macro.com.ar",
+  "banco-santander": "santander.com.ar",
+  icbc: "icbc.com.ar",
+  "banco-comafi": "comafi.com.ar",
+  "banco-credicoop": "bancocredicoop.coop",
+  "banco-supervielle": "supervielle.com.ar",
+  "banco-ciudad": "bancociudad.com.ar",
+  "banco-columbia": "bancocolumbia.com.ar",
+  bancor: "bancor.com.ar",
+  brubank: "brubank.com",
+  "mercado-pago": "mercadopago.com.ar",
+  uala: "uala.com.ar",
+  "personal-pay": "personalpay.com.ar",
+  "naranja-x": "naranjax.com",
+  modo: "modo.com.ar",
+  "banco-provincia": "bancoprovincia.com.ar",
+  "cuenta-dni": "cuentadni.com.ar",
+};
+
+// Logo del banco/billetera via favicon de Google (sin hostear assets ni mantener
+// imagenes). Prioriza el dominio curado por entidad; si no, cae al host del
+// sourceUrl. Devuelve null si no hay forma de resolver un dominio.
+export function getPromoEntityLogoUrl(promo: {
+  entitySlug: string;
+  sourceUrl: string | null;
+}): string | null {
+  let host: string | null = ENTITY_DOMAINS[promo.entitySlug] ?? null;
+
+  if (!host && promo.sourceUrl) {
+    try {
+      host = new URL(promo.sourceUrl).hostname.replace(/^www\./, "");
+    } catch {
+      host = null;
+    }
+  }
+
+  if (!host) return null;
+  return `https://www.google.com/s2/favicons?domain=${host}&sz=64`;
+}
+
 export function formatPromoBenefit(promo: BankPromo): string {
   const installments =
     promo.installments && promo.installments > 1

@@ -8,6 +8,7 @@ import {
   formatDayOfWeek,
   formatPromoBenefit,
   getActivePromosForDate,
+  getPromoEntityLogoUrl,
 } from "@/services/bankPromoService";
 
 export const dynamic = "force-dynamic";
@@ -94,9 +95,22 @@ export default async function PromosHoyPage() {
                   <p className="text-sm font-semibold text-emerald-700">
                     {formatDayOfWeek(promo.dayOfWeek)}
                   </p>
-                  <h2 className="mt-2 text-xl font-bold text-slate-950">
-                    {promo.entity}
-                  </h2>
+                  <div className="mt-2 flex items-center gap-2.5">
+                    {getPromoEntityLogoUrl(promo) ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        alt={`Logo ${promo.entity}`}
+                        className="h-7 w-7 shrink-0 rounded-md border border-slate-200 bg-white object-contain p-0.5"
+                        height={28}
+                        loading="lazy"
+                        src={getPromoEntityLogoUrl(promo) as string}
+                        width={28}
+                      />
+                    ) : null}
+                    <h2 className="text-xl font-bold text-slate-950">
+                      {promo.entity}
+                    </h2>
+                  </div>
                   <p className="mt-2 text-sm font-semibold text-slate-700">
                     {formatPromoBenefit(promo)}
                   </p>
