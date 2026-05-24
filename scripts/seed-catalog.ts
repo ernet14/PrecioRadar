@@ -42,6 +42,9 @@ const MODELS: Model[] = [
   { q: "Samsung Crystal UHD 65 U8000", must: ["65", "u8000"], not: ["soporte", "business", "50", "55", "75"] },
   { q: "LG Smart TV 50 UHD 4K 50UA8050PSA", must: ["50ua8050psa"], not: ["soporte"] },
   { q: "Samsung Smart TV QLED 65 Q6FAA", must: ["qn65q6faagczb"], not: ["soporte", "business"] },
+  // Variantes de tamaño de familias ya validadas (agrupan por SKU/EAN igual que sus hermanas).
+  { q: "Samsung Crystal UHD 75 U8000", must: ["75", "u8000"], not: ["soporte", "business", "43", "50", "55", "65"] },
+  { q: "Samsung Smart TV QLED 55 Q6FAA", must: ["qn55q6faagczb"], not: ["soporte", "business"] },
 ];
 
 const normalize = (s: string) => normalizeProductName(s);

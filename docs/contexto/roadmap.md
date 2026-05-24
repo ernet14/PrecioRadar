@@ -62,7 +62,12 @@ contra nada — y un comparador sin comparación no entrega su valor central.
   marcó 7 ofertas con precio roto (celular/heladera < $10k por feed defectuoso).
 - **Medición**: `scripts/measure-comparables.ts` (reusa `getScorecardHeadline`).
   `comparableRate` honesto: **8% (sucio) → 14% (seed+higiene) → 20% (descubrimiento) → 24%
-  (61 comparables / 256 con ofertas, tras dedup+limpieza)**.
+  (61 comparables / 256 con ofertas, tras dedup+limpieza) → 25% (64/261, 2026-05-23: +2
+  modelos TV en el seeder, 75" U8000 y QLED 55 Q6FAA)**.
+- **Discovery agotado sobre el catálogo actual** (2026-05-23): `densify-existing --limit 80`
+  dio **0 nuevos** comparables — los 124 productos de 1 sola tienda restantes son modelos
+  discontinuados/exclusivos que no existen en otras VTEX. Subir el rate ahora depende de
+  **sembrar modelos vigentes de alto solape** (electro/TV), no de re-descubrir lo viejo.
 - Telcos (Movistar/Claro/Personal): **descartadas** — Movistar no es VTEX (devolvió HTML) y
   los celulares ya comparan en las VTEX de electro.
 - **Próximo**: seguir sumando modelos electro/EAN de alto solape (TVs/electro agrupan 4-6
@@ -79,6 +84,11 @@ Compone con el tiempo igual que el `PriceHistory`. Más valioso que features nue
   el sitemap cae a rutas estáticas.
 - Medición local 2026-05-23: **216 productos reales indexables**, **49 comparables** con el
   filtro estricto de sitemap.
+- **Categorías sobre dataset real** ✅ (2026-05-23): `/categoria/[slug]` usa
+  `listRealProductsByCategory` (mismos filtros de indexabilidad que el sitemap) en vez del
+  catálogo mock; cae al mock solo si la categoría aún no tiene dataset real. Metadata,
+  contador y JSON-LD `CollectionPage` ahora reflejan precios/ofertas reales; badge "N tiendas"
+  + conteo de comparables en la cabecera. `revalidate=3600`.
 
 ### Fase 3+ — Índice de inflación / capa de datos B2B
 Índice de precios/inflación público + radar dólar pass-through, sobre el dataset VTEX
