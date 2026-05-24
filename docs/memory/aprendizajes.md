@@ -26,8 +26,18 @@
   El problema real era que conservaba solo el punto más antiguo por bucket → se perdía el
   mínimo histórico. Ahora preserva mín/máx (clave para "precio más bajo de la historia").
 - **El demo ya estaba casi aislado**: la mayoría de queries filtran `isDemo:false`. Solo los
-  contadores del resumen admin lo mezclaban. `sitemap` y `categoria/[slug]` usan mock por
-  diseño (MVP).
+  contadores del resumen admin lo mezclaban. `sitemap`, `producto/[slug]` y `categoria/[slug]`
+  ya migraron a dato real (Fase 2); `categoria` cae al mock solo si la categoría no tiene
+  productos reales.
+- **La taxonomía de las categorías reales NO coincide con la curada** (`mvpCategoryDescriptors`:
+  `televisores`, `celulares`…). Los productos persistidos heredan la categoría CRUDA del feed
+  VTEX (`tv-y-video`, `audio-tv-y-video`, `tv-audio-y-video`, `tecnologia`, `electro`,
+  `electro-y-tecnologia`…), fragmentada y por tienda. Consecuencias: (1) `/categoria/televisores`
+  y otras curadas **caen al mock** porque no hay slug real que matchee; (2) el índice por
+  categoría (`computePriceIndex({categorySlug})`) devuelve 0 salvo coincidencias sueltas
+  (`celulares`, `electrodomesticos`, `audio`, `herramientas`). Falta un **mapa feed→taxonomía
+  curada** (normalización de categorías) — tarea aparte, habilita SEO por categoría real + índice
+  segmentado.
 - El veredicto de oferta tiene **una sola fuente de verdad**: `detectDealQuality`. No
   duplicar esa lógica; componerla con `verdictService`.
 

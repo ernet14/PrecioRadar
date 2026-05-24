@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/layout/Container";
 import { Card } from "@/components/ui/Card";
 import { getMonitorData, type MonitorEvent, type MonitorJob } from "@/services/monitorService";
+import { computePriceIndex, type PriceIndexResult } from "@/services/priceIndexService";
 import { LiveMonitorControls } from "./LiveMonitorControls";
 
 export const metadata: Metadata = { title: "Monitor del bot", robots: { index: false, follow: false } };
@@ -75,8 +76,74 @@ const REPORT_TONE: Record<string, string> = {
   critical: "border-rose-300 bg-rose-100 text-rose-900",
 };
 
+function PriceIndexCard({ index }: { index: PriceIndexResult }) {
+  const mature = index.days >= 30;
+  const changeTone =
+    index.totalChangePct === null ? "text-slate-950" :
+    index.totalChangePct > 0 ? "text-rose-700" : "text-emerald-700";
+  const max = Math.max(...index.points.map((p) => p.index), 100);
+  const min = Math.min(...index.points.map((p) => p.index), 100);
+  const span = max - min || 1;
+
+  return (
+    <Card className="border-slate-200 p-5">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-base font-semibold text-slate-950">
+          Índice de precios (Fase 3 · capa de datos)
+        </h2>
+        <span className="rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-800">
+          {mature ? "serie activa" : "construyendo serie"}
+        </span>
+      </div>
+      <p className="mt-1 text-xs text-slate-500">
+        Índice encadenado (Jevons) sobre la mediana diaria de precios reales. Base 100 en {index.baseDate ?? "—"}.
+        Gana sentido con ~30+ días de historia.
+      </p>
+
+      {index.points.length > 0 ? (
+        <>
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            <div className="rounded-xl border border-slate-200 bg-white p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Índice actual</p>
+              <p className="mt-2 text-2xl font-bold tracking-tight text-slate-950">{index.latestIndex}</p>
+            </div>
+            <div className="rounded-xl border border-slate-200 bg-white p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Variación acumulada</p>
+              <p className={`mt-2 text-2xl font-bold tracking-tight ${changeTone}`}>
+                {index.totalChangePct !== null ? `${index.totalChangePct > 0 ? "+" : ""}${index.totalChangePct}%` : "—"}
+              </p>
+            </div>
+            <div className="rounded-xl border border-slate-200 bg-white p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Cobertura</p>
+              <p className="mt-2 text-2xl font-bold tracking-tight text-slate-950">
+                {index.days} d · {index.productsTracked} prod
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-4 flex items-end gap-1" style={{ height: 64 }}>
+            {index.points.map((point) => (
+              <div className="flex flex-1 flex-col items-center gap-1" key={point.date} title={`${point.date}: ${point.index} (n=${point.sampleSize})`}>
+                <div
+                  className="w-full rounded-t bg-blue-500/70"
+                  style={{ height: `${8 + ((point.index - min) / span) * 48}px` }}
+                />
+                <span className="text-[10px] text-slate-400">{point.date.slice(5)}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <p className="mt-3 rounded-lg border border-dashed border-slate-200 bg-slate-50 p-3 text-xs text-slate-500">
+          Sin datos de precios reales todavía para el índice.
+        </p>
+      )}
+    </Card>
+  );
+}
+
 export default async function MonitorPage() {
-  const data = await getMonitorData();
+  const [data, priceIndex] = await Promise.all([getMonitorData(), computePriceIndex()]);
 
   if (!data) {
     return (
@@ -157,6 +224,8 @@ export default async function MonitorPage() {
             </div>
           </Card>
         </section>
+
+        <PriceIndexCard index={priceIndex} />
 
         <Card className="border-slate-200 p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">

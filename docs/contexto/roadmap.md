@@ -68,6 +68,10 @@ contra nada — y un comparador sin comparación no entrega su valor central.
   dio **0 nuevos** comparables — los 124 productos de 1 sola tienda restantes son modelos
   discontinuados/exclusivos que no existen en otras VTEX. Subir el rate ahora depende de
   **sembrar modelos vigentes de alto solape** (electro/TV), no de re-descubrir lo viejo.
+- **Segunda tanda de seed** (2026-05-23): +5 modelos vigentes — TVs entrada (Crystal UHD 50/43
+  DU7000) y **primera línea blanca** (heladera Samsung RT38, microondas BGH B223D, lavarropas
+  Samsung WW90), todos agrupando por EAN súper+electro. **comparableRate 25% → 26%**
+  (71 comparables / 275 con ofertas). La línea blanca agrupa tan bien como las TVs.
 - Telcos (Movistar/Claro/Personal): **descartadas** — Movistar no es VTEX (devolvió HTML) y
   los celulares ya comparan en las VTEX de electro.
 - **Próximo**: seguir sumando modelos electro/EAN de alto solape (TVs/electro agrupan 4-6
@@ -90,9 +94,24 @@ Compone con el tiempo igual que el `PriceHistory`. Más valioso que features nue
   contador y JSON-LD `CollectionPage` ahora reflejan precios/ofertas reales; badge "N tiendas"
   + conteo de comparables en la cabecera. `revalidate=3600`.
 
-### Fase 3+ — Índice de inflación / capa de datos B2B
+### Fase 3+ — Índice de inflación / capa de datos B2B (motor iniciado 2026-05-23)
 Índice de precios/inflación público + radar dólar pass-through, sobre el dataset VTEX
 acumulado. Recién acá el cobro B2B tiene algo único que vender.
+
+- **Motor del índice** ✅ (2026-05-23): `priceIndexService.computePriceIndex()` calcula un
+  índice **encadenado tipo Jevons** (media geométrica de relativos de precio sobre productos
+  emparejados día-a-día; mediana diaria por producto como precio representativo). Es la
+  metodología de los IPC para agregados elementales: robusta al cambio de canasta. Acepta
+  `categorySlug`. Expuesto en `/admin/monitor` (tarjeta con índice actual, variación acumulada,
+  cobertura y mini-serie). Read-only, sin migración.
+- **Gated por historia**: hoy `PriceHistory` real abarca **~5 días** (arrancó 2026-05-20), así
+  que el índice es casi plano (base 100 → ~99) y NO mide inflación todavía. Compone solo con el
+  cron diario. **Página pública diferida** hasta tener ~30+ días de serie (evitar publicar un
+  índice engañoso); mientras tanto vive en el admin como "construyendo serie".
+- **Índice por categoría bloqueado** por la taxonomía cruda del feed (ver
+  [aprendizajes](../memory/aprendizajes.md) → "taxonomía"): falta mapear feed→taxonomía curada.
+- Pendiente Fase 3: radar dólar pass-through, página pública del índice, segmentación por
+  categoría real.
 
 ## Diferido / pendiente
 
