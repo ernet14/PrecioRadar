@@ -94,6 +94,21 @@ test("buildBankPromoImportCandidate autopublishes only verified current promos",
   assert.match(candidate.data.notes, /Evento detectado: Hot Sale 2026/);
 });
 
+test("buildBankPromoImportCandidate keeps future promos inactive until they start", () => {
+  const candidate = buildBankPromoImportCandidate({
+    now: new Date("2026-05-12T12:00:00"),
+    sourceText:
+      "BBVA 30% de descuento del 20/05/2026 al 25/05/2026 con tope de $8.000.",
+    sourceUrl: "https://www.bbva.com.ar/promos/futura",
+  });
+
+  assert.equal(candidate.status, "ready");
+  if (candidate.status !== "ready") return;
+  assert.equal(candidate.verified, false);
+  assert.equal(candidate.data.active, false);
+  assert.equal(localDateKey(candidate.data.validFrom), "2026-05-20");
+});
+
 test("buildBankPromoImportCandidate keeps unconfirmed promos inactive", () => {
   const candidate = buildBankPromoImportCandidate({
     now: new Date("2026-05-12T12:00:00"),

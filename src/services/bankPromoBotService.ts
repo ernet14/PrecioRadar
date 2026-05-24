@@ -298,12 +298,15 @@ function isVerifiedCurrentPromo({
   validFrom: Date | null;
   validUntil: Date | null;
 }) {
+  // Certifica que la promo este vigente HOY: sin fecha de fin no se autopublica,
+  // y ademas debe haber empezado (validFrom <= hoy) y no haber vencido
+  // (validUntil >= hoy). Una promo futura queda en revision, no se publica.
   if (!validUntil) return false;
 
   const today = startOfDay(now);
-  const startsAt = validFrom ?? today;
+  const startsAt = validFrom ? startOfDay(validFrom) : today;
 
-  return startsAt <= validUntil && validUntil >= today;
+  return startsAt <= today && validUntil >= today;
 }
 
 export function buildBankPromoImportCandidate({
@@ -331,7 +334,7 @@ export function buildBankPromoImportCandidate({
     (eventWithDates ? eventDate(eventWithDates.end, true) : null);
   const verified = isVerifiedCurrentPromo({ now, validFrom, validUntil });
   const noteParts = [
-    verified ? "Bot promos bancarias: fuente verificada y vigencia detectada." : "Bot promos bancarias: revision requerida; falta vigencia confirmada o esta vencida.",
+    verified ? "Bot promos bancarias: fuente verificada y vigente hoy." : "Bot promos bancarias: revision requerida; no esta vigente hoy (sin fecha de fin confirmada, aun no empezo o ya vencio).",
     detectedEvents.length > 0
       ? `Evento detectado: ${detectedEvents.map((event) => event.name).join(", ")}.`
       : null,

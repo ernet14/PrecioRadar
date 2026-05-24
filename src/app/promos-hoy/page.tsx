@@ -75,6 +75,12 @@ export default async function PromosHoyPage() {
             Descuentos, reintegros y cuotas disponibles para comparar el precio
             final antes de comprar.
           </p>
+          <p className="mt-4 max-w-2xl text-xs leading-5 text-slate-400">
+            Informacion orientativa, sujeta a cambios sin previo aviso. No somos
+            el emisor de estas promociones ni tenemos relacion con los bancos o
+            billeteras mencionados: verifica las condiciones en la fuente oficial
+            antes de comprar.
+          </p>
         </section>
 
         {promos.length > 0 ? (
