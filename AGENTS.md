@@ -18,3 +18,5 @@ This version has breaking changes — APIs, conventions, and file structure may 
 11. No usar agentes/subprocesos si con leer/buscar alcanza.
 12. Al terminar una etapa funcional, sugerir checkpoint Git.
 13. Mostrar archivos cambiados y resultado de la validación.
+14. Al cerrar algo no obvio, anotarlo: una decisión → `docs/memory/decisiones-recientes.md`; algo aprendido que costó descubrir → `docs/memory/aprendizajes.md` (1-3 líneas, lo más nuevo arriba). No duplicar lo que el código o git ya dicen.
+15. Memoria GLOBAL (preferencias del usuario, cross-proyecto) vive fuera del repo en `~/.claude`. Memoria de PROYECTO (decisiones, arquitectura, roadmap) vive versionada en `docs/`. Nunca poner secretos, keys ni datos personales en `docs/`.

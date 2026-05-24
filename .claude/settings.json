@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git status --short --branch",
+            "shell": "powershell",
+            "timeout": 10,
+            "statusMessage": "git status"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$c = git status --porcelain; if ($c) { '{\"systemMessage\":\"Hay cambios sin commitear. Recorda hacer checkpoint (commit) antes de cerrar.\"}' }",
+            "shell": "powershell",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,5 +1,8 @@
 # PrecioRadar — Plan de Etapas Completo
 
+> ⚠️ SNAPSHOT HISTÓRICO (roadmap maestro original). El header de estado quedó viejo.
+> Fuente de verdad actual del avance: `docs/contexto/roadmap.md` y `docs/memory/`.
+
 ## Documento de trabajo para implementación
 
 **Solo-founder · Bajo presupuesto (USD 0–80/mes) · Stack: Next.js 16 + Prisma + Supabase + Resend + Vercel**

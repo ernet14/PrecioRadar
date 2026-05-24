@@ -2,6 +2,8 @@
 
 
 
+> ⚠️ SNAPSHOT HISTÓRICO (mayo 2026). Estado desactualizado. Fuente de verdad actual: docs/contexto/ y docs/memory/.
+
 PRECIORADAR
 Revisión profunda de producto, técnica,
 legal, negocio y plan de trabajo
