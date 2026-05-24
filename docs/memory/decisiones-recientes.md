@@ -4,6 +4,11 @@
 > proyecto versionado en el repo (distinto de la memoria cross-sesión del agente, que vive
 > fuera del repo).
 
+## 2026-05-24 — Radar dólar pass-through reproducible
+- El radar dólar v0 no descarga cotizaciones automáticamente: `measure-pass-through.ts` exige
+  CSV `date,rate`. Motivo: la fuente de dólar debe quedar explícita y reproducible antes de
+  mezclarla con el índice propio o usarla en B2B.
+
 ## 2026-05-24 — Índice público sigue bloqueado por madurez temporal
 - `scripts/measure-price-index.ts` mide el índice por categoría. La cobertura ya es útil en
   celulares/TV/electro, pero la serie tiene solo 4-5 días; la página pública queda diferida hasta

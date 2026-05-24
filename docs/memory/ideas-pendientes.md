@@ -9,8 +9,9 @@
    research, bancos, fondos. Es el negocio B2B con más foso.
 2. **Extensión CamelCamelCamel-ML** (primer producto, Fase 1): historial real + veredicto de
    oferta trucha en cualquier publicación de ML. Crece orgánico y captura datos.
-3. **Radar de devaluación / pass-through al dólar**: cómo siguen los precios al dólar
-   (oficial vs blue/MEP), qué categorías ajustan antes. Señal financiera única de Argentina.
+3. **Radar de devaluación / pass-through al dólar**: v0 interno listo con CSV explícito
+   (`scripts/measure-pass-through.ts`). Pendiente: fuente oficializada de dólar, 30+ días de
+   serie y página pública/B2B.
 4. **Minería de la API de Preguntas**: agregar con IA las dudas reales de compra → guías y
    FAQs honestas (defensa del consumidor + SEO de cola larga).
 5. **Canasta familiar / costo de vida del hogar**: "¿cuánto subió MI canasta?". Retención

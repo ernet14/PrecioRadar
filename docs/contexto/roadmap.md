@@ -130,8 +130,13 @@ acumulado. Recién acá el cobro B2B tiene algo único que vender.
   actual: total 5 días / 320 productos / sample 213; celulares 5d / 71 / 62; televisores
   4d / 45 / 27; electrodomésticos 4d / 64 / 20. **Ninguna categoría publicable todavía por
   falta de días**, no por falta de código.
-- Pendiente Fase 3: radar dólar pass-through, página pública del índice, segmentación por
-  categoría real.
+- **Radar dólar pass-through v0 interno** ✅ (2026-05-24): `passThroughService` cruza el índice
+  de precios con una serie diaria de dólar provista por CSV (`date,rate`) y estima beta/correlación
+  por lags 0/1/3/7/14 días. `scripts/measure-pass-through.ts` es read-only y exige fuente explícita
+  para mantener reproducibilidad. No se publica UI: con 4-5 días de historia solo sirve como radar
+  interno.
+- Pendiente Fase 3: página pública del índice, página pública del radar dólar y empaquetado B2B
+  cuando haya 30+ días de serie.
 
 ## Diferido / pendiente
 
