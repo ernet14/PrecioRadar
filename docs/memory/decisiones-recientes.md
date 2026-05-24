@@ -4,6 +4,10 @@
 > proyecto versionado en el repo (distinto de la memoria cross-sesión del agente, que vive
 > fuera del repo).
 
+## 2026-05-24 — Tendencia total del radar en admin
+- `/admin/monitor` muestra un gráfico interno del scope `total` con índice y beta lag 0 usando
+  snapshots guardados; la tabla histórica sigue limitada para lectura operativa.
+
 ## 2026-05-24 — Radar BNA queda interno hasta madurar
 - `scripts/run-data-radar.ts` y `/admin/monitor` cruzan el índice con dólar Banco Nación venta
   para operación diaria, pero la señal queda marcada como interna/no pública hasta tener 30+

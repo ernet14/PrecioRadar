@@ -309,6 +309,7 @@ function toIsoDate(value: Date | string) {
 
 export async function listDataRadarSnapshots(opts?: {
   limit?: number;
+  scope?: string;
   source?: string;
 }): Promise<DataRadarSnapshotSummary[]> {
   const prisma = getPrismaClient();
@@ -318,7 +319,7 @@ export async function listDataRadarSnapshots(opts?: {
     const rows = await prisma.dataRadarSnapshot.findMany({
       orderBy: [{ snapshotDate: "desc" }, { scope: "asc" }],
       take: opts?.limit ?? 36,
-      where: { source: opts?.source ?? "bna" },
+      where: { source: opts?.source ?? "bna", ...(opts?.scope ? { scope: opts.scope } : {}) },
     });
 
     return rows.map((row) => ({

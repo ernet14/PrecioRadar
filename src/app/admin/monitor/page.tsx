@@ -182,6 +182,147 @@ const SNAPSHOT_STATUS_TONE: Record<string, string> = {
   ready: "border-emerald-200 bg-emerald-50 text-emerald-800",
 };
 
+function fmtTrendValue(value: number, fractionDigits = 2) {
+  return value.toLocaleString("es-AR", { maximumFractionDigits: fractionDigits });
+}
+
+function TrendMiniChart({
+  color,
+  fractionDigits = 2,
+  getValue,
+  includeZero = false,
+  snapshots,
+  title,
+}: {
+  color: string;
+  fractionDigits?: number;
+  getValue: (snapshot: DataRadarSnapshotSummary) => number | null;
+  includeZero?: boolean;
+  snapshots: DataRadarSnapshotSummary[];
+  title: string;
+}) {
+  const points = snapshots
+    .map((snapshot) => ({ date: snapshot.snapshotDate, value: getValue(snapshot) }))
+    .filter((point): point is { date: string; value: number } => point.value !== null);
+
+  if (points.length === 0) {
+    return (
+      <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4 text-xs text-slate-500">
+        Sin datos para {title.toLowerCase()}.
+      </div>
+    );
+  }
+
+  const width = 520;
+  const height = 160;
+  const padding = { bottom: 28, left: 46, right: 14, top: 14 };
+  const chartWidth = width - padding.left - padding.right;
+  const chartHeight = height - padding.top - padding.bottom;
+  const values = points.map((point) => point.value);
+  const rawMin = Math.min(...values, ...(includeZero ? [0] : []));
+  const rawMax = Math.max(...values, ...(includeZero ? [0] : []));
+  const rawSpan = rawMax - rawMin;
+  const pad = rawSpan === 0 ? Math.max(Math.abs(rawMax) * 0.05, 1) : rawSpan * 0.12;
+  const min = rawMin - pad;
+  const max = rawMax + pad;
+  const span = max - min || 1;
+  const xFor = (index: number) => padding.left + (points.length === 1 ? chartWidth / 2 : (index / (points.length - 1)) * chartWidth);
+  const yFor = (value: number) => padding.top + ((max - value) / span) * chartHeight;
+  const path = points.map((point, index) => `${index === 0 ? "M" : "L"} ${xFor(index).toFixed(1)} ${yFor(point.value).toFixed(1)}`).join(" ");
+  const first = points[0];
+  const latest = points.at(-1)!;
+  const zeroY = includeZero && min <= 0 && max >= 0 ? yFor(0) : null;
+
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{title}</p>
+          <p className="mt-1 font-mono text-xl font-bold text-slate-950">
+            {fmtTrendValue(latest.value, fractionDigits)}
+          </p>
+        </div>
+        <p className="text-right font-mono text-[11px] leading-5 text-slate-500">
+          {fmtCompactDate(first.date)} → {fmtCompactDate(latest.date)}
+        </p>
+      </div>
+      <svg className="mt-3 h-44 w-full overflow-visible" role="img" viewBox={`0 0 ${width} ${height}`}>
+        <title>{`${title} scope total`}</title>
+        {[0, 0.5, 1].map((tick) => {
+          const y = padding.top + tick * chartHeight;
+          const label = fmtTrendValue(max - tick * span, fractionDigits);
+          return (
+            <g key={tick}>
+              <line x1={padding.left} x2={width - padding.right} y1={y} y2={y} stroke="#e2e8f0" strokeDasharray="3 4" />
+              <text fill="#64748b" fontSize="10" x="0" y={y + 3}>{label}</text>
+            </g>
+          );
+        })}
+        {zeroY !== null ? (
+          <line x1={padding.left} x2={width - padding.right} y1={zeroY} y2={zeroY} stroke="#94a3b8" strokeDasharray="2 3" />
+        ) : null}
+        <path d={path} fill="none" stroke={color} strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" />
+        {points.map((point, index) => (
+          <circle cx={xFor(index)} cy={yFor(point.value)} fill="white" key={point.date} r="3" stroke={color} strokeWidth="2">
+            <title>{`${point.date}: ${fmtTrendValue(point.value, fractionDigits)}`}</title>
+          </circle>
+        ))}
+        {points.map((point, index) => (
+          <text fill="#94a3b8" fontSize="10" key={`${point.date}-label`} textAnchor="middle" x={xFor(index)} y={height - 8}>
+            {point.date.slice(5)}
+          </text>
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+function DataRadarTotalTrendCard({ snapshots }: { snapshots: DataRadarSnapshotSummary[] }) {
+  const totalSnapshots = snapshots
+    .filter((snapshot) => snapshot.scope === "total")
+    .sort((a, b) => a.snapshotDate.localeCompare(b.snapshotDate));
+  const latest = totalSnapshots.at(-1);
+
+  return (
+    <Card className="border-slate-200 p-5">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h2 className="text-base font-semibold text-slate-950">Tendencia scope total</h2>
+          <p className="mt-1 text-xs text-slate-500">
+            Evolución diaria guardada por el cron: índice total y beta lag 0 contra BNA venta.
+          </p>
+        </div>
+        <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-700">
+          {latest ? `${totalSnapshots.length} puntos · ${fmtCompactDate(latest.snapshotDate)}` : "sin datos"}
+        </span>
+      </div>
+
+      {totalSnapshots.length > 0 ? (
+        <div className="mt-4 grid gap-4 lg:grid-cols-2">
+          <TrendMiniChart
+            color="#2563eb"
+            getValue={(snapshot) => snapshot.priceLatestIndex}
+            snapshots={totalSnapshots}
+            title="Índice total"
+          />
+          <TrendMiniChart
+            color="#e11d48"
+            fractionDigits={4}
+            getValue={(snapshot) => snapshot.betaLag0}
+            includeZero
+            snapshots={totalSnapshots}
+            title="Beta lag 0"
+          />
+        </div>
+      ) : (
+        <p className="mt-3 rounded-lg border border-dashed border-slate-200 bg-slate-50 p-3 text-xs text-slate-500">
+          Todavía no hay snapshots para el scope total.
+        </p>
+      )}
+    </Card>
+  );
+}
+
 function DataRadarSnapshotsCard({ snapshots }: { snapshots: DataRadarSnapshotSummary[] }) {
   const latestDate = snapshots[0]?.snapshotDate ?? null;
   const latestCount = latestDate ? snapshots.filter((snapshot) => snapshot.snapshotDate === latestDate).length : 0;
@@ -306,10 +447,11 @@ function BnaRadarCard({ radar }: { radar: DataRadarResult | null }) {
 }
 
 export default async function MonitorPage() {
-  const [data, priceIndex, radarSnapshots] = await Promise.all([
+  const [data, priceIndex, radarSnapshots, totalRadarSnapshots] = await Promise.all([
     getMonitorData(),
     computePriceIndex(),
     listDataRadarSnapshots({ limit: 36 }),
+    listDataRadarSnapshots({ limit: 90, scope: "total" }),
   ]);
   const bnaRadar = await computeBnaDataRadar(priceIndex);
 
@@ -399,6 +541,7 @@ export default async function MonitorPage() {
         </section>
 
         <DataRadarSnapshotsCard snapshots={radarSnapshots} />
+        <DataRadarTotalTrendCard snapshots={totalRadarSnapshots} />
 
         <Card className="border-slate-200 p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
