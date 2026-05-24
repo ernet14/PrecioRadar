@@ -26,6 +26,8 @@ const BANK_PROMO_HOSTS = [
   "personalpay.com.ar",
   "naranjax.com",
   "modo.com.ar",
+  "bancoprovincia.com.ar",
+  "cuentadni.com.ar",
 ];
 
 const blockedHostPatterns = [
