@@ -145,7 +145,8 @@ acumulado. Recién acá el cobro B2B tiene algo único que vender.
 - **Cron interno + snapshots del radar** ✅ (2026-05-24): `/api/internal/data-radar` corre
   diario por Vercel Cron (`0 11 * * *` UTC), protegido por `CRON_SECRET`. Calcula total +
   categorías y guarda un snapshot diario por `source/scope/snapshotDate` en
-  `DataRadarSnapshot` (upsert idempotente).
+  `DataRadarSnapshot` (upsert idempotente). `/admin/monitor` muestra el historial reciente
+  guardado para revisar evolución sin recalcular todo a mano.
 - Pendiente Fase 3: página pública del índice, página pública del radar dólar y empaquetado B2B
   cuando haya 30+ días de serie.
 

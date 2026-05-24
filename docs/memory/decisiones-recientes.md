@@ -10,6 +10,8 @@
   días de `PriceHistory`.
 - `/api/internal/data-radar` corre como cron diario protegido y guarda snapshots idempotentes en
   `DataRadarSnapshot`; la tabla conserva métricas consultables + payload JSON completo.
+- `/admin/monitor` lee snapshots guardados como historial operativo; la tarjeta de radar en vivo
+  sigue calculando el estado actual, pero la evolución se toma de DB.
 
 ## 2026-05-24 — Radar dólar pass-through reproducible
 - El radar dólar v0 no descarga cotizaciones automáticamente: `measure-pass-through.ts` exige

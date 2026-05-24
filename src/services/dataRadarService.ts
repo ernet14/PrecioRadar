@@ -33,6 +33,23 @@ export type DataRadarPersistenceResult =
   | { snapshotDate: string; snapshots: number; status: "stored" }
   | { status: "database_unavailable" };
 
+export type DataRadarSnapshotSummary = {
+  betaLag0: number | null;
+  categorySlug: string | null;
+  correlationLag0: number | null;
+  fxCarried: number;
+  fxRates: number;
+  generatedAt: string;
+  priceDays: number;
+  priceLatestIndex: number | null;
+  priceTotalChangePct: number | null;
+  productsTracked: number;
+  scope: string;
+  snapshotDate: string;
+  source: string;
+  status: string;
+};
+
 function addDays(date: string, days: number) {
   const ms = Date.parse(`${date}T00:00:00.000Z`);
   if (!Number.isFinite(ms)) return null;
@@ -284,4 +301,43 @@ export async function persistBnaDataRadarSnapshots(
   }
 
   return { snapshotDate, snapshots, status: "stored" };
+}
+
+function toIsoDate(value: Date | string) {
+  return new Date(value).toISOString().slice(0, 10);
+}
+
+export async function listDataRadarSnapshots(opts?: {
+  limit?: number;
+  source?: string;
+}): Promise<DataRadarSnapshotSummary[]> {
+  const prisma = getPrismaClient();
+  if (!prisma) return [];
+
+  try {
+    const rows = await prisma.dataRadarSnapshot.findMany({
+      orderBy: [{ snapshotDate: "desc" }, { scope: "asc" }],
+      take: opts?.limit ?? 36,
+      where: { source: opts?.source ?? "bna" },
+    });
+
+    return rows.map((row) => ({
+      betaLag0: row.betaLag0,
+      categorySlug: row.categorySlug,
+      correlationLag0: row.correlationLag0,
+      fxCarried: row.fxCarried,
+      fxRates: row.fxRates,
+      generatedAt: row.generatedAt.toISOString(),
+      priceDays: row.priceDays,
+      priceLatestIndex: row.priceLatestIndex,
+      priceTotalChangePct: row.priceTotalChangePct,
+      productsTracked: row.productsTracked,
+      scope: row.scope,
+      snapshotDate: toIsoDate(row.snapshotDate),
+      source: row.source,
+      status: row.status,
+    }));
+  } catch {
+    return [];
+  }
 }

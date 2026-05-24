@@ -3,7 +3,12 @@ import { Container } from "@/components/layout/Container";
 import { Card } from "@/components/ui/Card";
 import { getMonitorData, type MonitorEvent, type MonitorJob } from "@/services/monitorService";
 import { computePriceIndex, type PriceIndexResult } from "@/services/priceIndexService";
-import { computeBnaDataRadar, type DataRadarResult } from "@/services/dataRadarService";
+import {
+  computeBnaDataRadar,
+  listDataRadarSnapshots,
+  type DataRadarResult,
+  type DataRadarSnapshotSummary,
+} from "@/services/dataRadarService";
 import type { PassThroughLagResult } from "@/services/passThroughService";
 import { LiveMonitorControls } from "./LiveMonitorControls";
 
@@ -149,6 +154,12 @@ function fmtSigned(value: number | null, suffix = "") {
   return `${value > 0 ? "+" : ""}${value}${suffix}`;
 }
 
+function fmtCompactDate(date: string | null) {
+  if (!date) return "—";
+  const [, month, day] = date.split("-");
+  return `${day}/${month}`;
+}
+
 function RadarLagLine({ lag }: { lag: PassThroughLagResult }) {
   const betaTone =
     lag.beta === null ? "text-slate-500" :
@@ -161,6 +172,93 @@ function RadarLagLine({ lag }: { lag: PassThroughLagResult }) {
       <span className={betaTone}>beta {fmtSigned(lag.beta)}</span>
       <span className="text-slate-500">corr {fmtSigned(lag.correlation)}</span>
     </div>
+  );
+}
+
+const SNAPSHOT_STATUS_TONE: Record<string, string> = {
+  insufficient_data: "border-amber-200 bg-amber-50 text-amber-800",
+  no_price_history: "border-slate-200 bg-slate-50 text-slate-600",
+  no_radar: "border-slate-200 bg-slate-50 text-slate-600",
+  ready: "border-emerald-200 bg-emerald-50 text-emerald-800",
+};
+
+function DataRadarSnapshotsCard({ snapshots }: { snapshots: DataRadarSnapshotSummary[] }) {
+  const latestDate = snapshots[0]?.snapshotDate ?? null;
+  const latestCount = latestDate ? snapshots.filter((snapshot) => snapshot.snapshotDate === latestDate).length : 0;
+
+  return (
+    <Card className="border-slate-200 p-5">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h2 className="text-base font-semibold text-slate-950">Historial radar dólar</h2>
+          <p className="mt-1 text-xs text-slate-500">
+            Snapshots guardados por el cron interno. Fuente BNA venta; uso interno hasta 30+ días.
+          </p>
+        </div>
+        <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-700">
+          {latestDate ? `${fmtCompactDate(latestDate)} · ${latestCount} scopes` : "sin snapshots"}
+        </span>
+      </div>
+
+      {snapshots.length > 0 ? (
+        <div className="mt-4 overflow-x-auto">
+          <table className="min-w-[920px] w-full border-separate border-spacing-0 text-left text-xs">
+            <thead>
+              <tr className="text-slate-500">
+                <th className="border-b border-slate-200 px-3 py-2 font-semibold">Fecha</th>
+                <th className="border-b border-slate-200 px-3 py-2 font-semibold">Scope</th>
+                <th className="border-b border-slate-200 px-3 py-2 font-semibold">Estado</th>
+                <th className="border-b border-slate-200 px-3 py-2 font-semibold">Índice</th>
+                <th className="border-b border-slate-200 px-3 py-2 font-semibold">Var.</th>
+                <th className="border-b border-slate-200 px-3 py-2 font-semibold">Beta 0d</th>
+                <th className="border-b border-slate-200 px-3 py-2 font-semibold">Corr 0d</th>
+                <th className="border-b border-slate-200 px-3 py-2 font-semibold">Cobertura</th>
+                <th className="border-b border-slate-200 px-3 py-2 font-semibold">FX</th>
+              </tr>
+            </thead>
+            <tbody>
+              {snapshots.map((snapshot) => (
+                <tr className="odd:bg-white even:bg-slate-50/70" key={`${snapshot.source}-${snapshot.scope}-${snapshot.snapshotDate}`}>
+                  <td className="border-b border-slate-100 px-3 py-2 font-mono text-slate-600">
+                    {fmtCompactDate(snapshot.snapshotDate)}
+                  </td>
+                  <td className="border-b border-slate-100 px-3 py-2 font-semibold text-slate-800">
+                    {snapshot.scope}
+                  </td>
+                  <td className="border-b border-slate-100 px-3 py-2">
+                    <span className={`rounded-full border px-2 py-0.5 font-semibold ${SNAPSHOT_STATUS_TONE[snapshot.status] ?? SNAPSHOT_STATUS_TONE.no_radar}`}>
+                      {snapshot.status}
+                    </span>
+                  </td>
+                  <td className="border-b border-slate-100 px-3 py-2 text-slate-700">
+                    {snapshot.priceLatestIndex ?? "—"}
+                  </td>
+                  <td className="border-b border-slate-100 px-3 py-2 text-slate-700">
+                    {fmtSigned(snapshot.priceTotalChangePct, "%")}
+                  </td>
+                  <td className="border-b border-slate-100 px-3 py-2 text-slate-700">
+                    {fmtSigned(snapshot.betaLag0)}
+                  </td>
+                  <td className="border-b border-slate-100 px-3 py-2 text-slate-700">
+                    {fmtSigned(snapshot.correlationLag0)}
+                  </td>
+                  <td className="border-b border-slate-100 px-3 py-2 text-slate-700">
+                    {snapshot.priceDays} d · {snapshot.productsTracked} prod
+                  </td>
+                  <td className="border-b border-slate-100 px-3 py-2 text-slate-700">
+                    {snapshot.fxRates} cot. {snapshot.fxCarried > 0 ? `· cf ${snapshot.fxCarried}` : ""}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p className="mt-3 rounded-lg border border-dashed border-slate-200 bg-slate-50 p-3 text-xs text-slate-500">
+          Todavía no hay snapshots del radar guardados.
+        </p>
+      )}
+    </Card>
   );
 }
 
@@ -208,7 +306,11 @@ function BnaRadarCard({ radar }: { radar: DataRadarResult | null }) {
 }
 
 export default async function MonitorPage() {
-  const [data, priceIndex] = await Promise.all([getMonitorData(), computePriceIndex()]);
+  const [data, priceIndex, radarSnapshots] = await Promise.all([
+    getMonitorData(),
+    computePriceIndex(),
+    listDataRadarSnapshots({ limit: 36 }),
+  ]);
   const bnaRadar = await computeBnaDataRadar(priceIndex);
 
   if (!data) {
@@ -295,6 +397,8 @@ export default async function MonitorPage() {
           <PriceIndexCard index={priceIndex} />
           <BnaRadarCard radar={bnaRadar} />
         </section>
+
+        <DataRadarSnapshotsCard snapshots={radarSnapshots} />
 
         <Card className="border-slate-200 p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
