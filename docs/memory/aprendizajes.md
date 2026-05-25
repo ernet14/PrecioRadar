@@ -67,6 +67,9 @@
 - **Dominio canónico:** `www.precio-radar.com` (con guion), no `precioradar.com.ar`.
 
 ## Next.js 16
+- `generateStaticParams()` en `/producto/[slug]` fuerza SSG aunque la página use cookies por
+  Supabase; en CI sin DB eso produjo `DYNAMIC_SERVER_USAGE`. Las páginas de producto quedan
+  dinámicas y el sitemap cae a slugs mock si no hay productos reales.
 - Es una versión con breaking changes respecto al training (ver `AGENTS.md`): leer la guía
   en `node_modules/next/dist/docs/` antes de escribir código de framework.
 - CSP mantiene `'unsafe-inline'`/`'unsafe-eval'` por hidratación de RSC/Turbopack; sacarlo

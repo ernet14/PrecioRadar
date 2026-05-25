@@ -1,5 +1,9 @@
 import type { MetadataRoute } from "next";
-import { getIndexableProductSlugs } from "@/services/productService";
+import {
+  getAllMockProductSlugs,
+  getIndexableProductSlugs,
+  type IndexableProduct,
+} from "@/services/productService";
 import { getAllGuideSlugs } from "@/content/guides";
 import { mvpCategoryDescriptors } from "@/data/categories";
 import { getAbsoluteUrl } from "@/lib/seo/site";
@@ -23,7 +27,15 @@ const staticRoutes: MetadataRoute.Sitemap = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const products = await getIndexableProductSlugs();
+  const realProducts = await getIndexableProductSlugs();
+  const products: IndexableProduct[] =
+    realProducts.length > 0
+      ? realProducts
+      : getAllMockProductSlugs().map((slug) => ({
+          slug,
+          comparable: false,
+          lastModified,
+        }));
   const guideSlugs = getAllGuideSlugs();
 
   const productRoutes: MetadataRoute.Sitemap = products.map((product) => ({

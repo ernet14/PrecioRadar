@@ -29,7 +29,6 @@ import { formatCurrencyARS, formatDate } from "@/lib/utils";
 import { getCurrentUser } from "@/lib/supabase/auth";
 import { buildOfferClickHref } from "@/services/clickTrackingService";
 import {
-  getIndexableProductSlugs,
   getProductDetailBySlug,
   type ProductDetail,
   type ProductSummary,
@@ -68,11 +67,6 @@ type ProductoPageProps = {
 const offerGridStyle = {
   "--offer-grid": "minmax(220px, 1fr) 125px 110px 120px 150px",
 } as CSSProperties;
-
-export async function generateStaticParams() {
-  const products = await getIndexableProductSlugs();
-  return products.map((product) => ({ slug: product.slug }));
-}
 
 export async function generateMetadata({
   params,
