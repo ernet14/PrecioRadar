@@ -56,6 +56,8 @@ jobs:
         run: npm ci --no-audit --no-fund
 
       - name: Generate Prisma client
+        env:
+          DIRECT_URL: "postgresql://postgres:postgres@localhost:5432/precioradar"
         run: npx prisma generate
 
       - name: Type check
@@ -118,6 +120,8 @@ jobs:
         run: npm ci --no-audit --no-fund
 
       - name: Generate Prisma client
+        env:
+          DIRECT_URL: "postgresql://postgres:postgres@localhost:5432/precioradar"
         run: npx prisma generate
 
       - name: Build
