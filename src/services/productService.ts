@@ -35,6 +35,8 @@ export type ProductDetail = {
 export type ProductSummary = {
   slug: string;
   name: string;
+  brand?: string | null;
+  brandSlug?: string | null;
   imageUrl?: string | null;
   price: number;
   storeName: string;
@@ -159,11 +161,27 @@ export type CategoryProduct = ProductSummary & {
   comparable: boolean;
 };
 
+export type BrandCategoryPage = {
+  brandName: string;
+  brandSlug: string;
+  categorySlug: string;
+  comparableCount: number;
+  lastModified: Date;
+  productCount: number;
+};
+
+function getBrandSlug(brand: string | null | undefined) {
+  const normalized = brand?.trim();
+  if (!normalized) return null;
+  return slugify(normalized);
+}
+
 // Productos REALES indexables de una categoría (mismos filtros que el sitemap:
 // no demo, no borrados, oferta viva, tienda activa). `comparable` = 2+ tiendas.
 // Devuelve [] si no hay DB (build sin conexión) → la página cae al catálogo mock.
 export async function listRealProductsByCategory(
   categorySlug: string,
+  options: { brandSlug?: string } = {},
 ): Promise<CategoryProduct[]> {
   const prisma = getPrismaClient();
   if (!prisma) return [];
@@ -198,6 +216,9 @@ export async function listRealProductsByCategory(
       .filter((product) =>
         normalizeCategorySlug({ name: product.name, slug: product.category.slug }) === categorySlug,
       )
+      .filter((product) =>
+        options.brandSlug ? getBrandSlug(product.brand) === options.brandSlug : true,
+      )
       .map((product) => {
         const storeCount = new Set(
           product.offers.map((offer) => offer.storeId),
@@ -206,6 +227,8 @@ export async function listRealProductsByCategory(
         return {
           slug: product.slug,
           name: product.name,
+          brand: product.brand,
+          brandSlug: getBrandSlug(product.brand),
           imageUrl: product.imageUrl,
           price: Number(product.offers[0].price),
           storeName: product.offers[0].store.name,
@@ -221,6 +244,78 @@ export async function listRealProductsByCategory(
           return left.comparable ? -1 : 1;
         }
         return left.price - right.price;
+      });
+  } catch {
+    return [];
+  }
+}
+
+export async function getIndexableBrandCategoryPages(): Promise<BrandCategoryPage[]> {
+  const prisma = getPrismaClient();
+  if (!prisma) return [];
+
+  const liveOffer = {
+    isDemo: false,
+    available: true,
+    store: { deletedAt: null, isDemo: false, active: true },
+  };
+
+  try {
+    const products = await prisma.product.findMany({
+      where: {
+        brand: { not: null },
+        deletedAt: null,
+        isDemo: false,
+        offers: { some: liveOffer },
+      },
+      include: {
+        category: true,
+        offers: {
+          where: liveOffer,
+          include: { store: true },
+        },
+      },
+      take: 750,
+    });
+
+    const groups = new Map<string, BrandCategoryPage>();
+
+    for (const product of products) {
+      const categorySlug = normalizeCategorySlug({
+        name: product.name,
+        slug: product.category.slug,
+      });
+      const brandSlug = getBrandSlug(product.brand);
+      if (!categorySlug || !brandSlug || !product.brand) continue;
+
+      const key = `${categorySlug}:${brandSlug}`;
+      const storeCount = new Set(product.offers.map((offer) => offer.storeId)).size;
+      const lastModified = product.offers.reduce<Date>(
+        (latest, offer) => (offer.updatedAt > latest ? offer.updatedAt : latest),
+        product.updatedAt,
+      );
+      const current = groups.get(key) ?? {
+        brandName: product.brand,
+        brandSlug,
+        categorySlug,
+        comparableCount: 0,
+        lastModified,
+        productCount: 0,
+      };
+
+      current.productCount += 1;
+      if (storeCount >= 2) current.comparableCount += 1;
+      if (lastModified > current.lastModified) current.lastModified = lastModified;
+      groups.set(key, current);
+    }
+
+    return Array.from(groups.values())
+      .filter((page) => page.productCount >= 2 || page.comparableCount >= 1)
+      .sort((left, right) => {
+        if (left.comparableCount !== right.comparableCount) {
+          return right.comparableCount - left.comparableCount;
+        }
+        return right.productCount - left.productCount;
       });
   } catch {
     return [];
@@ -433,6 +528,8 @@ async function getRealSimilarProducts(
       return {
         slug: candidate.slug,
         name: candidate.name,
+        brand: candidate.brand,
+        brandSlug: getBrandSlug(candidate.brand),
         imageUrl: candidate.imageUrl,
         price: Number(candidate.offers[0].price),
         storeName: candidate.offers[0].store.name,

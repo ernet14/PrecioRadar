@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import {
   getAllMockProductSlugs,
   getIndexableProductSlugs,
+  getIndexableBrandCategoryPages,
   type IndexableProduct,
 } from "@/services/productService";
 import { getAllGuideSlugs } from "@/content/guides";
@@ -28,6 +29,7 @@ const staticRoutes: MetadataRoute.Sitemap = [
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const realProducts = await getIndexableProductSlugs();
+  const brandCategoryPages = await getIndexableBrandCategoryPages();
   const products: IndexableProduct[] =
     realProducts.length > 0
       ? realProducts
@@ -61,5 +63,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }),
   );
 
-  return [...staticRoutes, ...categoryRoutes, ...productRoutes, ...guideRoutes];
+  const brandCategoryRoutes: MetadataRoute.Sitemap = brandCategoryPages.map(
+    (page) => ({
+      url: getAbsoluteUrl(`/categoria/${page.categorySlug}/marca/${page.brandSlug}`),
+      changeFrequency: "daily",
+      lastModified: page.lastModified,
+      priority: page.comparableCount > 0 ? 0.82 : 0.72,
+    }),
+  );
+
+  return [
+    ...staticRoutes,
+    ...categoryRoutes,
+    ...brandCategoryRoutes,
+    ...productRoutes,
+    ...guideRoutes,
+  ];
 }

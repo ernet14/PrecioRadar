@@ -41,6 +41,36 @@ function isComparable(product: ProductSummary): product is CategoryProduct {
   return (product as CategoryProduct).comparable === true;
 }
 
+function getBrandLinks(products: ProductSummary[]) {
+  const brands = new Map<
+    string,
+    { brandName: string; brandSlug: string; comparableCount: number; productCount: number }
+  >();
+
+  for (const product of products) {
+    if (!product.brand || !product.brandSlug) continue;
+    const current = brands.get(product.brandSlug) ?? {
+      brandName: product.brand,
+      brandSlug: product.brandSlug,
+      comparableCount: 0,
+      productCount: 0,
+    };
+    current.productCount += 1;
+    if (isComparable(product)) current.comparableCount += 1;
+    brands.set(product.brandSlug, current);
+  }
+
+  return Array.from(brands.values())
+    .filter((brand) => brand.productCount >= 2 || brand.comparableCount >= 1)
+    .sort((left, right) => {
+      if (left.comparableCount !== right.comparableCount) {
+        return right.comparableCount - left.comparableCount;
+      }
+      return right.productCount - left.productCount;
+    })
+    .slice(0, 10);
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -99,6 +129,7 @@ export default async function CategoriaPage({ params }: CategoriaPageProps) {
     ? Math.min(...products.map((product) => product.price))
     : null;
   const comparableCount = products.filter(isComparable).length;
+  const brandLinks = getBrandLinks(products);
   const canonical = getAbsoluteUrl(`/categoria/${slug}`);
 
   const collectionSchema = {
@@ -235,6 +266,26 @@ export default async function CategoriaPage({ params }: CategoriaPageProps) {
             </p>
           </Card>
         )}
+
+        {brandLinks.length > 0 ? (
+          <section className="border-t border-slate-200 pt-6">
+            <h2 className="text-xl font-semibold text-slate-950">
+              Comparar por marca
+            </h2>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {brandLinks.map((brand) => (
+                <Link
+                  className="rounded-full border border-slate-300 bg-white px-4 py-1.5 text-sm font-medium text-slate-700 transition hover:border-blue-300 hover:text-blue-700"
+                  href={`/categoria/${slug}/marca/${brand.brandSlug}`}
+                  key={brand.brandSlug}
+                >
+                  {brand.brandName}
+                  {brand.comparableCount > 0 ? ` · ${brand.comparableCount}` : ""}
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <section className="border-t border-slate-200 pt-6">
           <h2 className="text-xl font-semibold text-slate-950">

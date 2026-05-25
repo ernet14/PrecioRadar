@@ -52,6 +52,25 @@ const MODELS: Model[] = [
   { q: "Heladera Samsung No Frost RT38", must: ["samsung", "rt38"], not: ["soporte", "funda"] },
   { q: "Microondas BGH B223D", must: ["bgh", "b223d"], not: [] },
   { q: "Lavarropas Samsung WW90", must: ["samsung", "ww90"], not: ["soporte"] },
+  // Tercera tanda: modelos vigentes con solape real detectado en 3+ VTEX.
+  { q: "Microondas BGH B120DB20I", must: ["bgh", "b120db20i"], not: ["soporte"] },
+  { q: "Microondas BGH B118MB25", must: ["bgh", "b118mb25"], not: ["soporte"] },
+  { q: "Microondas BGH B120M20I", must: ["bgh", "b120m20i"], not: ["soporte"] },
+  { q: "Microondas BGH B228DN20I", must: ["bgh", "b228dn20i"], not: ["soporte"] },
+  { q: "Smart TV Philips 65PUD8100/77", must: ["65pud8100"], not: ["soporte", "control"] },
+  { q: "Smart TV Philips 55PUD7309/77", must: ["55pud7309"], not: ["soporte", "control"] },
+  { q: "Smart TV Philips 32PHD6910/77", must: ["32phd6910"], not: ["soporte", "control"] },
+  { q: "Smart TV TCL 32S5K", must: ["32s5k"], not: ["soporte", "control"] },
+  { q: "Smart TV TCL 43S5K", must: ["43s5k"], not: ["soporte", "control"] },
+  { q: "Smart TV Noblex 55 DV55X8580", must: ["dv55x8580"], not: ["soporte", "control"] },
+  { q: "Heladera Samsung RT42CB664012", must: ["samsung", "rt42cb664012"], not: ["soporte", "funda"] },
+  { q: "Heladera Samsung RS23CB760A41", must: ["samsung", "rs23cb760a41"], not: ["soporte", "funda"] },
+  { q: "Heladera Whirlpool WRE25AB", must: ["whirlpool", "wre25ab"], not: ["soporte", "filtro"] },
+  { q: "Lavarropas Samsung WW70A40000S", must: ["samsung", "ww70a40000s"], not: ["soporte"] },
+  { q: "Lavarropas Samsung WA75C5441BW", must: ["samsung", "wa75c5441bw"], not: ["soporte"] },
+  { q: "Lavarropas Drean LCFDR0608LB", must: ["drean", "lcfdr0608lb"], not: ["soporte"] },
+  { q: "Lavarropas Drean LFDR0710I", must: ["drean", "lfdr0710i"], not: ["soporte"] },
+  { q: "Lavarropas Whirlpool WNQ90AB", must: ["whirlpool", "wnq90ab"], not: ["soporte"] },
 ];
 
 const normalize = (s: string) => normalizeProductName(s);

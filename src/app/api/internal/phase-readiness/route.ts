@@ -5,18 +5,14 @@ import {
 } from "@/lib/cronAuth";
 import { isDatabaseConfigured } from "@/lib/prisma";
 import {
-  persistBnaDataRadarSnapshots,
-  runBnaDataRadar,
-} from "@/services/dataRadarService";
-import {
   buildPhase3ReadinessReport,
   persistPhase3ReadinessReport,
 } from "@/services/phaseReadinessService";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
+export const maxDuration = 30;
 
-async function handleDataRadar(request: Request) {
+async function handlePhaseReadiness(request: Request) {
   const authorization = authorizeCronRequest(request);
 
   if (authorization.status !== 200) {
@@ -30,22 +26,19 @@ async function handleDataRadar(request: Request) {
     );
   }
 
-  const result = await runBnaDataRadar();
-  const persistence = await persistBnaDataRadarSnapshots(result);
-  const phase3Readiness = await buildPhase3ReadinessReport(result);
-  const phase3Persistence = await persistPhase3ReadinessReport(phase3Readiness);
-  const httpStatus = result.status === "no_fx_data" ? 502 : 200;
+  const report = await buildPhase3ReadinessReport();
+  const persistence = await persistPhase3ReadinessReport(report);
 
   return Response.json(
-    { ...result, persistence, phase3Persistence, phase3Readiness },
-    { headers: noStoreHeaders, status: httpStatus },
+    { persistence, report, status: "ok" },
+    { headers: noStoreHeaders },
   );
 }
 
 export async function GET(request: Request) {
-  return handleDataRadar(request);
+  return handlePhaseReadiness(request);
 }
 
 export async function POST(request: Request) {
-  return handleDataRadar(request);
+  return handlePhaseReadiness(request);
 }

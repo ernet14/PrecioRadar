@@ -25,7 +25,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { ShareButton } from "@/components/product/ShareButton";
 import { PushToggle } from "@/components/pwa/PushToggle";
-import { formatCurrencyARS, formatDate } from "@/lib/utils";
+import { formatCurrencyARS, formatDate, slugify } from "@/lib/utils";
 import { getCurrentUser } from "@/lib/supabase/auth";
 import { buildOfferClickHref } from "@/services/clickTrackingService";
 import {
@@ -528,7 +528,18 @@ export default async function ProductoPage({
                 {product.name}
               </h1>
               <p className="mt-3 text-sm font-medium text-slate-500">
-                {product.brand ? `${product.brand} ` : ""}
+                {product.brand && product.categorySlug ? (
+                  <Link
+                    className="font-semibold text-blue-700 hover:underline"
+                    href={`/categoria/${product.categorySlug}/marca/${slugify(product.brand)}`}
+                  >
+                    {product.brand}
+                  </Link>
+                ) : product.brand ? (
+                  product.brand
+                ) : (
+                  ""
+                )}{" "}
                 {product.model ?? ""}
               </p>
               {product.aiDescription?.trim() ? (

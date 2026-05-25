@@ -4,6 +4,24 @@
 > proyecto versionado en el repo (distinto de la memoria cross-sesión del agente, que vive
 > fuera del repo).
 
+## 2026-05-25 — Automatización pre-Fase 3
+- No se automatiza `auto-densify --apply` dentro de Vercel Cron porque tarda ~150s y puede
+  exceder límites; queda manual/operativo.
+- Sí se automatiza el semáforo de madurez: `/api/internal/data-radar` persiste readiness diario
+  en `SystemHealthLog`, `/api/internal/phase-readiness` lo recalcula bajo `CRON_SECRET` y
+  `/admin/monitor` lo muestra.
+
+## 2026-05-25 — Tercera tanda de densificación VTEX
+- Se amplió `scripts/seed-catalog.ts` con modelos electro/TV de alto solape detectados en VTEX.
+- El apply final se hizo con `auto-densify --apply --max-groups=80`: 19 grupos seguros / 57
+  ofertas persistidas, 2 grupos bloqueados por dispersión, comparableRate **35% → 39%**
+  (127/328), auditoría limpia.
+
+## 2026-05-25 — SEO long-tail por marca/categoría
+- Se agrega `/categoria/[slug]/marca/[brandSlug]` como faceta indexable mínima sobre dataset real.
+- Solo entra al sitemap si hay 2+ productos o al menos 1 comparable; categorías y productos
+  enlazan internamente a esas páginas para distribuir autoridad hacia TVs/electro con solape.
+
 ## 2026-05-24 — Tendencia total del radar en admin
 - `/admin/monitor` muestra un gráfico interno del scope `total` con índice y beta lag 0 usando
   snapshots guardados; la tabla histórica sigue limitada para lectura operativa.

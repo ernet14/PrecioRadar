@@ -76,15 +76,21 @@ contra nada — y un comparador sin comparación no entrega su valor central.
   seguros adicionales y dejó bloqueado 1 grupo sospechoso por dispersión x4.75. Resultado:
   **comparableRate 26% → 34%** (92 comparables / 271 con ofertas vivas). Auditoría limpia:
   0 sospechosos en DB y 0 precios caros rotos bajo $10k.
+- **Tercera tanda electro/TV aplicada** ✅ (2026-05-25): `seed-catalog.ts` sumó 18 modelos
+  vigentes de alto solape (microondas BGH, TVs Philips/TCL/Noblex, heladeras y lavarropas
+  Samsung/Whirlpool/Drean). El apply operativo se completó con `auto-densify --apply
+  --max-groups=80`, persistiendo 19 grupos seguros / 57 ofertas y bloqueando 2 grupos por
+  dispersión. Resultado: **comparableRate 35% → 39%** (127 comparables / 328 con ofertas vivas).
+  Auditoría limpia: 0 sospechosos en DB y 0 precios caros rotos bajo $10k.
 - **Segunda tanda de seed** (2026-05-23): +5 modelos vigentes — TVs entrada (Crystal UHD 50/43
   DU7000) y **primera línea blanca** (heladera Samsung RT38, microondas BGH B223D, lavarropas
   Samsung WW90), todos agrupando por EAN súper+electro. **comparableRate 25% → 26%**
   (71 comparables / 275 con ofertas). La línea blanca agrupa tan bien como las TVs.
 - Telcos (Movistar/Claro/Personal): **descartadas** — Movistar no es VTEX (devolvió HTML) y
   los celulares ya comparan en las VTEX de electro.
-- **Próximo**: seguir sumando modelos electro/EAN de alto solape (TVs/electro agrupan 4-6
-  tiendas); apuntar a modelos que las tiendas stockean HOY (los viejos como A55/G24/G34 están
-  discontinuados y solo aparecen en 1 tienda).
+- **Próximo**: revisar manualmente los 2 grupos bloqueados por dispersión antes de forzarlos
+  (`--include-suspects`) o seguir ampliando con modelos nuevos de alto solape; no insistir con
+  celulares discontinuados (A55/G24/G34), que siguen apareciendo en 1 tienda.
 
 ### Fase 2 — Adquisición sostenible (SEO long-tail) (iniciada 2026-05-23)
 Sobre el dataset comparable, páginas de producto indexables (regla de oro del roadmap).
@@ -107,6 +113,11 @@ Compone con el tiempo igual que el `PriceHistory`. Más valioso que features nue
 - **Links internos y schema priorizando comparables** ✅ (2026-05-24): los similares en
   `/producto/[slug]` ahora salen de la categoría curada y priorizan productos comparables;
   `/categoria/[slug]` suma `ItemList` en JSON-LD con `AggregateOffer` cuando hay 2+ tiendas.
+- **Long-tail por marca/categoría** ✅ (2026-05-25): nueva ruta
+  `/categoria/[slug]/marca/[brandSlug]` para páginas indexables tipo "Televisores Samsung" o
+  "Electrodomésticos BGH". Se alimenta solo de productos reales con ofertas vivas, prioriza
+  comparables, agrega `CollectionPage` + `BreadcrumbList`, entra al sitemap y recibe links desde
+  categorías y producto.
 
 ### Fase 3+ — Índice de inflación / capa de datos B2B (motor iniciado 2026-05-23)
 Índice de precios/inflación público + radar dólar pass-through, sobre el dataset VTEX
@@ -147,6 +158,12 @@ acumulado. Recién acá el cobro B2B tiene algo único que vender.
   categorías y guarda un snapshot diario por `source/scope/snapshotDate` en
   `DataRadarSnapshot` (upsert idempotente). `/admin/monitor` muestra el historial reciente
   guardado para revisar evolución sin recalcular todo a mano.
+- **Semáforo automático hacia Fase 3** ✅ (2026-05-25): `phaseReadinessService` mide gates
+  públicos por scope (30+ días, 30+ productos, sample latest 20+), cobertura comparable y
+  páginas long-tail por marca/categoría. `/api/internal/data-radar` lo persiste a diario en
+  `SystemHealthLog`; `/api/internal/phase-readiness` permite corrida manual protegida y
+  `/admin/monitor` muestra el semáforo. Estado actual: building, total 6/30 días, 127/328
+  comparables (39%), 45 páginas long-tail.
 - Pendiente Fase 3: página pública del índice, página pública del radar dólar y empaquetado B2B
   cuando haya 30+ días de serie.
 

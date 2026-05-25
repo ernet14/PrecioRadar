@@ -9,6 +9,10 @@ import {
   type DataRadarResult,
   type DataRadarSnapshotSummary,
 } from "@/services/dataRadarService";
+import {
+  getLatestPhase3ReadinessReport,
+  type LatestPhase3ReadinessReport,
+} from "@/services/phaseReadinessService";
 import type { PassThroughLagResult } from "@/services/passThroughService";
 import { LiveMonitorControls } from "./LiveMonitorControls";
 
@@ -403,6 +407,112 @@ function DataRadarSnapshotsCard({ snapshots }: { snapshots: DataRadarSnapshotSum
   );
 }
 
+const READINESS_TONE: Record<string, string> = {
+  building: "border-amber-200 bg-amber-50 text-amber-800",
+  no_data: "border-slate-200 bg-slate-50 text-slate-600",
+  partial: "border-blue-200 bg-blue-50 text-blue-800",
+  ready: "border-emerald-200 bg-emerald-50 text-emerald-800",
+};
+
+function Phase3ReadinessCard({ readiness }: { readiness: LatestPhase3ReadinessReport | null }) {
+  const report = readiness?.report;
+  const total = report?.scopes.find((scope) => scope.label === "total");
+
+  return (
+    <Card className="border-slate-200 p-5">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h2 className="text-base font-semibold text-slate-950">Semáforo Fase 3</h2>
+          <p className="mt-1 text-xs text-slate-500">
+            Gate automático para decidir cuándo publicar índice/radar sin señal inmadura.
+          </p>
+        </div>
+        <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${READINESS_TONE[report?.status ?? "no_data"] ?? READINESS_TONE.no_data}`}>
+          {report?.status ?? "sin datos"}
+        </span>
+      </div>
+
+      {report ? (
+        <>
+          <div className="mt-4 grid gap-3 sm:grid-cols-4">
+            <StatTile
+              label="Serie total"
+              value={total ? `${total.days}/30 d` : "—"}
+              tone={total?.publicable ? "good" : "warn"}
+            />
+            <StatTile
+              label="Sample total"
+              value={total ? String(total.latestSample) : "—"}
+              tone={(total?.latestSample ?? 0) >= 20 ? "good" : "warn"}
+            />
+            <StatTile
+              label="Comparables"
+              value={`${report.comparableRate}%`}
+              tone={report.comparableRate >= 45 ? "good" : "warn"}
+            />
+            <StatTile
+              label="Long-tail"
+              value={String(report.brandCategoryPages)}
+              tone={report.brandCategoryPages >= 10 ? "good" : "neutral"}
+            />
+          </div>
+
+          <div className="mt-4 overflow-x-auto">
+            <table className="min-w-[760px] w-full border-separate border-spacing-0 text-left text-xs">
+              <thead>
+                <tr className="text-slate-500">
+                  <th className="border-b border-slate-200 px-3 py-2 font-semibold">Scope</th>
+                  <th className="border-b border-slate-200 px-3 py-2 font-semibold">Estado</th>
+                  <th className="border-b border-slate-200 px-3 py-2 font-semibold">Días</th>
+                  <th className="border-b border-slate-200 px-3 py-2 font-semibold">Productos</th>
+                  <th className="border-b border-slate-200 px-3 py-2 font-semibold">Sample</th>
+                  <th className="border-b border-slate-200 px-3 py-2 font-semibold">Falta</th>
+                </tr>
+              </thead>
+              <tbody>
+                {report.scopes.map((scope) => (
+                  <tr className="odd:bg-white even:bg-slate-50/70" key={scope.label}>
+                    <td className="border-b border-slate-100 px-3 py-2 font-semibold text-slate-800">
+                      {scope.label}
+                    </td>
+                    <td className="border-b border-slate-100 px-3 py-2">
+                      <span className={`rounded-full border px-2 py-0.5 font-semibold ${READINESS_TONE[scope.status] ?? READINESS_TONE.no_data}`}>
+                        {scope.status}
+                      </span>
+                    </td>
+                    <td className="border-b border-slate-100 px-3 py-2 text-slate-700">{scope.days}</td>
+                    <td className="border-b border-slate-100 px-3 py-2 text-slate-700">{scope.productsTracked}</td>
+                    <td className="border-b border-slate-100 px-3 py-2 text-slate-700">{scope.latestSample}</td>
+                    <td className="border-b border-slate-100 px-3 py-2 text-slate-500">
+                      {scope.missing.length > 0 ? scope.missing.join(", ") : "—"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-4 rounded-xl border border-slate-200 bg-white p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Próximas acciones</p>
+            <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-5 text-slate-600">
+              {report.nextActions.map((action) => (
+                <li key={action}>{action}</li>
+              ))}
+            </ul>
+            <p className="mt-3 text-[11px] text-slate-400">
+              Última medición: {readiness ? fmt(readiness.createdAt) : "—"}
+            </p>
+          </div>
+        </>
+      ) : (
+        <p className="mt-3 rounded-lg border border-dashed border-slate-200 bg-slate-50 p-3 text-xs text-slate-500">
+          Todavía no hay semáforo persistido. Se genera con el cron del radar o con `/api/internal/phase-readiness`.
+        </p>
+      )}
+    </Card>
+  );
+}
+
 function BnaRadarCard({ radar }: { radar: DataRadarResult | null }) {
   if (!radar) {
     return (
@@ -447,11 +557,12 @@ function BnaRadarCard({ radar }: { radar: DataRadarResult | null }) {
 }
 
 export default async function MonitorPage() {
-  const [data, priceIndex, radarSnapshots, totalRadarSnapshots] = await Promise.all([
+  const [data, priceIndex, radarSnapshots, totalRadarSnapshots, phase3Readiness] = await Promise.all([
     getMonitorData(),
     computePriceIndex(),
     listDataRadarSnapshots({ limit: 36 }),
     listDataRadarSnapshots({ limit: 90, scope: "total" }),
+    getLatestPhase3ReadinessReport(),
   ]);
   const bnaRadar = await computeBnaDataRadar(priceIndex);
 
@@ -541,6 +652,7 @@ export default async function MonitorPage() {
         </section>
 
         <DataRadarTotalTrendCard snapshots={totalRadarSnapshots} />
+        <Phase3ReadinessCard readiness={phase3Readiness} />
         <DataRadarSnapshotsCard snapshots={radarSnapshots} />
 
         <Card className="border-slate-200 p-5">
