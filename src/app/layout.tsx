@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { BetaBanner } from "@/components/layout/BetaBanner";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
@@ -71,6 +72,7 @@ export default function RootLayout({
         <CookieBanner />
         <ServiceWorkerRegistrar />
         <Analytics />
+        <GoogleAnalytics />
       </body>
     </html>
   );

@@ -2,45 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-
-const COOKIE_NAME = "pr_cookie_consent";
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
-
-type ConsentValue = {
-  essential: true;
-  analytics: boolean;
-  marketing: boolean;
-  updatedAt: string;
-};
-
-function getStoredConsent(): ConsentValue | null {
-  if (typeof document === "undefined") return null;
-  const match = document.cookie.match(
-    new RegExp(`(?:^|; )${COOKIE_NAME}=([^;]*)`),
-  );
-  if (!match) return null;
-
-  try {
-    const parsed = JSON.parse(decodeURIComponent(match[1]));
-    if (typeof parsed !== "object" || parsed === null) return null;
-    return {
-      essential: true,
-      analytics: Boolean(parsed.analytics),
-      marketing: Boolean(parsed.marketing),
-      updatedAt:
-        typeof parsed.updatedAt === "string"
-          ? parsed.updatedAt
-          : new Date().toISOString(),
-    };
-  } catch {
-    return null;
-  }
-}
-
-function storeConsent(value: ConsentValue) {
-  const encoded = encodeURIComponent(JSON.stringify(value));
-  document.cookie = `${COOKIE_NAME}=${encoded}; max-age=${COOKIE_MAX_AGE}; path=/; SameSite=Lax`;
-}
+import {
+  readConsent,
+  storeConsent,
+  type ConsentValue,
+} from "@/lib/consent";
 
 async function reportConsent(value: ConsentValue) {
   try {
@@ -66,7 +32,7 @@ export function CookieBanner() {
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      setVisible(!getStoredConsent());
+      setVisible(!readConsent());
     }, 0);
 
     return () => window.clearTimeout(timer);
@@ -138,8 +104,8 @@ export function CookieBanner() {
             <label className="flex flex-col text-sm text-slate-700">
               <span className="font-semibold text-slate-900">Analytics</span>
               <span className="mt-1 text-xs text-slate-500">
-                Métricas agregadas de uso. Hoy no instalamos ninguna; queda como
-                opción para futuras integraciones (Vercel Analytics, etc.).
+                Google Analytics para métricas agregadas de uso. Solo se carga si
+                lo permitís acá.
               </span>
               <span className="mt-2 inline-flex items-center gap-2">
                 <input

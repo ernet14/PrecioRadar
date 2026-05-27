@@ -4,6 +4,15 @@
 > proyecto versionado en el repo (distinto de la memoria cross-sesión del agente, que vive
 > fuera del repo).
 
+## 2026-05-27 — Google Analytics gateado por consentimiento
+- Se instala GA4 (`G-95LPD91C5Y`, override por `NEXT_PUBLIC_GA_ID`) vía `next/script`
+  `afterInteractive` en `components/analytics/GoogleAnalytics.tsx`, montado en el layout.
+- Solo carga si el usuario aceptó analytics: usa `useSyncExternalStore` sobre `consent.ts`
+  (lee la cookie `pr_cookie_consent` y reacciona a `CONSENT_EVENT` sin recargar).
+- `CookieBanner` dejó su copia local de consent y ahora usa el helper compartido (así dispara
+  el evento al guardar). CSP de `next.config.ts` habilita `googletagmanager.com` (script-src) y
+  `*.google-analytics.com` / `*.analytics.google.com` (connect-src).
+
 ## 2026-05-27 — Cuarta tanda de densificación (ampliación de queries)
 - Se ampliaron las `SEARCH_QUERIES` de `auto-densify.ts` (16 → 28) con familias electro/TV de
   alto solape aún sin cubrir (LG/Whirlpool en microondas/lavarropas/heladeras, Hisense/RCA en TV,
