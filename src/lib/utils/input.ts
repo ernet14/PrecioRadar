@@ -17,6 +17,28 @@ const allowedSearchHosts = [
   "temu.com",
 ];
 
+const allowedAffiliateHosts = [
+  "amazon.com",
+  "amazon.com.br",
+  "awin1.com",
+  "awin.com",
+  "cj.com",
+  "impact.com",
+  "impactradius.com",
+  "linksynergy.com",
+  "rakutenadvertising.com",
+  "shein.com",
+];
+
+const allowedImageHosts = [
+  ...allowedSearchHosts,
+  "mlstatic.com",
+  "vtexassets.com",
+  "vteximg.com.br",
+  "fravega.com",
+  "images.fravega.com",
+];
+
 const blockedHostPatterns = [
   /^localhost$/i,
   /^127\./,
@@ -31,11 +53,12 @@ const blockedHostPatterns = [
   /\.local$/i,
 ];
 
-function parseUrl(input: string) {
+export function parseHttpUrl(input: string) {
   const trimmedInput = input.trim();
 
   try {
-    return new URL(trimmedInput);
+    const url = new URL(trimmedInput);
+    return isSafeProtocol(url.protocol) ? url : null;
   } catch {
     if (/^[a-z0-9][a-z0-9.-]+\.[a-z]{2,}(\/.*)?$/i.test(trimmedInput)) {
       try {
@@ -53,35 +76,59 @@ function isSafeProtocol(protocol: string) {
   return protocol === "http:" || protocol === "https:";
 }
 
-function isBlockedHost(hostname: string) {
-  return blockedHostPatterns.some((pattern) => pattern.test(hostname));
+export function normalizeHostname(hostname: string) {
+  return hostname.toLowerCase().replace(/^www\./, "");
 }
 
-export function isAllowedSearchUrl(input: string) {
-  const parsedUrl = parseUrl(input);
+export function isBlockedHost(hostname: string) {
+  return blockedHostPatterns.some((pattern) => pattern.test(normalizeHostname(hostname)));
+}
 
-  if (!parsedUrl) return false;
-  if (!isSafeProtocol(parsedUrl.protocol)) return false;
+function isAllowedHost(hostname: string, allowedHosts: string[]) {
+  const normalized = normalizeHostname(hostname);
 
-  const hostname = parsedUrl.hostname.toLowerCase().replace(/^www\./, "");
+  if (isBlockedHost(normalized)) return false;
 
-  if (isBlockedHost(hostname)) return false;
-
-  return allowedSearchHosts.some(
-    (allowed) => hostname === allowed || hostname.endsWith(`.${allowed}`),
+  return allowedHosts.some(
+    (allowed) => normalized === allowed || normalized.endsWith(`.${allowed}`),
   );
 }
 
+export function isAllowedSearchUrl(input: string) {
+  const parsedUrl = parseHttpUrl(input);
+
+  if (!parsedUrl) return false;
+
+  return isAllowedHost(parsedUrl.hostname, allowedSearchHosts);
+}
+
+export function isAllowedOutboundUrl(input: string) {
+  const parsedUrl = parseHttpUrl(input);
+
+  if (!parsedUrl) return false;
+
+  return (
+    isAllowedHost(parsedUrl.hostname, allowedSearchHosts) ||
+    isAllowedHost(parsedUrl.hostname, allowedAffiliateHosts)
+  );
+}
+
+export function isAllowedImageUrl(input: string) {
+  const parsedUrl = parseHttpUrl(input);
+
+  if (!parsedUrl) return false;
+
+  return isAllowedHost(parsedUrl.hostname, allowedImageHosts);
+}
+
 export function isMercadoLibreUrl(url: string) {
-  const parsedUrl = parseUrl(url);
+  const parsedUrl = parseHttpUrl(url);
 
   if (!parsedUrl) {
     return false;
   }
 
-  if (!isSafeProtocol(parsedUrl.protocol)) return false;
-
-  const hostname = parsedUrl.hostname.toLowerCase().replace(/^www\./, "");
+  const hostname = normalizeHostname(parsedUrl.hostname);
 
   if (isBlockedHost(hostname)) return false;
 
@@ -94,13 +141,9 @@ export function isMercadoLibreUrl(url: string) {
 }
 
 export function detectInputType(input: string): InputType {
-  const parsedUrl = parseUrl(input);
+  const parsedUrl = parseHttpUrl(input);
 
   if (!parsedUrl) {
-    return "text";
-  }
-
-  if (!isSafeProtocol(parsedUrl.protocol)) {
     return "text";
   }
 

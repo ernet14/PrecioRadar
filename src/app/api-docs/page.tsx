@@ -2,53 +2,50 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/layout/Container";
 import { Card } from "@/components/ui/Card";
-import { getAbsoluteUrl, getSiteUrl } from "@/lib/seo/site";
+import { getAbsoluteUrl } from "@/lib/seo/site";
 
 export const metadata: Metadata = {
-  title: "Documentación de la API",
+  title: "API de PrecioRadar",
   description:
-    "Referencia de la API de PrecioRadar: autenticación, endpoints de búsqueda y de precios por producto, límites por plan y códigos de error.",
+    "API de PrecioRadar para acceder a precios reales, ofertas por tienda e historial de productos de Argentina.",
   alternates: { canonical: getAbsoluteUrl("/api-docs") },
 };
 
-const BASE = getSiteUrl();
+const DATA_POINTS = [
+  "Mejor precio disponible por producto",
+  "Ofertas por tienda con disponibilidad",
+  "Historial de precios según el plan",
+  "Estadísticas de variación y rango de precios",
+  "Datos de tiendas reales, sin productos demo",
+];
 
-function CodeBlock({ children }: { children: string }) {
-  return (
-    <pre className="overflow-x-auto rounded-lg bg-slate-950 p-4 text-xs leading-relaxed text-slate-100">
-      <code>{children}</code>
-    </pre>
-  );
-}
+const USE_CASES = [
+  {
+    title: "Sellers",
+    text: "Monitoreo de competencia, cambios de precio y oportunidades de margen.",
+  },
+  {
+    title: "Comparadores",
+    text: "Catálogo de productos con precios actuales e historial para enriquecer fichas.",
+  },
+  {
+    title: "Medios y research",
+    text: "Señales de precios para notas, rankings, tendencias y análisis de mercado.",
+  },
+];
 
-function Endpoint({
-  method,
-  path,
-  children,
-}: {
-  method: string;
-  path: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <Card className="border-slate-200 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
-      <p className="flex flex-wrap items-center gap-2 font-mono text-sm">
-        <span className="rounded bg-emerald-100 px-2 py-0.5 font-semibold text-emerald-800">
-          {method}
-        </span>
-        <span className="text-slate-950">{path}</span>
-      </p>
-      <div className="mt-4 space-y-4">{children}</div>
-    </Card>
-  );
-}
+const ACCESS_STEPS = [
+  "Elegís un plan según volumen e historial necesario.",
+  "Nos contás el caso de uso para habilitar la clave correcta.",
+  "Te enviamos la API key y la referencia técnica privada para integrar.",
+  "Medimos consumo diario y ajustamos el plan si el volumen crece.",
+];
 
-const ERRORS: { code: string; reason: string; when: string }[] = [
-  { code: "401", reason: "missing_api_key", when: "No mandaste la clave en ningún header." },
-  { code: "401", reason: "invalid_api_key", when: "La clave no existe, está inactiva o fue revocada." },
-  { code: "404", reason: "product_not_found", when: "El slug no corresponde a un producto real con ofertas." },
-  { code: "429", reason: "rate_limit_exceeded", when: "Superaste el límite diario de tu plan." },
-  { code: "503", reason: "database_unavailable", when: "Servicio de datos temporalmente no disponible." },
+const TECH_SUMMARY = [
+  { label: "Formato", value: "REST sobre HTTPS con respuestas JSON" },
+  { label: "Acceso", value: "API key privada por cliente" },
+  { label: "Recursos", value: "Búsqueda de productos y detalle de precios" },
+  { label: "Control", value: "Límites diarios por plan y soporte ante errores" },
 ];
 
 export default function ApiDocsPage() {
@@ -56,148 +53,95 @@ export default function ApiDocsPage() {
     <main className="bg-[#f4f7fb] py-10 text-slate-950">
       <Container className="space-y-8">
         <section className="rounded-3xl bg-slate-950 p-6 text-white shadow-[0_24px_60px_rgba(15,23,42,0.18)] md:p-8">
-          <p className="text-sm font-semibold text-emerald-200">API v1 · referencia</p>
+          <p className="text-sm font-semibold text-emerald-200">API de PrecioRadar</p>
           <h1 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
-            Documentación de la API
+            Datos de precios reales para integrar en tu negocio
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300 md:text-base">
-            REST sobre HTTPS, respuestas en JSON. Cada respuesta incluye el{" "}
-            <code className="text-emerald-200">tier</code> con el que se resolvió.
-            ¿Todavía no tenés clave?{" "}
-            <Link className="font-semibold text-white underline" href="/api-planes">
-              Mirá los planes
-            </Link>
-            .
+            La API entrega precios, ofertas e historial de productos de Argentina
+            para sellers, comparadores y equipos que necesitan datos confiables sin
+            construir scraping propio.
           </p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Link
+              className="inline-flex h-11 items-center rounded-lg bg-white px-5 text-sm font-semibold text-slate-950 transition hover:bg-slate-100"
+              href="/api-planes"
+            >
+              Ver planes
+            </Link>
+            <a
+              className="inline-flex h-11 items-center rounded-lg border border-white/20 px-5 text-sm font-semibold text-white transition hover:bg-white/10"
+              href="mailto:soporte@precio-radar.com?subject=Acceso%20a%20la%20API"
+            >
+              Solicitar acceso
+            </a>
+          </div>
         </section>
 
-        <Card className="border-slate-200 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
-          <h2 className="text-xl font-bold tracking-tight">Autenticación</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            Toda petición necesita tu API key (formato{" "}
-            <code className="rounded bg-slate-100 px-1">pr_live_…</code>). Mandala
-            como Bearer token o en el header <code className="rounded bg-slate-100 px-1">x-api-key</code>.
-            Nunca la expongas en el front-end ni la subas al repo.
-          </p>
-          <div className="mt-4">
-            <CodeBlock>{`# Authorization: Bearer
-curl -H "Authorization: Bearer pr_live_xxx" \\
-  ${BASE}/api/v1/products?q=notebook
+        <section className="grid gap-4 md:grid-cols-2">
+          <Card className="border-slate-200 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
+            <h2 className="text-xl font-bold tracking-tight">Qué entrega</h2>
+            <ul className="mt-4 space-y-3 text-sm text-slate-700">
+              {DATA_POINTS.map((item) => (
+                <li className="flex gap-2" key={item}>
+                  <span aria-hidden className="mt-0.5 text-emerald-600">✓</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </Card>
 
-# x-api-key
-curl -H "x-api-key: pr_live_xxx" \\
-  ${BASE}/api/v1/products?q=notebook`}</CodeBlock>
-          </div>
-        </Card>
+          <Card className="border-slate-200 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
+            <h2 className="text-xl font-bold tracking-tight">Cómo se usa</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              La integración se hace desde un backend o herramienta interna, nunca
+              exponiendo la clave en el front-end. La referencia técnica completa se
+              entrega junto con la API key.
+            </p>
+            <dl className="mt-4 grid gap-3 text-sm">
+              {TECH_SUMMARY.map((item) => (
+                <div className="rounded-lg border border-slate-200 bg-white p-3" key={item.label}>
+                  <dt className="font-semibold text-slate-950">{item.label}</dt>
+                  <dd className="mt-1 text-slate-600">{item.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </Card>
+        </section>
 
         <section className="space-y-4">
-          <h2 className="text-xl font-bold tracking-tight">Endpoints</h2>
-
-          <Endpoint method="GET" path="/api/v1/products">
-            <p className="text-sm leading-6 text-slate-600">
-              Busca productos reales con al menos una oferta disponible.
-              Parámetros: <code className="rounded bg-slate-100 px-1">q</code> (texto, opcional)
-              y <code className="rounded bg-slate-100 px-1">limit</code> (1–50, default 20).
-            </p>
-            <CodeBlock>{`curl -H "Authorization: Bearer pr_live_xxx" \\
-  "${BASE}/api/v1/products?q=smart%20tv%2055&limit=5"
-
-{
-  "tier": "PRO",
-  "status": "ok",
-  "query": "smart tv 55",
-  "count": 1,
-  "results": [
-    {
-      "slug": "smart-tv-55-...",
-      "name": "Smart TV 55\\" ...",
-      "brand": "Samsung",
-      "category": "Televisores",
-      "bestPrice": 749999,
-      "currency": "ARS",
-      "offerCount": 3
-    }
-  ]
-}`}</CodeBlock>
-          </Endpoint>
-
-          <Endpoint method="GET" path="/api/v1/products/{slug}">
-            <p className="text-sm leading-6 text-slate-600">
-              Devuelve el detalle de precios de un producto: mejor precio,
-              ofertas por tienda, estadísticas e historial. La profundidad del
-              historial depende de tu plan (<code className="rounded bg-slate-100 px-1">historyDays</code>).
-            </p>
-            <CodeBlock>{`curl -H "Authorization: Bearer pr_live_xxx" \\
-  ${BASE}/api/v1/products/smart-tv-55-samsung
-
-{
-  "tier": "PRO",
-  "slug": "smart-tv-55-samsung",
-  "name": "Smart TV 55\\" Samsung",
-  "brand": "Samsung",
-  "model": "AU7000",
-  "category": "Televisores",
-  "bestPrice": 749999,
-  "currency": "ARS",
-  "offerCount": 3,
-  "offers": [
-    { "store": "Tienda A", "storeSlug": "tienda-a", "price": 749999,
-      "currency": "ARS", "available": true, "url": "https://..." }
-  ],
-  "stats": { "averagePrice": 812000, "minPrice": 749999, "maxPrice": 899000,
-    "variationPercent": -7.6, "pointsCount": 42, "isSufficient": true },
-  "historyDays": 365,
-  "history": [
-    { "recordedAt": "2026-01-10T12:00:00.000Z", "price": 880000,
-      "currency": "ARS", "store": "Tienda A" }
-  ]
-}`}</CodeBlock>
-          </Endpoint>
+          <h2 className="text-xl font-bold tracking-tight">Para quién sirve</h2>
+          <div className="grid gap-4 md:grid-cols-3">
+            {USE_CASES.map((useCase) => (
+              <Card
+                className="border-slate-200 p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)]"
+                key={useCase.title}
+              >
+                <h3 className="font-bold tracking-tight text-slate-950">{useCase.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{useCase.text}</p>
+              </Card>
+            ))}
+          </div>
         </section>
 
         <Card className="border-slate-200 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
-          <h2 className="text-xl font-bold tracking-tight">Límites y plan</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            El límite diario y la profundidad de historial dependen de tu plan
-            (ver <Link className="font-semibold text-indigo-700 hover:underline" href="/api-planes">planes</Link>).
-            Las respuestas correctas incluyen el header{" "}
-            <code className="rounded bg-slate-100 px-1">X-RateLimit-Remaining</code> con
-            las llamadas que te quedan en el día. Al pasarte, recibís un{" "}
-            <code className="rounded bg-slate-100 px-1">429</code>.
-          </p>
-        </Card>
-
-        <Card className="border-slate-200 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
-          <h2 className="text-xl font-bold tracking-tight">Errores</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            Los errores devuelven un JSON con la forma{" "}
-            <code className="rounded bg-slate-100 px-1">{`{ "error": "<motivo>" }`}</code> y
-            el código HTTP correspondiente.
-          </p>
-          <div className="mt-4 overflow-x-auto">
-            <table className="w-full border-collapse text-sm">
-              <thead>
-                <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-500">
-                  <th className="py-2 pr-4 font-semibold">HTTP</th>
-                  <th className="py-2 pr-4 font-semibold">error</th>
-                  <th className="py-2 font-semibold">Cuándo</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ERRORS.map((row) => (
-                  <tr className="border-b border-slate-100" key={`${row.code}-${row.reason}`}>
-                    <td className="py-2 pr-4 font-mono font-semibold text-slate-950">{row.code}</td>
-                    <td className="py-2 pr-4 font-mono text-slate-700">{row.reason}</td>
-                    <td className="py-2 text-slate-600">{row.when}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <h2 className="text-xl font-bold tracking-tight">Alta y operación</h2>
+          <ol className="mt-4 grid gap-3 text-sm text-slate-700 md:grid-cols-2">
+            {ACCESS_STEPS.map((step, index) => (
+              <li className="flex gap-3 rounded-lg border border-slate-200 bg-white p-4" key={step}>
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white">
+                  {index + 1}
+                </span>
+                <span className="leading-6">{step}</span>
+              </li>
+            ))}
+          </ol>
         </Card>
 
         <p className="rounded-xl border border-dashed border-slate-200 bg-white p-5 text-sm leading-6 text-slate-600">
-          Solo servimos productos reales (sin demos). ¿Listo para integrar?{" "}
+          La documentación técnica con parámetros, autenticación y ejemplos se comparte
+          al habilitar el acceso, para que esta página no quede como una pantalla de
+          código pública.{" "}
           <Link className="font-semibold text-indigo-700 hover:underline" href="/api-planes">
             Elegí un plan y pedí tu API key
           </Link>

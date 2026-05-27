@@ -4,6 +4,21 @@
 > proyecto versionado en el repo (distinto de la memoria cross-sesión del agente, que vive
 > fuera del repo).
 
+## 2026-05-27 — Hardening de seguridad pro
+- Admin ya no confía en `user_metadata`; en prod exige `ADMIN_EMAILS` + rol en `app_metadata`.
+- Rate limit de auth/API falla cerrado en producción si falta Upstash; redirects/fetch/imports
+  validan hosts permitidos; `/api/out` deja de redirigir a destinos no allowlisteados.
+- `next` sube a 16.2.6 con overrides para transitive vulnerables; `npm audit` queda en 0.
+- Nueva migración `20260527120000_harden_rls` habilita RLS global deny-all para tablas de app.
+
+## 2026-05-27 — Refuerzo puntual Fase 1
+- `auto-densify --apply --max-groups=80` persistió 4 grupos seguros / 13 ofertas y llevó
+  comparableRate **43% → 44%** (163/374). Se bloquearon 5 sospechosos por dispersión.
+
+## 2026-05-27 — `/api-docs` deja de ser referencia pública con código
+- La página pública de API se orienta a negocio/operación: valor, datos disponibles, casos de
+  uso y alta. La referencia técnica con ejemplos se entrega junto con la API key.
+
 ## 2026-05-27 — Google Analytics gateado por consentimiento
 - Se instala GA4 (`G-95LPD91C5Y`, override por `NEXT_PUBLIC_GA_ID`) vía `next/script`
   `afterInteractive` en `components/analytics/GoogleAnalytics.tsx`, montado en el layout.

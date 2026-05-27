@@ -4,7 +4,6 @@ import {
 } from "@/services/fakeDiscountService";
 import {
   calculatePriceHistoryStats,
-  getAveragePrice,
   getMinPrice,
   type PriceHistoryPoint,
 } from "@/services/priceHistoryService";

@@ -96,6 +96,10 @@ contra nada — y un comparador sin comparación no entrega su valor central.
   Noblex/Hyundai/RCA, etc.) y bloqueó 8 sospechosos (cocinas Domec con feed roto en Carrefour
   ~$54k, los 2 lavarropas Samsung). Resultado: **comparableRate 39% → 43%** (159 comparables /
   367 con ofertas vivas). Auditoría limpia: 0 sospechosos en DB y 0 precios caros rotos.
+- **Refuerzo puntual post-cuarta tanda** ✅ (2026-05-27): `auto-densify --apply --max-groups=80`
+  persistió **4 grupos seguros / 13 ofertas** (Samsung QLED 75, Philips Ambilight 70, aire TCL
+  inverter, microondas BGH) y bloqueó 5 sospechosos por dispersión. Resultado:
+  **comparableRate 43% → 44%** (163 comparables / 374 con ofertas vivas). Auditoría limpia.
 - **Próximo**: revisar manualmente los grupos bloqueados por dispersión antes de forzarlos
   (`--include-suspects`) o seguir ampliando con modelos nuevos de alto solape; no insistir con
   celulares discontinuados (A55/G24/G34), que siguen apareciendo en 1 tienda.

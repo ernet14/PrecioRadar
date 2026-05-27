@@ -4,6 +4,7 @@ import { recordOfferClick } from "@/services/clickTrackingService";
 import { syncAuthUserToPrisma } from "@/services/userSyncService";
 import { outRouteSchema } from "@/lib/validation/schemas";
 import { rateLimit } from "@/lib/ratelimit";
+import { isAllowedOutboundUrl } from "@/lib/utils/input";
 
 export const dynamic = "force-dynamic";
 
@@ -51,6 +52,13 @@ export async function GET(request: NextRequest) {
     return Response.json(
       { reason: "offer_not_found", status: "error" },
       { headers: noStoreHeaders, status: 404 },
+    );
+  }
+
+  if (!isAllowedOutboundUrl(result.url)) {
+    return Response.json(
+      { reason: "unsafe_destination", status: "error" },
+      { headers: noStoreHeaders, status: 400 },
     );
   }
 

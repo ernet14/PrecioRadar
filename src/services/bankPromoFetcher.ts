@@ -4,6 +4,7 @@
 // http(s) + timeout. Muchas páginas de banco son SPA (poco texto en el HTML
 // crudo); por eso también levantamos las meta descripciones y, si no hay nada
 // útil, el caller cae al texto pegado.
+import { fetchWithAllowedRedirects } from "@/lib/utils/safeFetch";
 
 const BANK_PROMO_HOSTS = [
   "bbva.com.ar",
@@ -113,15 +114,15 @@ export async function fetchBankPromoText(url: string): Promise<BankPromoFetchRes
   const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
   try {
-    const response = await fetch(url, {
+    const response = await fetchWithAllowedRedirects(url, isAllowedBankUrl, {
       signal: controller.signal,
-      redirect: "follow",
       headers: {
         Accept: "text/html,application/xhtml+xml",
         "User-Agent": "PrecioRadar/1.0 (+https://www.precio-radar.com)",
       },
     });
 
+    if (!response) return { status: "not_allowed" };
     if (!response.ok) return { status: "error", reason: `HTTP ${response.status}` };
 
     const contentType = response.headers.get("content-type") ?? "";

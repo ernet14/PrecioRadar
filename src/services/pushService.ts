@@ -75,13 +75,16 @@ export async function savePushSubscription({
   }
 }
 
-export async function deletePushSubscription(endpoint: string): Promise<boolean> {
+export async function deletePushSubscription(
+  endpoint: string,
+  userId: string,
+): Promise<boolean> {
   const prisma = getPrismaClient();
 
   if (!prisma) return false;
 
   try {
-    await prisma.pushSubscription.deleteMany({ where: { endpoint } });
+    await prisma.pushSubscription.deleteMany({ where: { endpoint, userId } });
     return true;
   } catch (error) {
     logger.error("Unable to delete push subscription.", { error });

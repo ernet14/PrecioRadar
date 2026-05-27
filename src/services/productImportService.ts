@@ -1,7 +1,12 @@
 import { mvpCategoryDescriptors } from "@/data/categories";
 import { getPrismaClient } from "@/lib/prisma";
 import { normalizeProductName, slugify } from "@/lib/utils";
-import { isAllowedSearchUrl } from "@/lib/utils/input";
+import {
+  isAllowedImageUrl,
+  isAllowedOutboundUrl,
+  isAllowedSearchUrl,
+} from "@/lib/utils/input";
+import { fetchWithAllowedRedirects } from "@/lib/utils/safeFetch";
 import { logger } from "@/lib/logger";
 import type { ProductImportDraft } from "@/generated/prisma/client";
 
@@ -491,6 +496,21 @@ function getOrigin(url: string) {
   }
 }
 
+function cleanAllowedUrl(
+  value: string | null | undefined,
+  isAllowedUrl: (url: string) => boolean,
+) {
+  const trimmed = value?.trim();
+  if (!trimmed) return null;
+
+  try {
+    const url = new URL(trimmed);
+    return isAllowedUrl(url.toString()) ? url.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
 function getFieldSources(draft: ProductImportDraft): ProductImportFieldSources {
   if (!draft.fieldSources || typeof draft.fieldSources !== "object" || Array.isArray(draft.fieldSources)) {
     return {};
@@ -569,12 +589,12 @@ async function fetchPageHtml(url: string): Promise<string | null> {
   const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
   try {
-    const response = await fetch(url, {
+    const response = await fetchWithAllowedRedirects(url, isAllowedSearchUrl, {
       headers: { Accept: "text/html,application/xhtml+xml", "User-Agent": BROWSER_USER_AGENT },
-      redirect: "follow",
       signal: controller.signal,
     });
 
+    if (!response) return null;
     if (!response.ok) return null;
     if (!(response.headers.get("content-type") ?? "").includes("text/html")) return null;
 
@@ -769,12 +789,12 @@ export async function saveImportDraft(
   return prisma.productImportDraft.update({
     where: { id },
     data: {
-      affiliateUrl: input.affiliateUrl ?? null,
+      affiliateUrl: cleanAllowedUrl(input.affiliateUrl, isAllowedOutboundUrl),
       categorySlug: input.categorySlug ?? null,
       currentPrice: toDecimalString(input.currentPrice),
-      externalUrl: input.externalUrl ?? null,
+      externalUrl: cleanAllowedUrl(input.externalUrl, isAllowedSearchUrl),
       fieldSources: markChangedSources(getFieldSources(draft), draft, input),
-      imageUrl: input.imageUrl ?? null,
+      imageUrl: cleanAllowedUrl(input.imageUrl, isAllowedImageUrl),
       previousPrice: toDecimalString(input.previousPrice),
       productName: input.productName ?? null,
       shortDescription: input.shortDescription ?? null,
@@ -823,7 +843,9 @@ export async function publishImportDraft(
     const productName = savedDraft.productName ?? "";
     const storeSlug = savedDraft.storeSlug ?? "";
     const categorySlug = savedDraft.categorySlug ?? "";
-    const externalUrl = savedDraft.externalUrl ?? "";
+    const externalUrl = cleanAllowedUrl(savedDraft.externalUrl, isAllowedSearchUrl) ?? "";
+    const affiliateUrl = cleanAllowedUrl(savedDraft.affiliateUrl, isAllowedOutboundUrl);
+    const imageUrl = cleanAllowedUrl(savedDraft.imageUrl, isAllowedImageUrl);
     const storeName = savedDraft.storeName || slugToName(storeSlug);
     const productSlug = savedDraft.suggestedSlug || slugify(productName);
     const now = new Date();
@@ -833,9 +855,9 @@ export async function publishImportDraft(
         where: { slug: storeSlug },
         create: {
           active: true,
-          affiliateEnabled: Boolean(savedDraft.affiliateUrl),
+          affiliateEnabled: Boolean(affiliateUrl),
           baseUrl: getOrigin(externalUrl),
-          hasAffiliate: Boolean(savedDraft.affiliateUrl),
+          hasAffiliate: Boolean(affiliateUrl),
           isDemo: false,
           name: storeName,
           slug: storeSlug,
@@ -862,7 +884,7 @@ export async function publishImportDraft(
         create: {
           brand: null,
           categoryId: category.id,
-          imageUrl: savedDraft.imageUrl,
+          imageUrl,
           isDemo: false,
           model: null,
           name: productName,
@@ -871,7 +893,7 @@ export async function publishImportDraft(
         },
         update: {
           categoryId: category.id,
-          imageUrl: savedDraft.imageUrl,
+          imageUrl,
           name: productName,
           normalizedName: normalizeProductName(productName),
         },
@@ -884,12 +906,12 @@ export async function publishImportDraft(
           },
         },
         create: {
-          affiliateUrl: savedDraft.affiliateUrl,
+          affiliateUrl,
           available: true,
           condition: "NEW",
           currency: "ARS",
           externalId: `admin-import-${savedDraft.id}`,
-          imageUrl: savedDraft.imageUrl,
+          imageUrl,
           isDemo: false,
           lastCheckedAt: now,
           price: savedDraft.currentPrice ?? "0",
@@ -899,9 +921,9 @@ export async function publishImportDraft(
           title: productName,
         },
         update: {
-          affiliateUrl: savedDraft.affiliateUrl,
+          affiliateUrl,
           available: true,
-          imageUrl: savedDraft.imageUrl,
+          imageUrl,
           lastCheckedAt: now,
           price: savedDraft.currentPrice ?? "0",
           productId: product.id,

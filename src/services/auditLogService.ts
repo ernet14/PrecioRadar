@@ -28,7 +28,14 @@ function hashIp(ip: string | null | undefined): string | null {
   const trimmed = ip?.trim();
   if (!trimmed) return null;
 
-  const salt = process.env.AUDIT_IP_HASH_SALT ?? "precioradar-default-salt";
+  const salt = process.env.AUDIT_IP_HASH_SALT?.trim();
+  if (!salt) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("AUDIT_IP_HASH_SALT no configurado.");
+    }
+    return createHash("sha256").update(`dev-audit-salt:${trimmed}`).digest("hex");
+  }
+
   return createHash("sha256").update(`${salt}:${trimmed}`).digest("hex");
 }
 

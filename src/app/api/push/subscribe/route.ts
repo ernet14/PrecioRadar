@@ -62,6 +62,14 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const user = await getCurrentUser();
+  if (!user) {
+    return Response.json(
+      { status: "error", reason: "unauthorized" },
+      { headers: noStoreHeaders, status: 401 },
+    );
+  }
+
   let payload: unknown;
   try {
     payload = await request.json();
@@ -81,7 +89,7 @@ export async function DELETE(request: NextRequest) {
     );
   }
 
-  await deletePushSubscription(parsed.data.endpoint);
+  await deletePushSubscription(parsed.data.endpoint, user.id);
 
   return Response.json({ status: "ok" }, { headers: noStoreHeaders });
 }

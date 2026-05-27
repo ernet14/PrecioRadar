@@ -17,7 +17,16 @@ const contentSecurityPolicy = [
   "frame-ancestors 'self'",
   "form-action 'self'",
   "object-src 'none'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.vercel-insights.com https://*.vercel-analytics.com https://*.sentry.io https://www.googletagmanager.com",
+  [
+    "script-src 'self' 'unsafe-inline'",
+    process.env.NODE_ENV !== "production" ? "'unsafe-eval'" : "",
+    "https://*.vercel-insights.com",
+    "https://*.vercel-analytics.com",
+    "https://*.sentry.io",
+    "https://www.googletagmanager.com",
+  ]
+    .filter(Boolean)
+    .join(" "),
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
@@ -79,8 +88,23 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
-    // Las imagenes de producto provienen de CDNs variados segun la tienda importada.
-    remotePatterns: [{ protocol: "https", hostname: "**" }],
+    // CDNs conocidos de tiendas y feeds permitidos. Evita que next/image actúe
+    // como proxy abierto hacia cualquier host HTTPS.
+    remotePatterns: [
+      { protocol: "https", hostname: "http2.mlstatic.com" },
+      { protocol: "https", hostname: "*.vtexassets.com" },
+      { protocol: "https", hostname: "*.vteximg.com.br" },
+      { protocol: "https", hostname: "images.fravega.com" },
+      { protocol: "https", hostname: "*.fravega.com" },
+      { protocol: "https", hostname: "*.cetrogar.com.ar" },
+      { protocol: "https", hostname: "*.naldo.com.ar" },
+      { protocol: "https", hostname: "*.oncity.com" },
+      { protocol: "https", hostname: "*.carrefour.com.ar" },
+      { protocol: "https", hostname: "*.coppel.com.ar" },
+      { protocol: "https", hostname: "*.jumbo.com.ar" },
+      { protocol: "https", hostname: "*.vea.com.ar" },
+      { protocol: "https", hostname: "*.supermercadosdia.com.ar" },
+    ],
   },
 };
 

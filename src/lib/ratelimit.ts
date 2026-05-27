@@ -3,6 +3,7 @@ import { Redis } from "@upstash/redis";
 import { API_TIERS, type ApiTier } from "@/lib/apiTiers";
 
 type RateLimitResult = { success: boolean; remaining?: number };
+type LimiterKind = "api" | "auth" | "best-effort";
 
 function createLimiter(tokens: number, window: `${number} ${"ms" | "s" | "m" | "h" | "d"}`) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -30,7 +31,7 @@ export async function rateLimit(
 ): Promise<RateLimitResult> {
   const limiter = limiters[type];
 
-  if (!limiter) return { success: true };
+  if (!limiter) return missingLimiterResult(type === "out" || type === "search" ? "best-effort" : "auth");
 
   const result = await limiter.limit(identifier);
 
@@ -50,9 +51,17 @@ export async function rateLimitApi(
   }
 
   const limiter = apiTierLimiters.get(tier);
-  if (!limiter) return { success: true };
+  if (!limiter) return missingLimiterResult("api");
 
   const result = await limiter.limit(`api:${tier}:${identifier}`);
 
   return { success: result.success, remaining: result.remaining };
+}
+
+function missingLimiterResult(kind: LimiterKind): RateLimitResult {
+  if (process.env.NODE_ENV === "production" && kind !== "best-effort") {
+    return { success: false, remaining: 0 };
+  }
+
+  return { success: true };
 }

@@ -22,7 +22,6 @@ export function getUserRole(user: SupabaseUser | null): AppUserRole {
   return (
     normalizeRole(user.app_metadata?.role) ??
     normalizeRole(user.app_metadata?.user_role) ??
-    normalizeRole(user.user_metadata?.role) ??
     "USER"
   );
 }
@@ -59,9 +58,9 @@ export async function requireUser(nextPath = "/dashboard") {
   return user;
 }
 
-// Allowlist opcional de emails admin (env ADMIN_EMAILS, separados por coma).
-// Si está vacía, se cae al chequeo por rol (comportamiento previo). Si está
-// seteada, el email debe estar en la lista ADEMÁS de tener rol ADMIN.
+// Allowlist de emails admin (env ADMIN_EMAILS, separados por coma).
+// En producción es obligatoria: el rol debe venir de app_metadata y el email
+// debe estar explícitamente autorizado.
 function getAdminEmailAllowlist(): string[] {
   return (process.env.ADMIN_EMAILS ?? "")
     .split(",")
@@ -74,9 +73,13 @@ export function isAdmin(user: SupabaseUser | null): boolean {
 
   const allowlist = getAdminEmailAllowlist();
   const email = user.email?.toLowerCase() ?? "";
-  const passesAllowlist = allowlist.length === 0 || allowlist.includes(email);
+  const passesAllowlist = allowlist.includes(email);
 
-  return getUserRole(user) === "ADMIN" && passesAllowlist;
+  if (process.env.NODE_ENV === "production" && allowlist.length === 0) {
+    return false;
+  }
+
+  return getUserRole(user) === "ADMIN" && (allowlist.length === 0 || passesAllowlist);
 }
 
 export async function requireAdmin() {
