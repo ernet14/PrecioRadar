@@ -11,6 +11,7 @@
 //   node --import tsx --env-file=.env scripts/auto-densify.ts --apply
 //   node --import tsx --env-file=.env scripts/auto-densify.ts --apply --include-suspects
 //   node --import tsx --env-file=.env scripts/auto-densify.ts --audit-only
+//   node --import tsx --env-file=.env scripts/auto-densify.ts --suspects-only
 //
 // Dry-run por defecto: no escribe en DB.
 import { vtexProviders } from "../src/providers/stores/vtexStores";
@@ -23,6 +24,7 @@ import { persistProductOfferView } from "../src/services/priceSnapshotService";
 const APPLY = process.argv.includes("--apply");
 const AUDIT_ONLY = process.argv.includes("--audit-only");
 const INCLUDE_SUSPECTS = process.argv.includes("--include-suspects");
+const SUSPECTS_ONLY = process.argv.includes("--suspects-only");
 const MIN_STORES = readNumberArg("--min-stores", 2);
 const MAX_GROUPS = readNumberArg("--max-groups", 40);
 const SUSPECT_RATIO = readNumberArg("--suspect-ratio", 1.8);
@@ -209,6 +211,7 @@ function printCandidates(groups: CandidateGroup[], existingComparableSlugs: Set<
   const safeGroups = newGroups.filter((group) => group.priceRatio < SUSPECT_RATIO);
   const suspectGroups = newGroups.filter((group) => group.priceRatio >= SUSPECT_RATIO);
   const existingGroups = groups.length - newGroups.length;
+  const visibleGroups = SUSPECTS_ONLY ? suspectGroups : newGroups;
 
   console.log(`\n=== CANDIDATOS ===`);
   console.log(`Grupos descubiertos: ${groups.length}`);
@@ -216,8 +219,11 @@ function printCandidates(groups: CandidateGroup[], existingComparableSlugs: Set<
   console.log(`Nuevos seguros para apply: ${safeGroups.length}`);
   console.log(`Nuevos sospechosos bloqueados: ${suspectGroups.length}`);
   console.log(`Ya comparables en DB: ${existingGroups}`);
+  if (SUSPECTS_ONLY) {
+    console.log(`Mostrando solo sospechosos nuevos por dispersión >= x${SUSPECT_RATIO}.`);
+  }
 
-  for (const group of newGroups) {
+  for (const group of visibleGroups) {
     const flag = group.priceRatio >= SUSPECT_RATIO ? `  BLOQUEADO revisar x${group.priceRatio.toFixed(2)}` : "";
     console.log(`\n${group.key} [${group.categorySlug ?? "sin-categoria"}] ${group.stores.length} tiendas${flag}`);
     for (const offer of group.offers) {
@@ -229,6 +235,11 @@ function printCandidates(groups: CandidateGroup[], existingComparableSlugs: Set<
 }
 
 async function persistGroups(groups: CandidateGroup[], existingComparableSlugs: Set<string>) {
+  if (SUSPECTS_ONLY) {
+    console.log("\n(suspects-only: reporte read-only, no se persiste nada.)");
+    return;
+  }
+
   const newGroups = groups.filter((group) => !existingComparableSlugs.has(group.key));
   const eligibleGroups = INCLUDE_SUSPECTS
     ? newGroups
@@ -329,13 +340,13 @@ async function auditComparableGroups() {
     groups.set(row.slug, current);
   }
 
-  const suspects: Array<{ ratio: number; slug: string }> = [];
+  const suspects: Array<{ offers: ComparableRow[]; ratio: number; slug: string }> = [];
   for (const [slug, offers] of groups) {
     const prices = offers.map((offer) => offer.price);
     const min = Math.min(...prices);
     const max = Math.max(...prices);
     const ratio = min > 0 ? max / min : Infinity;
-    if (ratio >= SUSPECT_RATIO) suspects.push({ ratio, slug });
+    if (ratio >= SUSPECT_RATIO) suspects.push({ offers, ratio, slug });
   }
 
   console.log(`\n=== AUDITORÍA DB ===`);
@@ -343,6 +354,13 @@ async function auditComparableGroups() {
   console.log(`Sospechosos por dispersión >= x${SUSPECT_RATIO}: ${suspects.length}`);
   for (const suspect of suspects.slice(0, 20)) {
     console.log(`- ${suspect.slug} x${suspect.ratio.toFixed(2)}`);
+    if (SUSPECTS_ONLY) {
+      for (const offer of suspect.offers) {
+        console.log(
+          `   ${offer.store.padEnd(10)} $${offer.price.toLocaleString("es-AR").padStart(12)}  ${offer.title.slice(0, 74)}`,
+        );
+      }
+    }
   }
 }
 
@@ -378,7 +396,7 @@ async function reportJunkPrices() {
 }
 
 async function main() {
-  console.log(`Modo: ${APPLY ? "APPLY" : AUDIT_ONLY ? "AUDIT-ONLY" : "DRY-RUN"}\n`);
+  console.log(`Modo: ${SUSPECTS_ONLY ? "SUSPECTS-ONLY" : APPLY ? "APPLY" : AUDIT_ONLY ? "AUDIT-ONLY" : "DRY-RUN"}\n`);
 
   if (!AUDIT_ONLY) {
     const groups = await discoverCandidates();

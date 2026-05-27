@@ -60,6 +60,29 @@ const exampleHistory = [
   { label: "Hoy", price: "$68.000", height: "h-14" },
 ];
 
+const faqs = [
+  {
+    question: "¿PrecioRadar vende productos?",
+    answer:
+      "No. Te ayuda a comparar precios y decidir con más contexto. La compra se hace en la tienda correspondiente.",
+  },
+  {
+    question: "¿El precio puede cambiar?",
+    answer:
+      "Sí. Las tiendas pueden modificar precios o stock. Por eso mostramos la información como ayuda para decidir, no como garantía.",
+  },
+  {
+    question: "¿Qué pasa si no hay historial suficiente?",
+    answer:
+      "Lo aclaramos. En esos casos evitamos mostrar una señal fuerte hasta tener más información del producto.",
+  },
+  {
+    question: "¿Puedo recibir avisos?",
+    answer:
+      "Sí. Podés seguir productos o crear alertas para enterarte cuando detectamos una baja o una oportunidad interesante.",
+  },
+];
+
 function CheckIcon() {
   return (
     <svg
@@ -212,6 +235,30 @@ export default function ComoFuncionaPage() {
               una oferta realmente conviene o si es solo marketing.
             </p>
           </Card>
+        </Container>
+      </section>
+
+      <section className="bg-white py-12 md:py-16">
+        <Container>
+          <div className="max-w-2xl">
+            <Badge variant="neutral">Preguntas frecuentes</Badge>
+            <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-950">
+              Dudas rápidas antes de usar PrecioRadar
+            </h2>
+          </div>
+
+          <div className="mt-8 grid gap-4 md:grid-cols-2">
+            {faqs.map((faq) => (
+              <Card className="p-5" key={faq.question}>
+                <h3 className="text-base font-bold leading-snug text-slate-950">
+                  {faq.question}
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  {faq.answer}
+                </p>
+              </Card>
+            ))}
+          </div>
         </Container>
       </section>
 

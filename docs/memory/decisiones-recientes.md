@@ -4,6 +4,10 @@
 > proyecto versionado en el repo (distinto de la memoria cross-sesión del agente, que vive
 > fuera del repo).
 
+## 2026-05-26 — Revisión read-only de sospechosos Fase 1
+- `scripts/auto-densify.ts --suspects-only` enfoca la salida en grupos bloqueados por dispersión
+  y fuerza modo read-only para revisar Fase 1 sin riesgo de persistir ofertas.
+
 ## 2026-05-26 — Página pública "Cómo funciona"
 - `/como-funciona` queda como explicación pública simple; `/como-funcionamos` redirige ahí para
   no mantener visible la versión técnica anterior.
