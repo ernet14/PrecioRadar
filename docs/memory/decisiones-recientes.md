@@ -4,6 +4,10 @@
 > proyecto versionado en el repo (distinto de la memoria cross-sesión del agente, que vive
 > fuera del repo).
 
+## 2026-05-26 — Página pública "Cómo funciona"
+- `/como-funciona` queda como explicación pública simple; `/como-funcionamos` redirige ahí para
+  no mantener visible la versión técnica anterior.
+
 ## 2026-05-25 — Automatización pre-Fase 3
 - No se automatiza `auto-densify --apply` dentro de Vercel Cron porque tarda ~150s y puede
   exceder límites; queda manual/operativo.

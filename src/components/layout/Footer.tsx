@@ -10,12 +10,11 @@ const productLinks = [
   { href: "/termometro", label: "Termómetro de ofertas" },
   { href: "/api-docs", label: "API para desarrolladores" },
   { href: "/api-planes", label: "Planes de la API" },
-  { href: "/#como-funciona", label: "Cómo funciona" },
+  { href: "/como-funciona", label: "Cómo funciona" },
 ];
 
 const companyLinks = [
   { href: "/quienes-somos", label: "Quiénes somos" },
-  { href: "/como-funcionamos", label: "Cómo funcionamos" },
   { href: "/privacidad", label: "Privacidad" },
   { href: "/terminos", label: "Términos" },
   { href: "/cookies", label: "Cookies" },
@@ -85,7 +84,7 @@ export function Footer() {
               aria-hidden
               className="inline-block h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.7)]"
             />
-            Beta · Mejorando todas las semanas
+            Mejorando todas las semanas
           </p>
         </Container>
       </div>

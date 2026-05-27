@@ -12,17 +12,17 @@ export function BetaBanner() {
           />
           <span>
             <span className="font-semibold text-slate-950">
-              PrecioRadar está en beta.
+              PrecioRadar te ayuda a comprar con más contexto.
             </span>{" "}
-            Estamos construyendo el comparador: mostramos fuentes verificables,
-            historial cuando existe y datos demo identificados.
+            Guardamos historial, comparamos cambios y mostramos una señal
+            simple cuando hay información suficiente.
           </span>
         </p>
         <Link
           className="shrink-0 font-semibold text-indigo-700 underline-offset-2 hover:underline"
-          href="/como-funcionamos"
+          href="/como-funciona"
         >
-          Cómo funcionamos →
+          Cómo funciona →
         </Link>
       </Container>
     </div>

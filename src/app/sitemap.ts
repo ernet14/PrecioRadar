@@ -21,7 +21,7 @@ const staticRoutes: MetadataRoute.Sitemap = [
   { url: getAbsoluteUrl("/api-docs"), changeFrequency: "monthly", lastModified, priority: 0.6 },
   { url: getAbsoluteUrl("/api-planes"), changeFrequency: "monthly", lastModified, priority: 0.6 },
   { url: getAbsoluteUrl("/quienes-somos"), changeFrequency: "monthly", lastModified, priority: 0.5 },
-  { url: getAbsoluteUrl("/como-funcionamos"), changeFrequency: "monthly", lastModified, priority: 0.5 },
+  { url: getAbsoluteUrl("/como-funciona"), changeFrequency: "monthly", lastModified, priority: 0.7 },
   { url: getAbsoluteUrl("/privacidad"), changeFrequency: "yearly", lastModified, priority: 0.3 },
   { url: getAbsoluteUrl("/terminos"), changeFrequency: "yearly", lastModified, priority: 0.3 },
   { url: getAbsoluteUrl("/cookies"), changeFrequency: "yearly", lastModified, priority: 0.3 },
