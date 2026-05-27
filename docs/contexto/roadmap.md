@@ -88,7 +88,15 @@ contra nada — y un comparador sin comparación no entrega su valor central.
   (71 comparables / 275 con ofertas). La línea blanca agrupa tan bien como las TVs.
 - Telcos (Movistar/Claro/Personal): **descartadas** — Movistar no es VTEX (devolvió HTML) y
   los celulares ya comparan en las VTEX de electro.
-- **Próximo**: revisar manualmente los 2 grupos bloqueados por dispersión antes de forzarlos
+- **Cuarta tanda — ampliación de queries** ✅ (2026-05-27): se ampió `SEARCH_QUERIES` de
+  `auto-densify.ts` (16 → 28) con familias de alto solape sin cubrir: microondas/lavarropas/
+  heladeras LG y Whirlpool, marcas de TV Hisense/RCA, freezers, cocinas, termotanques, anafes,
+  lavavajillas y aires BGH. `auto-densify --apply --max-groups=120` persistió **34 grupos
+  seguros / 100 ofertas** (microondas Whirlpool en 6 tiendas, freezers Inelro/Gafa, TVs
+  Noblex/Hyundai/RCA, etc.) y bloqueó 8 sospechosos (cocinas Domec con feed roto en Carrefour
+  ~$54k, los 2 lavarropas Samsung). Resultado: **comparableRate 39% → 43%** (159 comparables /
+  367 con ofertas vivas). Auditoría limpia: 0 sospechosos en DB y 0 precios caros rotos.
+- **Próximo**: revisar manualmente los grupos bloqueados por dispersión antes de forzarlos
   (`--include-suspects`) o seguir ampliando con modelos nuevos de alto solape; no insistir con
   celulares discontinuados (A55/G24/G34), que siguen apareciendo en 1 tienda.
 

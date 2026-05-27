@@ -4,6 +4,14 @@
 > proyecto versionado en el repo (distinto de la memoria cross-sesión del agente, que vive
 > fuera del repo).
 
+## 2026-05-27 — Cuarta tanda de densificación (ampliación de queries)
+- Se ampliaron las `SEARCH_QUERIES` de `auto-densify.ts` (16 → 28) con familias electro/TV de
+  alto solape aún sin cubrir (LG/Whirlpool en microondas/lavarropas/heladeras, Hisense/RCA en TV,
+  freezers, cocinas, termotanques, anafes, lavavajillas, aires BGH).
+- `auto-densify --apply --max-groups=120`: 34 grupos seguros / 100 ofertas, 8 sospechosos
+  bloqueados (cocinas Domec con feed roto Carrefour + 2 lavarropas Samsung). comparableRate
+  **39% → 43%** (159/367), auditoría limpia.
+
 ## 2026-05-26 — Revisión read-only de sospechosos Fase 1
 - `scripts/auto-densify.ts --suspects-only` enfoca la salida en grupos bloqueados por dispersión
   y fuerza modo read-only para revisar Fase 1 sin riesgo de persistir ofertas.
