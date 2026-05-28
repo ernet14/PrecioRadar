@@ -5,9 +5,9 @@ import { Card } from "@/components/ui/Card";
 import { getAbsoluteUrl } from "@/lib/seo/site";
 
 export const metadata: Metadata = {
-  title: "API de PrecioRadar",
+  title: "Datos para empresas | PrecioRadar",
   description:
-    "API de PrecioRadar para acceder a precios reales, ofertas por tienda e historial de productos de Argentina.",
+    "Acceso privado a datos de precios reales, ofertas por tienda e historial de productos de Argentina.",
   alternates: { canonical: getAbsoluteUrl("/api-docs") },
 };
 
@@ -36,16 +36,16 @@ const USE_CASES = [
 
 const ACCESS_STEPS = [
   "Elegís un plan según volumen e historial necesario.",
-  "Nos contás el caso de uso para habilitar la clave correcta.",
-  "Te enviamos la API key y la referencia técnica privada para integrar.",
+  "Nos contás el caso de uso para preparar el acceso correcto.",
+  "Coordinamos el alta privada y la guía de integración fuera de la página pública.",
   "Medimos consumo diario y ajustamos el plan si el volumen crece.",
 ];
 
-const TECH_SUMMARY = [
-  { label: "Formato", value: "REST sobre HTTPS con respuestas JSON" },
-  { label: "Acceso", value: "API key privada por cliente" },
-  { label: "Recursos", value: "Búsqueda de productos y detalle de precios" },
-  { label: "Control", value: "Límites diarios por plan y soporte ante errores" },
+const ACCESS_SUMMARY = [
+  { label: "Cobertura", value: "Productos, tiendas, precios actuales e historial disponible" },
+  { label: "Alta", value: "Acceso privado para cada cliente aprobado" },
+  { label: "Operación", value: "Límites por plan, seguimiento de consumo y soporte" },
+  { label: "Entrega", value: "Guía privada y acompañamiento durante la integración" },
 ];
 
 export default function ApiDocsPage() {
@@ -53,12 +53,12 @@ export default function ApiDocsPage() {
     <main className="bg-[#f4f7fb] py-10 text-slate-950">
       <Container className="space-y-8">
         <section className="rounded-3xl bg-slate-950 p-6 text-white shadow-[0_24px_60px_rgba(15,23,42,0.18)] md:p-8">
-          <p className="text-sm font-semibold text-emerald-200">API de PrecioRadar</p>
+          <p className="text-sm font-semibold text-emerald-200">Datos B2B de PrecioRadar</p>
           <h1 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
             Datos de precios reales para integrar en tu negocio
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300 md:text-base">
-            La API entrega precios, ofertas e historial de productos de Argentina
+            El servicio entrega precios, ofertas e historial de productos de Argentina
             para sellers, comparadores y equipos que necesitan datos confiables sin
             construir scraping propio.
           </p>
@@ -71,7 +71,7 @@ export default function ApiDocsPage() {
             </Link>
             <a
               className="inline-flex h-11 items-center rounded-lg border border-white/20 px-5 text-sm font-semibold text-white transition hover:bg-white/10"
-              href="mailto:soporte@precio-radar.com?subject=Acceso%20a%20la%20API"
+              href="mailto:soporte@precio-radar.com?subject=Acceso%20a%20datos%20para%20empresas"
             >
               Solicitar acceso
             </a>
@@ -92,14 +92,14 @@ export default function ApiDocsPage() {
           </Card>
 
           <Card className="border-slate-200 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
-            <h2 className="text-xl font-bold tracking-tight">Cómo se usa</h2>
+            <h2 className="text-xl font-bold tracking-tight">Cómo se entrega</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              La integración se hace desde un backend o herramienta interna, nunca
-              exponiendo la clave en el front-end. La referencia técnica completa se
-              entrega junto con la API key.
+              El acceso se habilita de forma privada para cada cliente. La información
+              operativa y la guía de integración se comparten solo después del alta,
+              según el caso de uso y el plan contratado.
             </p>
             <dl className="mt-4 grid gap-3 text-sm">
-              {TECH_SUMMARY.map((item) => (
+              {ACCESS_SUMMARY.map((item) => (
                 <div className="rounded-lg border border-slate-200 bg-white p-3" key={item.label}>
                   <dt className="font-semibold text-slate-950">{item.label}</dt>
                   <dd className="mt-1 text-slate-600">{item.value}</dd>
@@ -138,12 +138,11 @@ export default function ApiDocsPage() {
           </ol>
         </Card>
 
-        <p className="rounded-xl border border-dashed border-slate-200 bg-white p-5 text-sm leading-6 text-slate-600">
-          La documentación técnica con parámetros, autenticación y ejemplos se comparte
-          al habilitar el acceso, para que esta página no quede como una pantalla de
-          código pública.{" "}
+          <p className="rounded-xl border border-dashed border-slate-200 bg-white p-5 text-sm leading-6 text-slate-600">
+          Esta página es comercial y no expone instrucciones técnicas públicas. Los
+          detalles de integración se comparten solo con clientes habilitados.{" "}
           <Link className="font-semibold text-indigo-700 hover:underline" href="/api-planes">
-            Elegí un plan y pedí tu API key
+            Elegí un plan y solicitá acceso
           </Link>
           .
         </p>
