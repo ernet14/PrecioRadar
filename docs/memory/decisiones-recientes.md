@@ -4,6 +4,10 @@
 > proyecto versionado en el repo (distinto de la memoria cross-sesión del agente, que vive
 > fuera del repo).
 
+## 2026-05-28 — Matriz OWASP Top 10
+- Se adopta `docs/seguridad-owasp-top-10.md` como matriz viva de seguridad basada en OWASP
+  Top 10:2025, con nota separada para SSRF por compatibilidad/riesgo OWASP 2021.
+
 ## 2026-05-27 — Hardening de seguridad pro
 - Admin ya no confía en `user_metadata`; en prod exige `ADMIN_EMAILS` + rol en `app_metadata`.
 - Rate limit de auth/API falla cerrado en producción si falta Upstash; redirects/fetch/imports
