@@ -411,6 +411,7 @@ export const ModelName = {
   SystemHealthLog: 'SystemHealthLog',
   DataRadarSnapshot: 'DataRadarSnapshot',
   BankPromo: 'BankPromo',
+  WeeklyFeaturedProduct: 'WeeklyFeaturedProduct',
   BankPromoBotSource: 'BankPromoBotSource',
   ApiKey: 'ApiKey'
 } as const
@@ -428,7 +429,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "productImportDraft" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "productReview" | "productVote" | "pushSubscription" | "affiliateLink" | "searchLog" | "providerLog" | "scrapeJob" | "auditLog" | "mercadoLibreCache" | "productReport" | "newsletterSubscription" | "analyticsEvent" | "mercadoLibreAuth" | "systemHealthLog" | "dataRadarSnapshot" | "bankPromo" | "bankPromoBotSource" | "apiKey"
+    modelProps: "user" | "category" | "store" | "product" | "productOffer" | "priceHistory" | "productImportDraft" | "trackedProduct" | "alert" | "notification" | "clickTracking" | "productReview" | "productVote" | "pushSubscription" | "affiliateLink" | "searchLog" | "providerLog" | "scrapeJob" | "auditLog" | "mercadoLibreCache" | "productReport" | "newsletterSubscription" | "analyticsEvent" | "mercadoLibreAuth" | "systemHealthLog" | "dataRadarSnapshot" | "bankPromo" | "weeklyFeaturedProduct" | "bankPromoBotSource" | "apiKey"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2430,6 +2431,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    WeeklyFeaturedProduct: {
+      payload: Prisma.$WeeklyFeaturedProductPayload<ExtArgs>
+      fields: Prisma.WeeklyFeaturedProductFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.WeeklyFeaturedProductFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeeklyFeaturedProductPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.WeeklyFeaturedProductFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeeklyFeaturedProductPayload>
+        }
+        findFirst: {
+          args: Prisma.WeeklyFeaturedProductFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeeklyFeaturedProductPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.WeeklyFeaturedProductFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeeklyFeaturedProductPayload>
+        }
+        findMany: {
+          args: Prisma.WeeklyFeaturedProductFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeeklyFeaturedProductPayload>[]
+        }
+        create: {
+          args: Prisma.WeeklyFeaturedProductCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeeklyFeaturedProductPayload>
+        }
+        createMany: {
+          args: Prisma.WeeklyFeaturedProductCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.WeeklyFeaturedProductCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeeklyFeaturedProductPayload>[]
+        }
+        delete: {
+          args: Prisma.WeeklyFeaturedProductDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeeklyFeaturedProductPayload>
+        }
+        update: {
+          args: Prisma.WeeklyFeaturedProductUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeeklyFeaturedProductPayload>
+        }
+        deleteMany: {
+          args: Prisma.WeeklyFeaturedProductDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.WeeklyFeaturedProductUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.WeeklyFeaturedProductUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeeklyFeaturedProductPayload>[]
+        }
+        upsert: {
+          args: Prisma.WeeklyFeaturedProductUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeeklyFeaturedProductPayload>
+        }
+        aggregate: {
+          args: Prisma.WeeklyFeaturedProductAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateWeeklyFeaturedProduct>
+        }
+        groupBy: {
+          args: Prisma.WeeklyFeaturedProductGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WeeklyFeaturedProductGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.WeeklyFeaturedProductCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WeeklyFeaturedProductCountAggregateOutputType> | number
+        }
+      }
+    }
     BankPromoBotSource: {
       payload: Prisma.$BankPromoBotSourcePayload<ExtArgs>
       fields: Prisma.BankPromoBotSourceFieldRefs
@@ -3065,6 +3140,26 @@ export const BankPromoScalarFieldEnum = {
 export type BankPromoScalarFieldEnum = (typeof BankPromoScalarFieldEnum)[keyof typeof BankPromoScalarFieldEnum]
 
 
+export const WeeklyFeaturedProductScalarFieldEnum = {
+  id: 'id',
+  weekStart: 'weekStart',
+  slug: 'slug',
+  productId: 'productId',
+  rank: 'rank',
+  score: 'score',
+  reason: 'reason',
+  isDemo: 'isDemo',
+  pinned: 'pinned',
+  name: 'name',
+  imageUrl: 'imageUrl',
+  price: 'price',
+  storeName: 'storeName',
+  createdAt: 'createdAt'
+} as const
+
+export type WeeklyFeaturedProductScalarFieldEnum = (typeof WeeklyFeaturedProductScalarFieldEnum)[keyof typeof WeeklyFeaturedProductScalarFieldEnum]
+
+
 export const BankPromoBotSourceScalarFieldEnum = {
   id: 'id',
   url: 'url',
@@ -3461,6 +3556,7 @@ export type GlobalOmitConfig = {
   systemHealthLog?: Prisma.SystemHealthLogOmit
   dataRadarSnapshot?: Prisma.DataRadarSnapshotOmit
   bankPromo?: Prisma.BankPromoOmit
+  weeklyFeaturedProduct?: Prisma.WeeklyFeaturedProductOmit
   bankPromoBotSource?: Prisma.BankPromoBotSourceOmit
   apiKey?: Prisma.ApiKeyOmit
 }

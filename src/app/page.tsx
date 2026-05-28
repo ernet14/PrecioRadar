@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { mvpCategoryDescriptors } from "@/data/categories";
 import { formatCurrencyARS } from "@/lib/utils";
-import { getFeaturedProductsForHome } from "@/services/featuredProductsService";
+import { getWeeklyFeaturedForHome } from "@/services/weeklyFeaturedService";
 
 export const revalidate = 3600;
 
@@ -118,14 +118,15 @@ function ProductImage({
 }
 
 export default async function Home() {
-  const featured = await getFeaturedProductsForHome();
+  const featured = await getWeeklyFeaturedForHome();
   const featuredProducts = featured.products;
   const heroProduct = featuredProducts[0];
   const heroPeerProducts = featuredProducts.slice(1, 4);
-  const sourceIsReal = featured.source === "mercadolibre";
-  const featuredBadgeLabel = sourceIsReal ? "Datos reales" : "Catálogo demo";
-  const featuredCopy = sourceIsReal
-    ? "Productos populares con precios actuales de fuentes integradas. Tocá una card para ver el detalle de comparación."
+  const sourceIsWeekly = featured.source === "weekly";
+  const hasRealProducts = sourceIsWeekly && featuredProducts.some((p) => !p.isDemo);
+  const featuredBadgeLabel = hasRealProducts ? "Datos reales" : "Catálogo demo";
+  const featuredCopy = hasRealProducts
+    ? "Productos con las mejores señales de precio de la semana."
     : "Catálogo de demostración mientras sumamos más fuentes reales. Los datos demo quedan identificados.";
 
   return (
@@ -333,13 +334,13 @@ export default async function Home() {
                       Vista marketplace
                     </p>
                     <h2 className="mt-2 text-lg font-bold text-slate-950">
-                      {sourceIsReal
+                      {hasRealProducts
                         ? "Precios reales disponibles"
                         : "Comparación clara por tienda"}
                     </h2>
                   </div>
-                  <Badge variant={sourceIsReal ? "success" : "neutral"}>
-                    {sourceIsReal ? "Datos reales" : "Catálogo demo"}
+                  <Badge variant={hasRealProducts ? "success" : "neutral"}>
+                    {hasRealProducts ? "Datos reales" : "Catálogo demo"}
                   </Badge>
                 </div>
                 <div className="mt-5 rounded-xl border border-indigo-100 bg-gradient-to-br from-indigo-50 via-white to-emerald-50 p-4">
@@ -536,14 +537,17 @@ export default async function Home() {
         <Container>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <Badge variant={sourceIsReal ? "success" : "neutral"}>
+              <Badge variant={hasRealProducts ? "success" : "neutral"}>
                 {featuredBadgeLabel}
               </Badge>
               <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
-                Productos destacados para comparar
+                Detectadas por PrecioRadar
               </h2>
               <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600">
                 {featuredCopy}
+              </p>
+              <p className="mt-1 text-xs text-slate-400">
+                Selección actualizada semanalmente según precios, historial y señales de oportunidad.
               </p>
             </div>
             <Link
@@ -564,10 +568,10 @@ export default async function Home() {
                   <div className="relative">
                     <ProductImage imageUrl={product.imageUrl} name={product.name} />
                     <Badge
-                      variant={sourceIsReal ? "success" : "neutral"}
+                      variant={!product.isDemo ? "success" : "neutral"}
                       className="absolute right-2 top-2 shadow-sm"
                     >
-                      {sourceIsReal ? "Real" : "Demo"}
+                      {!product.isDemo ? "Real" : "Datos en seguimiento"}
                     </Badge>
                   </div>
                   <h3 className="mt-4 line-clamp-2 text-base font-bold leading-snug text-slate-950">

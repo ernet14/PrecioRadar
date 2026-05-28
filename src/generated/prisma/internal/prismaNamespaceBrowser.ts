@@ -78,6 +78,7 @@ export const ModelName = {
   SystemHealthLog: 'SystemHealthLog',
   DataRadarSnapshot: 'DataRadarSnapshot',
   BankPromo: 'BankPromo',
+  WeeklyFeaturedProduct: 'WeeklyFeaturedProduct',
   BankPromoBotSource: 'BankPromoBotSource',
   ApiKey: 'ApiKey'
 } as const
@@ -544,6 +545,26 @@ export const BankPromoScalarFieldEnum = {
 } as const
 
 export type BankPromoScalarFieldEnum = (typeof BankPromoScalarFieldEnum)[keyof typeof BankPromoScalarFieldEnum]
+
+
+export const WeeklyFeaturedProductScalarFieldEnum = {
+  id: 'id',
+  weekStart: 'weekStart',
+  slug: 'slug',
+  productId: 'productId',
+  rank: 'rank',
+  score: 'score',
+  reason: 'reason',
+  isDemo: 'isDemo',
+  pinned: 'pinned',
+  name: 'name',
+  imageUrl: 'imageUrl',
+  price: 'price',
+  storeName: 'storeName',
+  createdAt: 'createdAt'
+} as const
+
+export type WeeklyFeaturedProductScalarFieldEnum = (typeof WeeklyFeaturedProductScalarFieldEnum)[keyof typeof WeeklyFeaturedProductScalarFieldEnum]
 
 
 export const BankPromoBotSourceScalarFieldEnum = {

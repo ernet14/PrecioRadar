@@ -264,6 +264,7 @@ export type ProductWhereInput = {
   productReviews?: Prisma.ProductReviewListRelationFilter
   productVotes?: Prisma.ProductVoteListRelationFilter
   trackedProducts?: Prisma.TrackedProductListRelationFilter
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductListRelationFilter
 }
 
 export type ProductOrderByWithRelationInput = {
@@ -291,6 +292,7 @@ export type ProductOrderByWithRelationInput = {
   productReviews?: Prisma.ProductReviewOrderByRelationAggregateInput
   productVotes?: Prisma.ProductVoteOrderByRelationAggregateInput
   trackedProducts?: Prisma.TrackedProductOrderByRelationAggregateInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductOrderByRelationAggregateInput
 }
 
 export type ProductWhereUniqueInput = Prisma.AtLeast<{
@@ -321,6 +323,7 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   productReviews?: Prisma.ProductReviewListRelationFilter
   productVotes?: Prisma.ProductVoteListRelationFilter
   trackedProducts?: Prisma.TrackedProductListRelationFilter
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductListRelationFilter
 }, "id" | "slug">
 
 export type ProductOrderByWithAggregationInput = {
@@ -387,6 +390,7 @@ export type ProductCreateInput = {
   productReviews?: Prisma.ProductReviewCreateNestedManyWithoutProductInput
   productVotes?: Prisma.ProductVoteCreateNestedManyWithoutProductInput
   trackedProducts?: Prisma.TrackedProductCreateNestedManyWithoutProductInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateInput = {
@@ -413,6 +417,7 @@ export type ProductUncheckedCreateInput = {
   productReviews?: Prisma.ProductReviewUncheckedCreateNestedManyWithoutProductInput
   productVotes?: Prisma.ProductVoteUncheckedCreateNestedManyWithoutProductInput
   trackedProducts?: Prisma.TrackedProductUncheckedCreateNestedManyWithoutProductInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductUpdateInput = {
@@ -439,6 +444,7 @@ export type ProductUpdateInput = {
   productReviews?: Prisma.ProductReviewUpdateManyWithoutProductNestedInput
   productVotes?: Prisma.ProductVoteUpdateManyWithoutProductNestedInput
   trackedProducts?: Prisma.TrackedProductUpdateManyWithoutProductNestedInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateInput = {
@@ -465,6 +471,7 @@ export type ProductUncheckedUpdateInput = {
   productReviews?: Prisma.ProductReviewUncheckedUpdateManyWithoutProductNestedInput
   productVotes?: Prisma.ProductVoteUncheckedUpdateManyWithoutProductNestedInput
   trackedProducts?: Prisma.TrackedProductUncheckedUpdateManyWithoutProductNestedInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateManyInput = {
@@ -760,6 +767,22 @@ export type ProductUpdateOneWithoutProductReportsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProductUpdateToOneWithWhereWithoutProductReportsInput, Prisma.ProductUpdateWithoutProductReportsInput>, Prisma.ProductUncheckedUpdateWithoutProductReportsInput>
 }
 
+export type ProductCreateNestedOneWithoutWeeklyFeaturedInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutWeeklyFeaturedInput, Prisma.ProductUncheckedCreateWithoutWeeklyFeaturedInput>
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutWeeklyFeaturedInput
+  connect?: Prisma.ProductWhereUniqueInput
+}
+
+export type ProductUpdateOneWithoutWeeklyFeaturedNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutWeeklyFeaturedInput, Prisma.ProductUncheckedCreateWithoutWeeklyFeaturedInput>
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutWeeklyFeaturedInput
+  upsert?: Prisma.ProductUpsertWithoutWeeklyFeaturedInput
+  disconnect?: Prisma.ProductWhereInput | boolean
+  delete?: Prisma.ProductWhereInput | boolean
+  connect?: Prisma.ProductWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProductUpdateToOneWithWhereWithoutWeeklyFeaturedInput, Prisma.ProductUpdateWithoutWeeklyFeaturedInput>, Prisma.ProductUncheckedUpdateWithoutWeeklyFeaturedInput>
+}
+
 export type ProductCreateWithoutCategoryInput = {
   id?: string
   name: string
@@ -783,6 +806,7 @@ export type ProductCreateWithoutCategoryInput = {
   productReviews?: Prisma.ProductReviewCreateNestedManyWithoutProductInput
   productVotes?: Prisma.ProductVoteCreateNestedManyWithoutProductInput
   trackedProducts?: Prisma.TrackedProductCreateNestedManyWithoutProductInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutCategoryInput = {
@@ -808,6 +832,7 @@ export type ProductUncheckedCreateWithoutCategoryInput = {
   productReviews?: Prisma.ProductReviewUncheckedCreateNestedManyWithoutProductInput
   productVotes?: Prisma.ProductVoteUncheckedCreateNestedManyWithoutProductInput
   trackedProducts?: Prisma.TrackedProductUncheckedCreateNestedManyWithoutProductInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutCategoryInput = {
@@ -879,6 +904,7 @@ export type ProductCreateWithoutOffersInput = {
   productReviews?: Prisma.ProductReviewCreateNestedManyWithoutProductInput
   productVotes?: Prisma.ProductVoteCreateNestedManyWithoutProductInput
   trackedProducts?: Prisma.TrackedProductCreateNestedManyWithoutProductInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutOffersInput = {
@@ -904,6 +930,7 @@ export type ProductUncheckedCreateWithoutOffersInput = {
   productReviews?: Prisma.ProductReviewUncheckedCreateNestedManyWithoutProductInput
   productVotes?: Prisma.ProductVoteUncheckedCreateNestedManyWithoutProductInput
   trackedProducts?: Prisma.TrackedProductUncheckedCreateNestedManyWithoutProductInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutOffersInput = {
@@ -945,6 +972,7 @@ export type ProductUpdateWithoutOffersInput = {
   productReviews?: Prisma.ProductReviewUpdateManyWithoutProductNestedInput
   productVotes?: Prisma.ProductVoteUpdateManyWithoutProductNestedInput
   trackedProducts?: Prisma.TrackedProductUpdateManyWithoutProductNestedInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutOffersInput = {
@@ -970,6 +998,7 @@ export type ProductUncheckedUpdateWithoutOffersInput = {
   productReviews?: Prisma.ProductReviewUncheckedUpdateManyWithoutProductNestedInput
   productVotes?: Prisma.ProductVoteUncheckedUpdateManyWithoutProductNestedInput
   trackedProducts?: Prisma.TrackedProductUncheckedUpdateManyWithoutProductNestedInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutPriceHistoryInput = {
@@ -995,6 +1024,7 @@ export type ProductCreateWithoutPriceHistoryInput = {
   productReviews?: Prisma.ProductReviewCreateNestedManyWithoutProductInput
   productVotes?: Prisma.ProductVoteCreateNestedManyWithoutProductInput
   trackedProducts?: Prisma.TrackedProductCreateNestedManyWithoutProductInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutPriceHistoryInput = {
@@ -1020,6 +1050,7 @@ export type ProductUncheckedCreateWithoutPriceHistoryInput = {
   productReviews?: Prisma.ProductReviewUncheckedCreateNestedManyWithoutProductInput
   productVotes?: Prisma.ProductVoteUncheckedCreateNestedManyWithoutProductInput
   trackedProducts?: Prisma.TrackedProductUncheckedCreateNestedManyWithoutProductInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutPriceHistoryInput = {
@@ -1061,6 +1092,7 @@ export type ProductUpdateWithoutPriceHistoryInput = {
   productReviews?: Prisma.ProductReviewUpdateManyWithoutProductNestedInput
   productVotes?: Prisma.ProductVoteUpdateManyWithoutProductNestedInput
   trackedProducts?: Prisma.TrackedProductUpdateManyWithoutProductNestedInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutPriceHistoryInput = {
@@ -1086,6 +1118,7 @@ export type ProductUncheckedUpdateWithoutPriceHistoryInput = {
   productReviews?: Prisma.ProductReviewUncheckedUpdateManyWithoutProductNestedInput
   productVotes?: Prisma.ProductVoteUncheckedUpdateManyWithoutProductNestedInput
   trackedProducts?: Prisma.TrackedProductUncheckedUpdateManyWithoutProductNestedInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutTrackedProductsInput = {
@@ -1111,6 +1144,7 @@ export type ProductCreateWithoutTrackedProductsInput = {
   productReports?: Prisma.ProductReportCreateNestedManyWithoutProductInput
   productReviews?: Prisma.ProductReviewCreateNestedManyWithoutProductInput
   productVotes?: Prisma.ProductVoteCreateNestedManyWithoutProductInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutTrackedProductsInput = {
@@ -1136,6 +1170,7 @@ export type ProductUncheckedCreateWithoutTrackedProductsInput = {
   productReports?: Prisma.ProductReportUncheckedCreateNestedManyWithoutProductInput
   productReviews?: Prisma.ProductReviewUncheckedCreateNestedManyWithoutProductInput
   productVotes?: Prisma.ProductVoteUncheckedCreateNestedManyWithoutProductInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutTrackedProductsInput = {
@@ -1177,6 +1212,7 @@ export type ProductUpdateWithoutTrackedProductsInput = {
   productReports?: Prisma.ProductReportUpdateManyWithoutProductNestedInput
   productReviews?: Prisma.ProductReviewUpdateManyWithoutProductNestedInput
   productVotes?: Prisma.ProductVoteUpdateManyWithoutProductNestedInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutTrackedProductsInput = {
@@ -1202,6 +1238,7 @@ export type ProductUncheckedUpdateWithoutTrackedProductsInput = {
   productReports?: Prisma.ProductReportUncheckedUpdateManyWithoutProductNestedInput
   productReviews?: Prisma.ProductReviewUncheckedUpdateManyWithoutProductNestedInput
   productVotes?: Prisma.ProductVoteUncheckedUpdateManyWithoutProductNestedInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutAlertsInput = {
@@ -1227,6 +1264,7 @@ export type ProductCreateWithoutAlertsInput = {
   productReviews?: Prisma.ProductReviewCreateNestedManyWithoutProductInput
   productVotes?: Prisma.ProductVoteCreateNestedManyWithoutProductInput
   trackedProducts?: Prisma.TrackedProductCreateNestedManyWithoutProductInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutAlertsInput = {
@@ -1252,6 +1290,7 @@ export type ProductUncheckedCreateWithoutAlertsInput = {
   productReviews?: Prisma.ProductReviewUncheckedCreateNestedManyWithoutProductInput
   productVotes?: Prisma.ProductVoteUncheckedCreateNestedManyWithoutProductInput
   trackedProducts?: Prisma.TrackedProductUncheckedCreateNestedManyWithoutProductInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutAlertsInput = {
@@ -1293,6 +1332,7 @@ export type ProductUpdateWithoutAlertsInput = {
   productReviews?: Prisma.ProductReviewUpdateManyWithoutProductNestedInput
   productVotes?: Prisma.ProductVoteUpdateManyWithoutProductNestedInput
   trackedProducts?: Prisma.TrackedProductUpdateManyWithoutProductNestedInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutAlertsInput = {
@@ -1318,6 +1358,7 @@ export type ProductUncheckedUpdateWithoutAlertsInput = {
   productReviews?: Prisma.ProductReviewUncheckedUpdateManyWithoutProductNestedInput
   productVotes?: Prisma.ProductVoteUncheckedUpdateManyWithoutProductNestedInput
   trackedProducts?: Prisma.TrackedProductUncheckedUpdateManyWithoutProductNestedInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutClickTrackingInput = {
@@ -1343,6 +1384,7 @@ export type ProductCreateWithoutClickTrackingInput = {
   productReviews?: Prisma.ProductReviewCreateNestedManyWithoutProductInput
   productVotes?: Prisma.ProductVoteCreateNestedManyWithoutProductInput
   trackedProducts?: Prisma.TrackedProductCreateNestedManyWithoutProductInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutClickTrackingInput = {
@@ -1368,6 +1410,7 @@ export type ProductUncheckedCreateWithoutClickTrackingInput = {
   productReviews?: Prisma.ProductReviewUncheckedCreateNestedManyWithoutProductInput
   productVotes?: Prisma.ProductVoteUncheckedCreateNestedManyWithoutProductInput
   trackedProducts?: Prisma.TrackedProductUncheckedCreateNestedManyWithoutProductInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutClickTrackingInput = {
@@ -1409,6 +1452,7 @@ export type ProductUpdateWithoutClickTrackingInput = {
   productReviews?: Prisma.ProductReviewUpdateManyWithoutProductNestedInput
   productVotes?: Prisma.ProductVoteUpdateManyWithoutProductNestedInput
   trackedProducts?: Prisma.TrackedProductUpdateManyWithoutProductNestedInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutClickTrackingInput = {
@@ -1434,6 +1478,7 @@ export type ProductUncheckedUpdateWithoutClickTrackingInput = {
   productReviews?: Prisma.ProductReviewUncheckedUpdateManyWithoutProductNestedInput
   productVotes?: Prisma.ProductVoteUncheckedUpdateManyWithoutProductNestedInput
   trackedProducts?: Prisma.TrackedProductUncheckedUpdateManyWithoutProductNestedInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutProductReviewsInput = {
@@ -1459,6 +1504,7 @@ export type ProductCreateWithoutProductReviewsInput = {
   productReports?: Prisma.ProductReportCreateNestedManyWithoutProductInput
   productVotes?: Prisma.ProductVoteCreateNestedManyWithoutProductInput
   trackedProducts?: Prisma.TrackedProductCreateNestedManyWithoutProductInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutProductReviewsInput = {
@@ -1484,6 +1530,7 @@ export type ProductUncheckedCreateWithoutProductReviewsInput = {
   productReports?: Prisma.ProductReportUncheckedCreateNestedManyWithoutProductInput
   productVotes?: Prisma.ProductVoteUncheckedCreateNestedManyWithoutProductInput
   trackedProducts?: Prisma.TrackedProductUncheckedCreateNestedManyWithoutProductInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutProductReviewsInput = {
@@ -1525,6 +1572,7 @@ export type ProductUpdateWithoutProductReviewsInput = {
   productReports?: Prisma.ProductReportUpdateManyWithoutProductNestedInput
   productVotes?: Prisma.ProductVoteUpdateManyWithoutProductNestedInput
   trackedProducts?: Prisma.TrackedProductUpdateManyWithoutProductNestedInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutProductReviewsInput = {
@@ -1550,6 +1598,7 @@ export type ProductUncheckedUpdateWithoutProductReviewsInput = {
   productReports?: Prisma.ProductReportUncheckedUpdateManyWithoutProductNestedInput
   productVotes?: Prisma.ProductVoteUncheckedUpdateManyWithoutProductNestedInput
   trackedProducts?: Prisma.TrackedProductUncheckedUpdateManyWithoutProductNestedInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutProductVotesInput = {
@@ -1575,6 +1624,7 @@ export type ProductCreateWithoutProductVotesInput = {
   productReports?: Prisma.ProductReportCreateNestedManyWithoutProductInput
   productReviews?: Prisma.ProductReviewCreateNestedManyWithoutProductInput
   trackedProducts?: Prisma.TrackedProductCreateNestedManyWithoutProductInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutProductVotesInput = {
@@ -1600,6 +1650,7 @@ export type ProductUncheckedCreateWithoutProductVotesInput = {
   productReports?: Prisma.ProductReportUncheckedCreateNestedManyWithoutProductInput
   productReviews?: Prisma.ProductReviewUncheckedCreateNestedManyWithoutProductInput
   trackedProducts?: Prisma.TrackedProductUncheckedCreateNestedManyWithoutProductInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutProductVotesInput = {
@@ -1641,6 +1692,7 @@ export type ProductUpdateWithoutProductVotesInput = {
   productReports?: Prisma.ProductReportUpdateManyWithoutProductNestedInput
   productReviews?: Prisma.ProductReviewUpdateManyWithoutProductNestedInput
   trackedProducts?: Prisma.TrackedProductUpdateManyWithoutProductNestedInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutProductVotesInput = {
@@ -1666,6 +1718,7 @@ export type ProductUncheckedUpdateWithoutProductVotesInput = {
   productReports?: Prisma.ProductReportUncheckedUpdateManyWithoutProductNestedInput
   productReviews?: Prisma.ProductReviewUncheckedUpdateManyWithoutProductNestedInput
   trackedProducts?: Prisma.TrackedProductUncheckedUpdateManyWithoutProductNestedInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutAffiliateLinksInput = {
@@ -1691,6 +1744,7 @@ export type ProductCreateWithoutAffiliateLinksInput = {
   productReviews?: Prisma.ProductReviewCreateNestedManyWithoutProductInput
   productVotes?: Prisma.ProductVoteCreateNestedManyWithoutProductInput
   trackedProducts?: Prisma.TrackedProductCreateNestedManyWithoutProductInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutAffiliateLinksInput = {
@@ -1716,6 +1770,7 @@ export type ProductUncheckedCreateWithoutAffiliateLinksInput = {
   productReviews?: Prisma.ProductReviewUncheckedCreateNestedManyWithoutProductInput
   productVotes?: Prisma.ProductVoteUncheckedCreateNestedManyWithoutProductInput
   trackedProducts?: Prisma.TrackedProductUncheckedCreateNestedManyWithoutProductInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutAffiliateLinksInput = {
@@ -1757,6 +1812,7 @@ export type ProductUpdateWithoutAffiliateLinksInput = {
   productReviews?: Prisma.ProductReviewUpdateManyWithoutProductNestedInput
   productVotes?: Prisma.ProductVoteUpdateManyWithoutProductNestedInput
   trackedProducts?: Prisma.TrackedProductUpdateManyWithoutProductNestedInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutAffiliateLinksInput = {
@@ -1782,6 +1838,7 @@ export type ProductUncheckedUpdateWithoutAffiliateLinksInput = {
   productReviews?: Prisma.ProductReviewUncheckedUpdateManyWithoutProductNestedInput
   productVotes?: Prisma.ProductVoteUncheckedUpdateManyWithoutProductNestedInput
   trackedProducts?: Prisma.TrackedProductUncheckedUpdateManyWithoutProductNestedInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutProductReportsInput = {
@@ -1807,6 +1864,7 @@ export type ProductCreateWithoutProductReportsInput = {
   productReviews?: Prisma.ProductReviewCreateNestedManyWithoutProductInput
   productVotes?: Prisma.ProductVoteCreateNestedManyWithoutProductInput
   trackedProducts?: Prisma.TrackedProductCreateNestedManyWithoutProductInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutProductReportsInput = {
@@ -1832,6 +1890,7 @@ export type ProductUncheckedCreateWithoutProductReportsInput = {
   productReviews?: Prisma.ProductReviewUncheckedCreateNestedManyWithoutProductInput
   productVotes?: Prisma.ProductVoteUncheckedCreateNestedManyWithoutProductInput
   trackedProducts?: Prisma.TrackedProductUncheckedCreateNestedManyWithoutProductInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutProductReportsInput = {
@@ -1873,6 +1932,7 @@ export type ProductUpdateWithoutProductReportsInput = {
   productReviews?: Prisma.ProductReviewUpdateManyWithoutProductNestedInput
   productVotes?: Prisma.ProductVoteUpdateManyWithoutProductNestedInput
   trackedProducts?: Prisma.TrackedProductUpdateManyWithoutProductNestedInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutProductReportsInput = {
@@ -1895,6 +1955,127 @@ export type ProductUncheckedUpdateWithoutProductReportsInput = {
   clickTracking?: Prisma.ClickTrackingUncheckedUpdateManyWithoutProductNestedInput
   offers?: Prisma.ProductOfferUncheckedUpdateManyWithoutProductNestedInput
   priceHistory?: Prisma.PriceHistoryUncheckedUpdateManyWithoutProductNestedInput
+  productReviews?: Prisma.ProductReviewUncheckedUpdateManyWithoutProductNestedInput
+  productVotes?: Prisma.ProductVoteUncheckedUpdateManyWithoutProductNestedInput
+  trackedProducts?: Prisma.TrackedProductUncheckedUpdateManyWithoutProductNestedInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUncheckedUpdateManyWithoutProductNestedInput
+}
+
+export type ProductCreateWithoutWeeklyFeaturedInput = {
+  id?: string
+  name: string
+  slug: string
+  brand?: string | null
+  model?: string | null
+  imageUrl?: string | null
+  isDemo?: boolean
+  normalizedName: string
+  aiDescription?: string | null
+  aiDescriptionAt?: Date | string | null
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  category: Prisma.CategoryCreateNestedOneWithoutProductsInput
+  affiliateLinks?: Prisma.AffiliateLinkCreateNestedManyWithoutProductInput
+  alerts?: Prisma.AlertCreateNestedManyWithoutProductInput
+  clickTracking?: Prisma.ClickTrackingCreateNestedManyWithoutProductInput
+  offers?: Prisma.ProductOfferCreateNestedManyWithoutProductInput
+  priceHistory?: Prisma.PriceHistoryCreateNestedManyWithoutProductInput
+  productReports?: Prisma.ProductReportCreateNestedManyWithoutProductInput
+  productReviews?: Prisma.ProductReviewCreateNestedManyWithoutProductInput
+  productVotes?: Prisma.ProductVoteCreateNestedManyWithoutProductInput
+  trackedProducts?: Prisma.TrackedProductCreateNestedManyWithoutProductInput
+}
+
+export type ProductUncheckedCreateWithoutWeeklyFeaturedInput = {
+  id?: string
+  name: string
+  slug: string
+  brand?: string | null
+  model?: string | null
+  categoryId: string
+  imageUrl?: string | null
+  isDemo?: boolean
+  normalizedName: string
+  aiDescription?: string | null
+  aiDescriptionAt?: Date | string | null
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  affiliateLinks?: Prisma.AffiliateLinkUncheckedCreateNestedManyWithoutProductInput
+  alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutProductInput
+  clickTracking?: Prisma.ClickTrackingUncheckedCreateNestedManyWithoutProductInput
+  offers?: Prisma.ProductOfferUncheckedCreateNestedManyWithoutProductInput
+  priceHistory?: Prisma.PriceHistoryUncheckedCreateNestedManyWithoutProductInput
+  productReports?: Prisma.ProductReportUncheckedCreateNestedManyWithoutProductInput
+  productReviews?: Prisma.ProductReviewUncheckedCreateNestedManyWithoutProductInput
+  productVotes?: Prisma.ProductVoteUncheckedCreateNestedManyWithoutProductInput
+  trackedProducts?: Prisma.TrackedProductUncheckedCreateNestedManyWithoutProductInput
+}
+
+export type ProductCreateOrConnectWithoutWeeklyFeaturedInput = {
+  where: Prisma.ProductWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductCreateWithoutWeeklyFeaturedInput, Prisma.ProductUncheckedCreateWithoutWeeklyFeaturedInput>
+}
+
+export type ProductUpsertWithoutWeeklyFeaturedInput = {
+  update: Prisma.XOR<Prisma.ProductUpdateWithoutWeeklyFeaturedInput, Prisma.ProductUncheckedUpdateWithoutWeeklyFeaturedInput>
+  create: Prisma.XOR<Prisma.ProductCreateWithoutWeeklyFeaturedInput, Prisma.ProductUncheckedCreateWithoutWeeklyFeaturedInput>
+  where?: Prisma.ProductWhereInput
+}
+
+export type ProductUpdateToOneWithWhereWithoutWeeklyFeaturedInput = {
+  where?: Prisma.ProductWhereInput
+  data: Prisma.XOR<Prisma.ProductUpdateWithoutWeeklyFeaturedInput, Prisma.ProductUncheckedUpdateWithoutWeeklyFeaturedInput>
+}
+
+export type ProductUpdateWithoutWeeklyFeaturedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  brand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  aiDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiDescriptionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.CategoryUpdateOneRequiredWithoutProductsNestedInput
+  affiliateLinks?: Prisma.AffiliateLinkUpdateManyWithoutProductNestedInput
+  alerts?: Prisma.AlertUpdateManyWithoutProductNestedInput
+  clickTracking?: Prisma.ClickTrackingUpdateManyWithoutProductNestedInput
+  offers?: Prisma.ProductOfferUpdateManyWithoutProductNestedInput
+  priceHistory?: Prisma.PriceHistoryUpdateManyWithoutProductNestedInput
+  productReports?: Prisma.ProductReportUpdateManyWithoutProductNestedInput
+  productReviews?: Prisma.ProductReviewUpdateManyWithoutProductNestedInput
+  productVotes?: Prisma.ProductVoteUpdateManyWithoutProductNestedInput
+  trackedProducts?: Prisma.TrackedProductUpdateManyWithoutProductNestedInput
+}
+
+export type ProductUncheckedUpdateWithoutWeeklyFeaturedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  brand?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  aiDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiDescriptionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  affiliateLinks?: Prisma.AffiliateLinkUncheckedUpdateManyWithoutProductNestedInput
+  alerts?: Prisma.AlertUncheckedUpdateManyWithoutProductNestedInput
+  clickTracking?: Prisma.ClickTrackingUncheckedUpdateManyWithoutProductNestedInput
+  offers?: Prisma.ProductOfferUncheckedUpdateManyWithoutProductNestedInput
+  priceHistory?: Prisma.PriceHistoryUncheckedUpdateManyWithoutProductNestedInput
+  productReports?: Prisma.ProductReportUncheckedUpdateManyWithoutProductNestedInput
   productReviews?: Prisma.ProductReviewUncheckedUpdateManyWithoutProductNestedInput
   productVotes?: Prisma.ProductVoteUncheckedUpdateManyWithoutProductNestedInput
   trackedProducts?: Prisma.TrackedProductUncheckedUpdateManyWithoutProductNestedInput
@@ -1939,6 +2120,7 @@ export type ProductUpdateWithoutCategoryInput = {
   productReviews?: Prisma.ProductReviewUpdateManyWithoutProductNestedInput
   productVotes?: Prisma.ProductVoteUpdateManyWithoutProductNestedInput
   trackedProducts?: Prisma.TrackedProductUpdateManyWithoutProductNestedInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutCategoryInput = {
@@ -1964,6 +2146,7 @@ export type ProductUncheckedUpdateWithoutCategoryInput = {
   productReviews?: Prisma.ProductReviewUncheckedUpdateManyWithoutProductNestedInput
   productVotes?: Prisma.ProductVoteUncheckedUpdateManyWithoutProductNestedInput
   trackedProducts?: Prisma.TrackedProductUncheckedUpdateManyWithoutProductNestedInput
+  weeklyFeatured?: Prisma.WeeklyFeaturedProductUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateManyWithoutCategoryInput = {
@@ -1997,6 +2180,7 @@ export type ProductCountOutputType = {
   productReviews: number
   productVotes: number
   trackedProducts: number
+  weeklyFeatured: number
 }
 
 export type ProductCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2009,6 +2193,7 @@ export type ProductCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   productReviews?: boolean | ProductCountOutputTypeCountProductReviewsArgs
   productVotes?: boolean | ProductCountOutputTypeCountProductVotesArgs
   trackedProducts?: boolean | ProductCountOutputTypeCountTrackedProductsArgs
+  weeklyFeatured?: boolean | ProductCountOutputTypeCountWeeklyFeaturedArgs
 }
 
 /**
@@ -2084,6 +2269,13 @@ export type ProductCountOutputTypeCountTrackedProductsArgs<ExtArgs extends runti
   where?: Prisma.TrackedProductWhereInput
 }
 
+/**
+ * ProductCountOutputType without action
+ */
+export type ProductCountOutputTypeCountWeeklyFeaturedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WeeklyFeaturedProductWhereInput
+}
+
 
 export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2110,6 +2302,7 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   productReviews?: boolean | Prisma.Product$productReviewsArgs<ExtArgs>
   productVotes?: boolean | Prisma.Product$productVotesArgs<ExtArgs>
   trackedProducts?: boolean | Prisma.Product$trackedProductsArgs<ExtArgs>
+  weeklyFeatured?: boolean | Prisma.Product$weeklyFeaturedArgs<ExtArgs>
   _count?: boolean | Prisma.ProductCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["product"]>
 
@@ -2178,6 +2371,7 @@ export type ProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   productReviews?: boolean | Prisma.Product$productReviewsArgs<ExtArgs>
   productVotes?: boolean | Prisma.Product$productVotesArgs<ExtArgs>
   trackedProducts?: boolean | Prisma.Product$trackedProductsArgs<ExtArgs>
+  weeklyFeatured?: boolean | Prisma.Product$weeklyFeaturedArgs<ExtArgs>
   _count?: boolean | Prisma.ProductCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProductIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2200,6 +2394,7 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     productReviews: Prisma.$ProductReviewPayload<ExtArgs>[]
     productVotes: Prisma.$ProductVotePayload<ExtArgs>[]
     trackedProducts: Prisma.$TrackedProductPayload<ExtArgs>[]
+    weeklyFeatured: Prisma.$WeeklyFeaturedProductPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2620,6 +2815,7 @@ export interface Prisma__ProductClient<T, Null = never, ExtArgs extends runtime.
   productReviews<T extends Prisma.Product$productReviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$productReviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   productVotes<T extends Prisma.Product$productVotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$productVotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductVotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   trackedProducts<T extends Prisma.Product$trackedProductsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$trackedProductsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TrackedProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  weeklyFeatured<T extends Prisma.Product$weeklyFeaturedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$weeklyFeaturedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WeeklyFeaturedProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3277,6 +3473,30 @@ export type Product$trackedProductsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.TrackedProductScalarFieldEnum | Prisma.TrackedProductScalarFieldEnum[]
+}
+
+/**
+ * Product.weeklyFeatured
+ */
+export type Product$weeklyFeaturedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the WeeklyFeaturedProduct
+   */
+  select?: Prisma.WeeklyFeaturedProductSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the WeeklyFeaturedProduct
+   */
+  omit?: Prisma.WeeklyFeaturedProductOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WeeklyFeaturedProductInclude<ExtArgs> | null
+  where?: Prisma.WeeklyFeaturedProductWhereInput
+  orderBy?: Prisma.WeeklyFeaturedProductOrderByWithRelationInput | Prisma.WeeklyFeaturedProductOrderByWithRelationInput[]
+  cursor?: Prisma.WeeklyFeaturedProductWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WeeklyFeaturedProductScalarFieldEnum | Prisma.WeeklyFeaturedProductScalarFieldEnum[]
 }
 
 /**

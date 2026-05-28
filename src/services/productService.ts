@@ -43,6 +43,7 @@ export type ProductSummary = {
   recommendationLabel: string;
   comparable?: boolean;
   storeCount?: number;
+  isDemo?: boolean;
 };
 
 function getProductSlug(product: ProviderProduct) {

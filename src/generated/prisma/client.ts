@@ -177,6 +177,11 @@ export type DataRadarSnapshot = Prisma.DataRadarSnapshotModel
  */
 export type BankPromo = Prisma.BankPromoModel
 /**
+ * Model WeeklyFeaturedProduct
+ * 
+ */
+export type WeeklyFeaturedProduct = Prisma.WeeklyFeaturedProductModel
+/**
  * Model BankPromoBotSource
  * 
  */

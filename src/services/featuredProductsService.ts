@@ -6,7 +6,7 @@ import {
   type ProductSummary,
 } from "@/services/productService";
 
-export type FeaturedSource = "mercadolibre" | "demo";
+export type FeaturedSource = "mercadolibre" | "demo" | "weekly";
 
 export type FeaturedProductsResult = {
   source: FeaturedSource;
