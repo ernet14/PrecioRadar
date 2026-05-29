@@ -41,6 +41,7 @@ const benefits = [
       "Ves ofertas agrupadas por producto para elegir con menos ruido y más contexto.",
     shortDescription: "Ofertas agrupadas por producto.",
     kicker: "Comparacion",
+    chip: "Comparación",
   },
   {
     title: "Revisá historial de precios",
@@ -48,6 +49,7 @@ const benefits = [
       "El historial ayuda a entender si el precio actual está cerca de una buena referencia.",
     shortDescription: "Mirá si el precio actual conviene.",
     kicker: "Historial",
+    chip: "Historial",
   },
   {
     title: "Creá alertas",
@@ -55,6 +57,7 @@ const benefits = [
       "Seguí ofertas y recibí avisos internos cuando una condición de compra se cumple.",
     shortDescription: "Avisos cuando baja el precio.",
     kicker: "Alertas",
+    chip: "Alertas",
   },
   {
     title: "Detectá ofertas reales",
@@ -62,6 +65,7 @@ const benefits = [
       "La recomendación simple separa precios convenientes de promociones poco claras.",
     shortDescription: "Separá ofertas reales de las dudosas.",
     kicker: "Confianza",
+    chip: "Ofertas reales",
   },
 ];
 
@@ -102,12 +106,12 @@ function ProductImage({
 }) {
   if (imageUrl) {
     return (
-      <div className="relative h-36 overflow-hidden rounded-lg border border-slate-100 bg-white">
+      <div className="relative h-28 overflow-hidden rounded-lg border border-slate-100 bg-white sm:h-36">
         <Image
           alt={name}
           className="object-contain"
           fill
-          sizes="(max-width: 768px) 100vw, 280px"
+          sizes="(max-width: 768px) 50vw, 280px"
           src={imageUrl}
         />
       </div>
@@ -115,7 +119,7 @@ function ProductImage({
   }
 
   return (
-    <div className="flex h-36 items-center justify-center rounded-lg border border-slate-100 bg-slate-100 text-2xl font-bold text-slate-500">
+    <div className="flex h-28 items-center justify-center rounded-lg border border-slate-100 bg-slate-100 text-2xl font-bold text-slate-500 sm:h-36">
       {getProductInitials(name)}
     </div>
   );
@@ -246,13 +250,13 @@ export default async function Home() {
                   Argentina · ARS · Beta en construcción
                 </Badge>
               </div>
-              <h1 className="hero-fade-in hero-fade-in-delay-1 mt-6 max-w-4xl text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-[3.5rem] lg:leading-[1.05]">
+              <h1 className="hero-fade-in hero-fade-in-delay-1 mt-4 max-w-4xl text-3xl font-bold tracking-tight text-white sm:mt-6 sm:text-5xl lg:text-[3.5rem] lg:leading-[1.05]">
                 Comprá con más contexto:{" "}
                 <span className="bg-gradient-to-r from-indigo-300 via-violet-300 to-emerald-300 bg-clip-text text-transparent">
                   precio real, historial y alertas
                 </span>
               </h1>
-              <p className="hero-fade-in hero-fade-in-delay-2 mt-5 max-w-2xl text-lg leading-8 text-slate-300">
+              <p className="hero-fade-in hero-fade-in-delay-2 mt-3 max-w-2xl text-base leading-7 text-slate-300 sm:mt-5 sm:text-lg sm:leading-8">
                 Estamos construyendo un comparador con precios de fuentes
                 integradas, historial y alertas. Las promos bancarias se
                 publican solo cuando tienen fuente y vigencia verificable.
@@ -261,7 +265,7 @@ export default async function Home() {
               <div className="hero-fade-in hero-fade-in-delay-3">
                 <Card
                   id="buscar"
-                  className="mt-8 border-white/10 bg-white p-4 shadow-[0_28px_70px_-12px_rgba(8,11,30,0.6)]"
+                  className="mt-5 border-white/10 bg-white p-4 shadow-[0_28px_70px_-12px_rgba(8,11,30,0.6)] sm:mt-8"
                 >
                   <SearchForm
                     helperText="Buscador MVP. Los datos demo están identificados."
@@ -281,7 +285,7 @@ export default async function Home() {
                 </Card>
               </div>
 
-              <dl className="hero-fade-in hero-fade-in-delay-4 mt-8 grid max-w-xl grid-cols-3 gap-4 text-sm text-slate-300">
+              <dl className="hero-fade-in hero-fade-in-delay-4 mt-6 grid max-w-xl grid-cols-3 gap-4 text-sm text-slate-300 sm:mt-8">
                 <div>
                   <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-indigo-200">
                     Productos
@@ -467,12 +471,29 @@ export default async function Home() {
         />
       </section>
 
-      <section className="py-10 sm:py-16">
+      <section className="py-6 sm:py-16">
         <Container>
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {/* Mobile: franja compacta de chips, cerca del hero */}
+          <div className="flex flex-wrap gap-2 sm:hidden">
+            {benefits.map((benefit) => (
+              <span
+                className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm"
+                key={benefit.title}
+              >
+                <span
+                  aria-hidden
+                  className="inline-block size-1.5 rounded-full bg-emerald-500"
+                />
+                {benefit.chip}
+              </span>
+            ))}
+          </div>
+
+          {/* Desktop: cards amplias */}
+          <div className="hidden grid-cols-2 gap-4 sm:grid xl:grid-cols-4">
             {benefits.map((benefit) => (
               <Card
-                className="p-4 transition hover:-translate-y-0.5 hover:border-indigo-200 sm:p-6"
+                className="p-6 transition hover:-translate-y-0.5 hover:border-indigo-200"
                 key={benefit.title}
               >
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-indigo-700">
@@ -482,13 +503,10 @@ export default async function Home() {
                   />
                   {benefit.kicker}
                 </span>
-                <h2 className="mt-3 text-base font-bold leading-snug text-slate-950 sm:mt-4 sm:text-lg">
+                <h2 className="mt-4 text-lg font-bold leading-snug text-slate-950">
                   {benefit.title}
                 </h2>
-                <p className="mt-2 text-sm leading-6 text-slate-600 sm:hidden">
-                  {benefit.shortDescription}
-                </p>
-                <p className="mt-3 hidden text-sm leading-6 text-slate-600 sm:block">
+                <p className="mt-3 text-sm leading-6 text-slate-600">
                   {benefit.description}
                 </p>
               </Card>
@@ -497,84 +515,38 @@ export default async function Home() {
         </Container>
       </section>
 
-      <section id="categorias" className="py-10 sm:py-16">
-        <Container>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <Badge variant="brand">Categorías populares</Badge>
-              <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
-                Explorá productos para comparar
-              </h2>
-            </div>
-            <p className="max-w-xl text-sm leading-6 text-slate-600">
-              El MVP prioriza categorías donde precio, historial y alertas
-              aportan una decisión de compra más confiable.
-            </p>
-          </div>
-
-          <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-4 lg:grid-cols-4">
-            {mvpCategoryDescriptors.map((descriptor, index) => (
-              <Link
-                className="group block"
-                href={`/categoria/${descriptor.slug}`}
-                key={descriptor.slug}
-              >
-                <Card className="h-full p-4 transition group-hover:-translate-y-1 group-hover:border-indigo-200 group-hover:shadow-[0_22px_50px_-15px_rgba(79,70,229,0.25)] sm:p-6">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-sm font-bold text-white shadow-[0_8px_20px_-8px_rgba(79,70,229,0.55)] sm:h-12 sm:w-12">
-                    {String(index + 1).padStart(2, "0")}
-                  </div>
-                  <h3 className="mt-3 text-base font-bold text-slate-950 sm:mt-5 sm:text-lg">
-                    {descriptor.name}
-                  </h3>
-                  <p className="mt-1.5 text-sm leading-6 text-slate-600 sm:hidden">
-                    {descriptor.shortDescription}
-                  </p>
-                  <p className="mt-2 hidden text-sm leading-6 text-slate-600 sm:block">
-                    {descriptor.description}
-                  </p>
-                  <p className="mt-4 hidden items-center gap-1 text-sm font-semibold text-indigo-700 opacity-0 transition group-hover:opacity-100 sm:inline-flex">
-                    Explorar
-                    <span aria-hidden>→</span>
-                  </p>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </Container>
-      </section>
-
-      <section className="py-10 sm:py-16">
+      <section className="py-8 sm:py-16">
         <Container>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <Badge variant={hasRealProducts ? "success" : "neutral"}>
                 {featuredBadgeLabel}
               </Badge>
-              <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
+              <h2 className="mt-3 text-2xl font-bold tracking-tight text-slate-950 sm:mt-4 sm:text-4xl">
                 Detectadas por PrecioRadar
               </h2>
               <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600">
                 {featuredCopy}
               </p>
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-1 hidden text-xs text-slate-400 sm:block">
                 Selección actualizada semanalmente según precios, historial y señales de oportunidad.
               </p>
             </div>
             <Link
-              className="inline-flex h-10 items-center justify-center rounded-lg border border-indigo-200 bg-white px-4 text-sm font-semibold text-indigo-700 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50"
+              className="hidden h-10 items-center justify-center rounded-lg border border-indigo-200 bg-white px-4 text-sm font-semibold text-indigo-700 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50 sm:inline-flex"
               href="/buscar?q=galaxy+a55"
             >
               Ver más productos →
             </Link>
           </div>
 
-          <div className="mt-6 grid gap-4 sm:mt-10 sm:gap-5 md:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-5 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-5 md:grid-cols-2 xl:grid-cols-4">
             {featuredProducts.map((product) => (
               <Card
                 className="group overflow-hidden transition hover:-translate-y-1 hover:border-indigo-200 hover:shadow-[0_22px_50px_-15px_rgba(79,70,229,0.25)]"
                 key={product.slug}
               >
-                <div className="p-4">
+                <div className="p-3 sm:p-4">
                   <div className="relative">
                     <ProductImage imageUrl={product.imageUrl} name={product.name} />
                     <Badge
@@ -584,35 +556,93 @@ export default async function Home() {
                       {!product.isDemo ? "Real" : "Datos en seguimiento"}
                     </Badge>
                   </div>
-                  <h3 className="mt-4 line-clamp-2 text-base font-bold leading-snug text-slate-950">
+                  <h3 className="mt-3 line-clamp-2 text-sm font-bold leading-snug text-slate-950 sm:mt-4 sm:text-base">
                     {product.name}
                   </h3>
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 truncate text-xs text-slate-500 sm:text-sm">
                     {product.storeName}
                   </p>
-                  <div className="mt-4 flex items-end justify-between gap-3 border-t border-slate-100 pt-4">
+                  <div className="mt-3 flex flex-wrap items-end justify-between gap-x-3 gap-y-1 border-t border-slate-100 pt-3 sm:mt-4 sm:pt-4">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-500 sm:text-xs">
                         Desde
                       </p>
-                      <p className="text-2xl font-bold tracking-tight text-slate-950">
+                      <p className="text-lg font-bold tracking-tight text-slate-950 sm:text-2xl">
                         {formatCurrencyARS(product.price)}
                       </p>
                     </div>
                     {product.recommendationLabel ? (
-                      <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-emerald-700">
+                      <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-700 sm:px-2.5 sm:py-1 sm:text-[11px]">
                         {product.recommendationLabel}
                       </span>
                     ) : null}
                   </div>
                   <Link
-                    className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-lg bg-gradient-to-b from-indigo-500 to-indigo-600 px-4 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgba(79,70,229,0.55)] transition hover:from-indigo-500 hover:to-indigo-700"
+                    className="mt-3 inline-flex h-9 w-full items-center justify-center rounded-lg bg-gradient-to-b from-indigo-500 to-indigo-600 px-4 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgba(79,70,229,0.55)] transition hover:from-indigo-500 hover:to-indigo-700 sm:mt-5 sm:h-11"
                     href={`/producto/${product.slug}`}
                   >
-                    Ver comparación
+                    <span className="sm:hidden">Comparar</span>
+                    <span className="hidden sm:inline">Ver comparación</span>
                   </Link>
                 </div>
               </Card>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      <section id="categorias" className="py-8 sm:py-16">
+        <Container>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <Badge variant="brand">Categorías populares</Badge>
+              <h2 className="mt-3 text-2xl font-bold tracking-tight text-slate-950 sm:mt-4 sm:text-4xl">
+                Explorá productos para comparar
+              </h2>
+            </div>
+            <p className="hidden max-w-xl text-sm leading-6 text-slate-600 sm:block">
+              El MVP prioriza categorías donde precio, historial y alertas
+              aportan una decisión de compra más confiable.
+            </p>
+          </div>
+
+          {/* Mobile: chips deslizables horizontalmente */}
+          <div className="-mx-5 mt-5 flex gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] sm:hidden [&::-webkit-scrollbar]:hidden">
+            {mvpCategoryDescriptors.map((descriptor) => (
+              <Link
+                className="inline-flex h-9 shrink-0 items-center rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700"
+                href={`/categoria/${descriptor.slug}`}
+                key={descriptor.slug}
+              >
+                {descriptor.name}
+              </Link>
+            ))}
+          </div>
+
+          {/* Desktop: cards visuales */}
+          <div className="mt-10 hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-4">
+            {mvpCategoryDescriptors.map((descriptor, index) => (
+              <Link
+                className="group block"
+                href={`/categoria/${descriptor.slug}`}
+                key={descriptor.slug}
+              >
+                <Card className="h-full p-6 transition group-hover:-translate-y-1 group-hover:border-indigo-200 group-hover:shadow-[0_22px_50px_-15px_rgba(79,70,229,0.25)]">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-sm font-bold text-white shadow-[0_8px_20px_-8px_rgba(79,70,229,0.55)]">
+                    {String(index + 1).padStart(2, "0")}
+                  </div>
+                  <h3 className="mt-5 text-lg font-bold text-slate-950">
+                    {descriptor.name}
+                  </h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    {descriptor.description}
+                  </p>
+                  <p className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-indigo-700 opacity-0 transition group-hover:opacity-100">
+                    Explorar
+                    <span aria-hidden>→</span>
+                  </p>
+                </Card>
+              </Link>
             ))}
           </div>
         </Container>
@@ -627,22 +657,24 @@ export default async function Home() {
             </h2>
           </div>
 
-          <div className="relative mt-8 grid gap-6 sm:mt-12 md:grid-cols-3">
+          <div className="relative mt-6 grid gap-4 sm:mt-12 sm:gap-6 md:grid-cols-3">
             <div
               aria-hidden
               className="absolute left-6 top-12 hidden h-px w-[calc(100%-3rem)] bg-gradient-to-r from-indigo-200 via-violet-200 to-emerald-200 md:block"
             />
             {steps.map((step, index) => (
-              <div className="relative" key={step.title}>
-                <div className="relative grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-sm font-bold text-white shadow-[0_8px_20px_-8px_rgba(79,70,229,0.55)]">
+              <div className="relative flex gap-4 md:block" key={step.title}>
+                <div className="relative grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-sm font-bold text-white shadow-[0_8px_20px_-8px_rgba(79,70,229,0.55)] sm:h-12 sm:w-12">
                   {index + 1}
                 </div>
-                <h3 className="mt-5 text-xl font-bold text-slate-950">
-                  {step.title}
-                </h3>
-                <p className="mt-3 leading-7 text-slate-600">
-                  {step.description}
-                </p>
+                <div className="min-w-0">
+                  <h3 className="text-base font-bold text-slate-950 sm:mt-5 sm:text-xl">
+                    {step.title}
+                  </h3>
+                  <p className="mt-1 text-sm leading-6 text-slate-600 sm:mt-3 sm:text-base sm:leading-7">
+                    {step.description}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
