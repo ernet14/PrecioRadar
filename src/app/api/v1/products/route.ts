@@ -25,10 +25,8 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const query = url.searchParams.get("q") ?? "";
   const parsedLimit = Number.parseInt(url.searchParams.get("limit") ?? "", 10);
-  const result = await searchApiProducts(
-    query,
-    Number.isFinite(parsedLimit) ? parsedLimit : 20,
-  );
+  const safeLimit = Number.isFinite(parsedLimit) ? Math.min(Math.max(parsedLimit, 1), 100) : 20;
+  const result = await searchApiProducts(query, safeLimit);
 
   if (result.status === "database_unavailable") return error(503, "database_unavailable");
 

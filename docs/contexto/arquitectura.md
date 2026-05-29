@@ -61,8 +61,14 @@
 - `/api/internal/refresh-prices` — snapshot de precios + compactación de historial.
 - `/api/internal/evaluate-alerts` — evalúa alertas y notifica.
 - `/api/internal/evaluate-bank-promos` — desactiva promos vencidas + notifica.
+- `/api/internal/refresh-weekly-featured` — selección semanal "Detectadas por PrecioRadar"
+  (lunes 08:00 UTC). Trigger externo en cron-job.org (header `X-Cron-Secret`).
+- `/api/internal/densify` — tanda rotativa de densificación (lunes 06:00 UTC). Trigger externo
+  en cron-job.org (header `X-Cron-Secret`).
 - Trigger externo (Hobby limita cantidad): `health-watch`, `daily-report`,
-  `generate-descriptions`.
+  `generate-descriptions`, `refresh-weekly-featured`, `densify`. Los `crons` de `vercel.json`
+  quedan definidos pero en Hobby no se garantiza que corran todos; el trigger real es externo
+  (cron-job.org / UptimeRobot) pegando con `CRON_SECRET`.
 - **Compactación de `PriceHistory`:** roll-up perpetuo (día → semana → mes), preservando
   por bucket la fila más antigua + el mínimo + el máximo (no borra todo a 180d).
 
