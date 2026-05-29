@@ -4,6 +4,17 @@
 > proyecto versionado en el repo (distinto de la memoria cross-sesión del agente, que vive
 > fuera del repo).
 
+## 2026-05-29 — Auditoría de seguridad de server actions (cerrada, sin cambios)
+- Revisados los 19 archivos con `"use server"`. Mutaciones de usuario (alertas, reseñas, votos,
+  seguir-producto, reportes, notificaciones, account) validan con zod y exigen `getCurrentUser()`;
+  el ownership se fuerza pasando `user.id` al servicio (anti-IDOR). Auth (login/registro) suma
+  rate limit + audit. Admin (destacados, promos, bot, keys, importar, reportes) llaman
+  `requireAdmin()` como 1ª línea; los `"use server"` inline en los `page.tsx` de admin solo
+  delegan a esas actions. `isAdmin` exige rol `ADMIN` (app_metadata) **y** allowlist de email
+  (obligatoria en prod). Conclusión: no hay action que mute sin auth ni IDOR; no se tocó código.
+- Deuda menor (defensa en profundidad, no urgente): en `promos/bot`, `importar` y `reportes`
+  algunos `id`/`status` se pasan al servicio como string sin zod (admin-only, bajo riesgo).
+
 ## 2026-05-29 — Hardening de seguridad: XSS en JSON-LD + validación
 - **XSS almacenado (principal):** `JSON.stringify` embebido en `<script application/ld+json>`
   no escapa `< > &` ni separadores Unicode → contenido de usuario (reseñas: `authorName`/`body`,
