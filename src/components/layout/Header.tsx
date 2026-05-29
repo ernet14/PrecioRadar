@@ -4,6 +4,7 @@ import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/Button";
 import { getCurrentUser, isAdmin } from "@/lib/supabase/auth";
 import { Logo } from "@/components/layout/Logo";
+import { MobileMenu } from "@/components/layout/MobileMenu";
 
 const navLinkClass =
   "relative text-slate-600 transition hover:text-slate-950 after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-0 after:rounded-full after:bg-gradient-to-r after:from-indigo-500 after:to-emerald-400 after:transition-all hover:after:w-full";
@@ -18,7 +19,7 @@ export async function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60">
-      <Container className="flex min-h-16 items-center justify-between gap-4 py-3">
+      <Container className="relative flex min-h-16 items-center justify-between gap-4 py-3">
         <Link
           href="/"
           className="group"
@@ -46,7 +47,7 @@ export async function Header() {
         </nav>
 
         {user ? (
-          <div className="flex items-center gap-2">
+          <div className="hidden items-center gap-2 md:flex">
             {isAdmin(user) ? (
               <Link className={secondaryLinkClass} href="/admin">
                 Admin
@@ -65,7 +66,7 @@ export async function Header() {
             </form>
           </div>
         ) : (
-          <div className="flex items-center gap-2">
+          <div className="hidden items-center gap-2 md:flex">
             <Link className={secondaryLinkClass} href="/login">
               Ingresar
             </Link>
@@ -74,6 +75,11 @@ export async function Header() {
             </Link>
           </div>
         )}
+
+        <MobileMenu
+          isAdminUser={user ? isAdmin(user) : false}
+          isAuthenticated={Boolean(user)}
+        />
       </Container>
     </header>
   );

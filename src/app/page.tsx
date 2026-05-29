@@ -39,24 +39,28 @@ const benefits = [
     title: "Compará precios entre tiendas",
     description:
       "Ves ofertas agrupadas por producto para elegir con menos ruido y más contexto.",
+    shortDescription: "Ofertas agrupadas por producto.",
     kicker: "Comparacion",
   },
   {
     title: "Revisá historial de precios",
     description:
       "El historial ayuda a entender si el precio actual está cerca de una buena referencia.",
+    shortDescription: "Mirá si el precio actual conviene.",
     kicker: "Historial",
   },
   {
     title: "Creá alertas",
     description:
       "Seguí ofertas y recibí avisos internos cuando una condición de compra se cumple.",
+    shortDescription: "Avisos cuando baja el precio.",
     kicker: "Alertas",
   },
   {
     title: "Detectá ofertas reales",
     description:
       "La recomendación simple separa precios convenientes de promociones poco claras.",
+    shortDescription: "Separá ofertas reales de las dudosas.",
     kicker: "Confianza",
   },
 ];
@@ -230,7 +234,7 @@ export default async function Home() {
           className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-indigo-400/60 to-transparent"
         />
 
-        <Container className="relative py-16 md:py-24">
+        <Container className="relative py-12 sm:py-16 md:py-24">
           <div className="grid gap-12 lg:grid-cols-[minmax(0,1.05fr)_440px] lg:items-center">
             <div className="min-w-0">
               <div className="hero-fade-in">
@@ -463,12 +467,12 @@ export default async function Home() {
         />
       </section>
 
-      <section className="py-16">
+      <section className="py-10 sm:py-16">
         <Container>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-2 xl:grid-cols-4">
             {benefits.map((benefit) => (
               <Card
-                className="p-6 transition hover:-translate-y-0.5 hover:border-indigo-200"
+                className="p-4 transition hover:-translate-y-0.5 hover:border-indigo-200 sm:p-6"
                 key={benefit.title}
               >
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-indigo-700">
@@ -478,10 +482,13 @@ export default async function Home() {
                   />
                   {benefit.kicker}
                 </span>
-                <h2 className="mt-4 text-lg font-bold leading-snug text-slate-950">
+                <h2 className="mt-3 text-base font-bold leading-snug text-slate-950 sm:mt-4 sm:text-lg">
                   {benefit.title}
                 </h2>
-                <p className="mt-3 text-sm leading-6 text-slate-600">
+                <p className="mt-2 text-sm leading-6 text-slate-600 sm:hidden">
+                  {benefit.shortDescription}
+                </p>
+                <p className="mt-3 hidden text-sm leading-6 text-slate-600 sm:block">
                   {benefit.description}
                 </p>
               </Card>
@@ -490,7 +497,7 @@ export default async function Home() {
         </Container>
       </section>
 
-      <section id="categorias" className="py-16">
+      <section id="categorias" className="py-10 sm:py-16">
         <Container>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -505,24 +512,27 @@ export default async function Home() {
             </p>
           </div>
 
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-4 lg:grid-cols-4">
             {mvpCategoryDescriptors.map((descriptor, index) => (
               <Link
                 className="group block"
                 href={`/categoria/${descriptor.slug}`}
                 key={descriptor.slug}
               >
-                <Card className="h-full p-6 transition group-hover:-translate-y-1 group-hover:border-indigo-200 group-hover:shadow-[0_22px_50px_-15px_rgba(79,70,229,0.25)]">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-sm font-bold text-white shadow-[0_8px_20px_-8px_rgba(79,70,229,0.55)]">
+                <Card className="h-full p-4 transition group-hover:-translate-y-1 group-hover:border-indigo-200 group-hover:shadow-[0_22px_50px_-15px_rgba(79,70,229,0.25)] sm:p-6">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-sm font-bold text-white shadow-[0_8px_20px_-8px_rgba(79,70,229,0.55)] sm:h-12 sm:w-12">
                     {String(index + 1).padStart(2, "0")}
                   </div>
-                  <h3 className="mt-5 text-lg font-bold text-slate-950">
+                  <h3 className="mt-3 text-base font-bold text-slate-950 sm:mt-5 sm:text-lg">
                     {descriptor.name}
                   </h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                  <p className="mt-1.5 text-sm leading-6 text-slate-600 sm:hidden">
+                    {descriptor.shortDescription}
+                  </p>
+                  <p className="mt-2 hidden text-sm leading-6 text-slate-600 sm:block">
                     {descriptor.description}
                   </p>
-                  <p className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-indigo-700 opacity-0 transition group-hover:opacity-100">
+                  <p className="mt-4 hidden items-center gap-1 text-sm font-semibold text-indigo-700 opacity-0 transition group-hover:opacity-100 sm:inline-flex">
                     Explorar
                     <span aria-hidden>→</span>
                   </p>
@@ -533,7 +543,7 @@ export default async function Home() {
         </Container>
       </section>
 
-      <section className="py-16">
+      <section className="py-10 sm:py-16">
         <Container>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -558,7 +568,7 @@ export default async function Home() {
             </Link>
           </div>
 
-          <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-6 grid gap-4 sm:mt-10 sm:gap-5 md:grid-cols-2 xl:grid-cols-4">
             {featuredProducts.map((product) => (
               <Card
                 className="group overflow-hidden transition hover:-translate-y-1 hover:border-indigo-200 hover:shadow-[0_22px_50px_-15px_rgba(79,70,229,0.25)]"
@@ -608,7 +618,7 @@ export default async function Home() {
         </Container>
       </section>
 
-      <section id="como-funciona" className="bg-white py-20">
+      <section id="como-funciona" className="bg-white py-12 sm:py-20">
         <Container>
           <div className="max-w-2xl">
             <Badge variant="neutral">Cómo funciona</Badge>
@@ -617,7 +627,7 @@ export default async function Home() {
             </h2>
           </div>
 
-          <div className="relative mt-12 grid gap-6 md:grid-cols-3">
+          <div className="relative mt-8 grid gap-6 sm:mt-12 md:grid-cols-3">
             <div
               aria-hidden
               className="absolute left-6 top-12 hidden h-px w-[calc(100%-3rem)] bg-gradient-to-r from-indigo-200 via-violet-200 to-emerald-200 md:block"
@@ -639,9 +649,9 @@ export default async function Home() {
         </Container>
       </section>
 
-      <section className="py-16">
+      <section className="py-10 sm:py-16">
         <Container>
-          <Card className="relative grid gap-6 overflow-hidden border-white/10 bg-hero-glow p-8 text-white md:grid-cols-[0.8fr_1.2fr] md:p-10">
+          <Card className="relative grid gap-6 overflow-hidden border-white/10 bg-hero-glow p-6 text-white sm:p-8 md:grid-cols-[0.8fr_1.2fr] md:p-10">
             <div>
               <Badge className="border-emerald-300/30 bg-emerald-300/10 text-emerald-100">
                 Confianza

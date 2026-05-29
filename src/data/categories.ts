@@ -2,6 +2,8 @@ export type CategoryDescriptor = {
   slug: string;
   name: string;
   description: string;
+  /** Descripción breve para tarjetas compactas (mobile). */
+  shortDescription: string;
 };
 
 type CategoryAlias = {
@@ -15,61 +17,73 @@ export const mvpCategoryDescriptors: CategoryDescriptor[] = [
     slug: "celulares",
     name: "Celulares",
     description: "Comparamos celulares Samsung, Motorola, Xiaomi y Apple por precio real, historial y cuotas.",
+    shortDescription: "Modelos populares con historial y alertas.",
   },
   {
     slug: "notebooks",
     name: "Notebooks",
     description: "Notebooks Lenovo, HP, Asus y Dell con seguimiento de precio para comprar al mejor momento.",
+    shortDescription: "Seguimiento de precios para comprar mejor.",
   },
   {
     slug: "componentes-pc",
     name: "Componentes de PC",
     description: "Placas de video, procesadores, memorias y SSD con historial real de precio.",
+    shortDescription: "Placas, procesadores y SSD con historial.",
   },
   {
     slug: "televisores",
     name: "Televisores",
     description: "Smart TVs Samsung, LG y TCL en distintas pulgadas con comparativa de precios en Argentina.",
+    shortDescription: "Smart TVs por pulgada y mejor precio.",
   },
   {
     slug: "audio",
     name: "Audio",
     description: "Auriculares, parlantes y barras de sonido con seguimiento del mejor precio.",
+    shortDescription: "Auriculares y parlantes al mejor precio.",
   },
   {
     slug: "consolas-videojuegos",
     name: "Consolas y videojuegos",
     description: "PlayStation, Xbox, Nintendo y videojuegos f\u00edsicos con alertas de precio.",
+    shortDescription: "Consolas y juegos con alertas de precio.",
   },
   {
     slug: "electrodomesticos",
     name: "Electrodom\u00e9sticos",
     description: "Lavarropas, heladeras y aires acondicionados con comparativa entre tiendas argentinas.",
+    shortDescription: "Heladeras, lavarropas y aires comparados.",
   },
   {
     slug: "herramientas",
     name: "Herramientas",
     description: "Taladros, atornilladores, herramientas Bosch, DeWalt y Black & Decker, ferretería y jardín comparadas.",
+    shortDescription: "Taladros y herramientas al mejor precio.",
   },
   {
     slug: "pequenos-electrodomesticos",
     name: "Pequeños electrodomésticos",
     description: "Cafeteras, licuadoras, freidoras de aire y planchas con seguimiento de precio entre tiendas.",
+    shortDescription: "Cafeteras, freidoras y más, comparadas.",
   },
   {
     slug: "hogar",
     name: "Hogar y muebles",
     description: "Colchones, sillas, escritorios, iluminación y deco con comparativa de precios en Argentina.",
+    shortDescription: "Colchones, muebles y deco con seguimiento.",
   },
   {
     slug: "deportes",
     name: "Deportes",
     description: "Zapatillas, botines, indumentaria deportiva y fitness de marcas comparadas por precio.",
+    shortDescription: "Zapatillas e indumentaria deportiva.",
   },
   {
     slug: "indumentaria",
     name: "Indumentaria",
     description: "Ropa, calzado y accesorios para toda la familia con seguimiento del mejor precio.",
+    shortDescription: "Ropa y calzado con el mejor precio.",
   },
 ];
 
