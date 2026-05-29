@@ -29,6 +29,10 @@
 - Seed de historial de los ítems más populares (mitiga cold-start de la extensión).
 
 ## Deuda técnica / limpieza
+- **Pasada de seguridad sobre server actions** (pendiente, prioridad media): las mutaciones de
+  alertas/reseñas/votos/seguir-producto/reportes viven en server actions (`"use server"`), no en
+  `/api`. Confirmar que cada una valide con zod (schemas en `lib/validation/schemas.ts`) y verifique
+  `requireAuth`/`requireAdmin` antes de mutar. Las rutas `/api` ya quedaron auditadas el 2026-05-29.
 - `README.md` (raíz) tiene datos stale (describe crons cada 4h/30min; hoy `vercel.json`
   tiene 4 crons diarios). Actualizar.
 - `src/tests/README.md` dice "no test runner configured" — falso (hay 25+ tests,
