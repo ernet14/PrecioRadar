@@ -4,6 +4,21 @@
 > proyecto versionado en el repo (distinto de la memoria cross-sesión del agente, que vive
 > fuera del repo).
 
+## 2026-05-29 — Hardening de seguridad: XSS en JSON-LD + validación
+- **XSS almacenado (principal):** `JSON.stringify` embebido en `<script application/ld+json>`
+  no escapa `< > &` ni separadores Unicode → contenido de usuario (reseñas: `authorName`/`body`,
+  nombre de producto) podía cerrar la etiqueta con `</script>` e inyectar JS. Nuevo helper
+  `src/lib/seo/safeJsonLd.ts` (escapa a `\uXXXX`), aplicado en las 6 páginas con
+  `dangerouslySetInnerHTML` (producto, categoría, categoría/marca, guías, promos-hoy, termómetro).
+- **API pública:** `/api/v1/products` clampa `limit` a `[1,100]` (antes aceptaba `limit=999999`).
+- **Defensa en profundidad:** `registerSchema.name` ahora usa regex anclada
+  (`^[\p{L}\p{M}][\p{L}\p{M}\s.'-]*[\p{L}\p{M}]$`) que rechaza `< > &`; `/api/cookies/consent`
+  suma rate limit (bucket `out`, best-effort).
+- Auditoría de rutas: SQL todo parametrizado (incl. único `$executeRawUnsafe` con binding `$1`);
+  ninguna ruta que deba estar protegida quedó abierta (`debug/mercadolibre` cubierta por `CRON_SECRET`).
+- Crons nuevos (`refresh-weekly-featured`, `densify`) ya disparándose por trigger externo
+  (cron-job.org con header `X-Cron-Secret`); Vercel Hobby no garantiza los `crons` de `vercel.json`.
+
 ## 2026-05-28 — Ampliación de catálogo a verticales nuevas + ingesta automática
 - Categorías nuevas (sin alimentos): pequeños electrodomésticos, hogar, deportes, indumentaria;
   herramientas ampliada a ferretería/construcción/jardín. Se guarda `isFoodProduct` para excluir

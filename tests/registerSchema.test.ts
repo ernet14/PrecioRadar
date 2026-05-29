@@ -18,6 +18,17 @@ test("rechaza nombre sin letras", () => {
   assert.equal(r.success, false);
 });
 
+test("rechaza nombre con caracteres de inyección (< >)", () => {
+  const r = registerSchema.safeParse({ ...valid, name: "a</script><script>x</script>b" });
+  assert.equal(r.success, false);
+});
+
+test("acepta nombres con acentos, guiones y apóstrofes", () => {
+  for (const name of ["José Pérez", "Ana-María", "O'Connor"]) {
+    assert.equal(registerSchema.safeParse({ ...valid, name }).success, true, name);
+  }
+});
+
 test("rechaza contraseña corta o sin número", () => {
   assert.equal(registerSchema.safeParse({ ...valid, password: "abc123" }).success, false); // < 8
   assert.equal(registerSchema.safeParse({ ...valid, password: "abcdefgh" }).success, false); // sin número

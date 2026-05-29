@@ -67,7 +67,9 @@ export const registerSchema = z.object({
     .trim()
     .min(2, "Ingresá tu nombre (al menos 2 caracteres).")
     .max(80, "El nombre es demasiado largo.")
-    .regex(/\p{L}.*\p{L}/u, "Ingresá un nombre válido."),
+    // Empieza y termina en letra; en el medio solo letras, marcas, espacios y . ' -
+    // (rechaza < > & etc., defensa en profundidad contra inyección/XSS).
+    .regex(/^[\p{L}\p{M}][\p{L}\p{M}\s.'-]*[\p{L}\p{M}]$/u, "Ingresá un nombre válido."),
   email: z.string().trim().email("Ingresa un email válido."),
   password: z
     .string()
