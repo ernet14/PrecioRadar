@@ -4,6 +4,18 @@
 > proyecto versionado en el repo (distinto de la memoria cross-sesión del agente, que vive
 > fuera del repo).
 
+## 2026-05-28 — Ampliación de catálogo a verticales nuevas + ingesta automática
+- Categorías nuevas (sin alimentos): pequeños electrodomésticos, hogar, deportes, indumentaria;
+  herramientas ampliada a ferretería/construcción/jardín. Se guarda `isFoodProduct` para excluir
+  comida (red de seguridad en `persistProductOfferView`). `normalizeCategorySlug` cae a fallback
+  solo-por-keyword para clasificar productos de tiendas nuevas con categoría VTEX desconocida.
+- Tiendas VTEX nuevas verificadas: Más Online (sc=1), Sportotal, Newsport, Grid, Mimo & Co,
+  Desiderata, Portsaid. `searchLimit` 12→24; soporte `salesChannel` en el provider.
+- Densify productizado: queries centralizadas en `src/data/densifyQueries.ts` (12 categorías,
+  ~250 queries), core reutilizable en `src/services/densifyService.ts` (piso de precio + guarda de
+  comida). Endpoint `/api/internal/densify` (CRON_SECRET, maxDuration 300, tanda rotativa semanal)
+  + cron lunes 6am UTC. Buscador: `inferRelevantCategorySlugs` deriva categoría por keyword.
+
 ## 2026-05-28 — Matriz OWASP Top 10
 - Se adopta `docs/seguridad-owasp-top-10.md` como matriz viva de seguridad basada en OWASP
   Top 10:2025, con nota separada para SSRF por compatibilidad/riesgo OWASP 2021.
