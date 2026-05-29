@@ -56,7 +56,7 @@ test("admin access requires allowlisted email when allowlist is configured", () 
 });
 
 test("production admin access fails closed without ADMIN_EMAILS", () => {
-  process.env.NODE_ENV = "production";
+  (process.env as Record<string, string | undefined>).NODE_ENV = "production";
   delete process.env.ADMIN_EMAILS;
 
   assert.equal(
