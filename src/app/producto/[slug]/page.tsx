@@ -23,6 +23,8 @@ import {
 } from "@/services/reviewService";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
+import { OutboundOfferLink } from "@/components/analytics/OutboundOfferLink";
+import { TrackOnMount } from "@/components/analytics/TrackOnMount";
 import { ShareButton } from "@/components/product/ShareButton";
 import { PushToggle } from "@/components/pwa/PushToggle";
 import { formatCurrencyARS, formatDate, slugify } from "@/lib/utils";
@@ -361,14 +363,15 @@ function OfferRow({
       </div>
 
       <div>
-        <a
+        <OutboundOfferLink
           className="inline-flex h-11 w-full items-center justify-center rounded-lg border border-blue-200 bg-white px-3 text-sm font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50"
           href={offerHref}
-          rel="noreferrer"
-          target="_blank"
+          itemId={productSlug}
+          store={offer.storeSlug}
+          value={offer.price}
         >
           Ver oferta
-        </a>
+        </OutboundOfferLink>
         <Link
           className="mt-2 inline-flex h-9 w-full items-center justify-center rounded-lg px-3 text-xs font-semibold text-slate-500 transition hover:bg-slate-50 hover:text-blue-700"
           href={`/producto/${productSlug}?reportOffer=${encodeURIComponent(
@@ -465,6 +468,15 @@ export default async function ProductoPage({
           dangerouslySetInnerHTML={{ __html: safeJsonLd(schema) }}
         />
       ))}
+      <TrackOnMount
+        event="view_item"
+        params={{
+          item_id: product.slug,
+          item_category: product.categorySlug ?? undefined,
+          value: product.bestOffer.price,
+          currency: "ARS",
+        }}
+      />
       <Container className="space-y-10">
         <Link
           className="inline-flex text-sm font-semibold text-blue-700 transition hover:text-blue-800"

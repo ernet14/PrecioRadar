@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { TrackingFeedback } from "@/components/product/TrackingFeedback";
+import { OutboundOfferLink } from "@/components/analytics/OutboundOfferLink";
 import { PushToggle } from "@/components/pwa/PushToggle";
 import { requireUser } from "@/lib/supabase/auth";
 import { formatDate } from "@/lib/utils";
@@ -226,14 +227,13 @@ function TrackedProductCard({
           </div>
           <div className="mt-5 grid gap-2">
             {hasOfferUrl ? (
-              <Link
+              <OutboundOfferLink
                 className="inline-flex h-10 items-center justify-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
                 href={offerHref}
-                rel="noreferrer"
-                target="_blank"
+                itemId={product.slug}
               >
                 Ver oferta
-              </Link>
+              </OutboundOfferLink>
             ) : (
               <span
                 aria-disabled

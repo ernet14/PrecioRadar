@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/layout/Container";
+import { OutboundOfferLink } from "@/components/analytics/OutboundOfferLink";
+import { TrackOnMount } from "@/components/analytics/TrackOnMount";
 import { TrackProductButton } from "@/components/product/TrackProductButton";
 import { TrackingFeedback } from "@/components/product/TrackingFeedback";
 import { SearchForm } from "@/components/search/SearchForm";
@@ -252,14 +254,15 @@ function ResultCard({
                       </div>
 
                       <div>
-                        <a
+                        <OutboundOfferLink
                           className="inline-flex h-11 w-full items-center justify-center rounded-lg border border-indigo-200 bg-white px-3 text-sm font-semibold text-indigo-700 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50"
                           href={offerHref}
-                          rel="noreferrer"
-                          target="_blank"
+                          itemId={item.product.slug}
+                          store={topOffer.store?.slug}
+                          value={topOffer.price}
                         >
                           Ver oferta →
-                        </a>
+                        </OutboundOfferLink>
                       </div>
 
                       <div className="min-w-0">
@@ -382,6 +385,16 @@ export default async function BuscarPage({ searchParams }: BuscarPageProps) {
 
   return (
     <main className="bg-section-soft py-10 text-slate-950">
+      {query ? (
+        <TrackOnMount
+          event="search"
+          params={{
+            search_term: query,
+            results_count:
+              result.exactMatches.length + result.similarMatches.length,
+          }}
+        />
+      ) : null}
       <Container className="space-y-10">
         <section className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_18px_50px_-20px_rgba(15,23,42,0.18)] md:p-8">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
