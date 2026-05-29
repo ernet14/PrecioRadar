@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/Card";
 import { DealQualityBadge } from "@/components/product/DealQualityBadge";
 import { formatCurrencyARS, formatDate } from "@/lib/utils";
 import { getAbsoluteUrl } from "@/lib/seo/site";
+import { safeJsonLd } from "@/lib/seo/safeJsonLd";
 import { getRelevantEvent } from "@/data/commercialEvents";
 import {
   getDealThermometer,
@@ -88,7 +89,7 @@ export default async function TermometroPage() {
     <main className="bg-[#f4f7fb] py-10 text-slate-950">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
       <Container className="space-y-8">
         <section className="rounded-3xl bg-slate-950 p-6 text-white shadow-[0_24px_60px_rgba(15,23,42,0.18)] md:p-8">

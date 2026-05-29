@@ -9,6 +9,7 @@ import {
   mvpCategoryDescriptors,
 } from "@/data/categories";
 import { getAbsoluteUrl, getSiteUrl } from "@/lib/seo/site";
+import { safeJsonLd } from "@/lib/seo/safeJsonLd";
 import { formatCurrencyARS } from "@/lib/utils";
 import {
   getIndexableBrandCategoryPages,
@@ -165,11 +166,11 @@ export default async function MarcaCategoriaPage({
     <main className="bg-[#f4f7fb] py-10 text-slate-950">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(collectionSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbSchema) }}
       />
 
       <Container className="space-y-8">

@@ -16,6 +16,7 @@ import {
   type ProductSummary,
 } from "@/services/productService";
 import { getAbsoluteUrl, getSiteUrl } from "@/lib/seo/site";
+import { safeJsonLd } from "@/lib/seo/safeJsonLd";
 
 type CategoriaPageProps = {
   params: Promise<{ slug: string }>;
@@ -195,11 +196,11 @@ export default async function CategoriaPage({ params }: CategoriaPageProps) {
     <main className="bg-[#f4f7fb] py-10 text-slate-950">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(collectionSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbSchema) }}
       />
 
       <Container className="space-y-8">

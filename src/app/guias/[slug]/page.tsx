@@ -7,6 +7,7 @@ import { NewsletterForm } from "@/components/newsletter/NewsletterForm";
 import { getAllGuideSlugs, getGuideBySlug, guides } from "@/content/guides";
 import { getAllMockProductSlugs } from "@/services/productService";
 import { getAbsoluteUrl, getSiteUrl } from "@/lib/seo/site";
+import { safeJsonLd } from "@/lib/seo/safeJsonLd";
 
 const siteUrl = getSiteUrl();
 
@@ -91,7 +92,7 @@ export default async function GuiaPage({ params }: Props) {
         <script
           key={i}
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(schema) }}
         />
       ))}
 

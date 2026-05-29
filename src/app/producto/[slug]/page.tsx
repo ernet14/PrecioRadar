@@ -35,6 +35,7 @@ import {
 } from "@/services/productService";
 import { buildProductJsonLd } from "@/lib/seo/jsonLd";
 import { getAbsoluteUrl } from "@/lib/seo/site";
+import { safeJsonLd } from "@/lib/seo/safeJsonLd";
 import { getCategoryDescriptorBySlug } from "@/data/categories";
 import {
   getTrackingOverviewForUser,
@@ -461,7 +462,7 @@ export default async function ProductoPage({
         <script
           key={i}
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(schema) }}
         />
       ))}
       <Container className="space-y-10">

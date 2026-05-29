@@ -4,6 +4,7 @@ import { CommercialEventBanner } from "@/components/commercial/CommercialEventBa
 import { Card } from "@/components/ui/Card";
 import { formatDate } from "@/lib/utils";
 import { getAbsoluteUrl } from "@/lib/seo/site";
+import { safeJsonLd } from "@/lib/seo/safeJsonLd";
 import {
   formatDayOfWeek,
   formatPromoBenefit,
@@ -61,7 +62,7 @@ export default async function PromosHoyPage() {
     <main className="bg-[#f4f7fb] py-10 text-slate-950">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
       <CommercialEventBanner now={today} />
       <Container className="space-y-8">
