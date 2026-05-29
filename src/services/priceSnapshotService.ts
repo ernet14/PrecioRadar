@@ -3,7 +3,7 @@ import { logger } from "@/lib/logger";
 import { providerByStoreSlug } from "@/providers/stores";
 import type { ProviderProduct } from "@/providers/stores/types";
 import { getCanonicalProductKey, slugify } from "@/lib/utils";
-import { normalizeCategorySlug } from "@/data/categories";
+import { normalizeCategorySlug, isFoodProduct } from "@/data/categories";
 
 export type SnapshotResult = {
   status: "completed" | "database_unavailable" | "error" | "no_offers";
@@ -164,6 +164,9 @@ async function recordTodayPriceHistory(
 // Persiste en DB (cualquier provider real) para que el cron tenga qué actualizar.
 export async function persistProductOfferView(offer: ProviderProduct): Promise<void> {
   if (offer.isDemo || !offer.externalId) return;
+  // Sin alimentos por ahora: red de seguridad central para que ni la búsqueda en
+  // vivo (súper Día/Vea/Jumbo/Carrefour/Más Online) meta comida en el catálogo.
+  if (isFoodProduct(offer.name)) return;
 
   const prisma = getPrismaClient();
 

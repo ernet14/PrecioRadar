@@ -19,6 +19,10 @@
     {
       "path": "/api/internal/refresh-weekly-featured",
       "schedule": "0 8 * * 1"
+    },
+    {
+      "path": "/api/internal/densify",
+      "schedule": "0 6 * * 1"
     }
   ]
 }

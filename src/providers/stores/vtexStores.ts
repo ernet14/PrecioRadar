@@ -18,6 +18,16 @@ const vtexStoreConfigs: VtexStoreConfig[] = [
   { name: "jumbo", storeSlug: "jumbo", storeName: "Jumbo", baseUrl: "https://www.jumbo.com.ar" },
   { name: "vea", storeSlug: "vea", storeName: "Vea", baseUrl: "https://www.vea.com.ar" },
   { name: "dia", storeSlug: "dia", storeName: "Día", baseUrl: "https://diaonline.supermercadosdia.com.ar" },
+  // Más Online (hogar/electro/super): su Search API sólo devuelve precios con sc=1.
+  { name: "masonline", storeSlug: "masonline", storeName: "Más Online", baseUrl: "https://www.masonline.com.ar", salesChannel: 1 },
+  // Deportes / calzado (VTEX verificado 2026-05-28).
+  { name: "sportotal", storeSlug: "sportotal", storeName: "Sportotal", baseUrl: "https://www.sportotal.com.ar" },
+  { name: "newsport", storeSlug: "newsport", storeName: "Newsport", baseUrl: "https://www.newsport.com.ar" },
+  { name: "grid", storeSlug: "grid", storeName: "Grid", baseUrl: "https://www.grid.com.ar" },
+  // Indumentaria / moda (VTEX verificado 2026-05-28).
+  { name: "mimo", storeSlug: "mimo", storeName: "Mimo & Co", baseUrl: "https://www.mimo.com.ar" },
+  { name: "desiderata", storeSlug: "desiderata", storeName: "Desiderata", baseUrl: "https://www.desiderata.com.ar" },
+  { name: "portsaid", storeSlug: "portsaid", storeName: "Portsaid", baseUrl: "https://www.portsaid.com.ar" },
 ];
 
 export const vtexProviders = vtexStoreConfigs.map(createVtexProvider);

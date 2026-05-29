@@ -114,7 +114,31 @@ const CATEGORY_KEYWORDS: Array<{ keywords: string[]; slug: string }> = [
     slug: "electrodomesticos",
   },
   {
-    keywords: ["taladro", "atornillador", "bosch", "dewalt", "herramienta"],
+    keywords: [
+      "cafetera",
+      "licuadora",
+      "batidora",
+      "freidora de aire",
+      "aspiradora",
+      "plancha",
+      "tostadora",
+    ],
+    slug: "pequenos-electrodomesticos",
+  },
+  {
+    keywords: ["colchon", "sommier", "silla", "escritorio", "sillon", "mueble", "lampara"],
+    slug: "hogar",
+  },
+  {
+    keywords: ["zapatillas", "botines", "nike", "adidas", "puma", "pelota"],
+    slug: "deportes",
+  },
+  {
+    keywords: ["remera", "campera", "jean", "pantalon", "vestido", "buzo", "calzado"],
+    slug: "indumentaria",
+  },
+  {
+    keywords: ["taladro", "atornillador", "bosch", "dewalt", "herramienta", "amoladora", "pintura"],
     slug: "herramientas",
   },
 ];

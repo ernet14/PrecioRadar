@@ -41,8 +41,12 @@ const relatedCategorySlugs: Record<string, string[]> = {
   audio: ["audio"],
   "componentes-pc": ["componentes-pc"],
   herramientas: ["herramientas"],
-  electrodomesticos: ["electrodomesticos"],
+  electrodomesticos: ["electrodomesticos", "pequenos-electrodomesticos"],
+  "pequenos-electrodomesticos": ["pequenos-electrodomesticos", "electrodomesticos"],
   "consolas-videojuegos": ["consolas-videojuegos"],
+  hogar: ["hogar"],
+  deportes: ["deportes", "indumentaria"],
+  indumentaria: ["indumentaria", "deportes"],
 };
 
 function createBaseResult({
@@ -166,29 +170,19 @@ function isBrandOnlyQuery(product: ProviderProduct, queryTokens: string[]) {
 }
 
 function inferRelevantCategorySlugs(normalizedQuery: string) {
-  const tokens = getQueryTokens(normalizedQuery);
   const modelTokens = getModelTokens(normalizedQuery);
   const categories = new Set<string>();
 
-  if (
-    Array.from(modelTokens).some((token) => /^a\d{2}$/i.test(token)) ||
-    tokens.some((token) =>
-      ["celular", "celulares", "galaxy", "iphone", "smartphone"].includes(token),
-    )
-  ) {
+  // Caso especial: modelos de celular tipo "a55" sin la palabra "celular".
+  if (Array.from(modelTokens).some((token) => /^a\d{2}$/i.test(token))) {
     categories.add("celulares");
   }
 
-  if (tokens.some((token) => ["notebook", "laptop"].includes(token))) {
-    categories.add("notebooks");
-  }
-
-  if (tokens.some((token) => ["tv", "televisor", "televisores"].includes(token))) {
-    categories.add("televisores");
-  }
-
-  if (tokens.some((token) => ["auricular", "auriculares", "jbl"].includes(token))) {
-    categories.add("audio");
+  // Detección general por keyword sobre el texto de la query. Cubre todas las
+  // categorías curadas (incluidas las nuevas) sin hardcodear cada una.
+  const inferred = normalizeCategorySlug({ name: normalizedQuery });
+  if (inferred && relatedCategorySlugs[inferred]) {
+    categories.add(inferred);
   }
 
   return categories;

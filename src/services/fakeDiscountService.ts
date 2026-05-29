@@ -41,6 +41,9 @@ const CATEGORY_DISCOUNT_THRESHOLDS: Record<string, number> = {
   "consolas-videojuegos": 0.1,
   electrodomesticos: 0.08,
   herramientas: 0.08,
+  "pequenos-electrodomesticos": 0.1,
+  hogar: 0.15,
+  deportes: 0.2,
   indumentaria: 0.25,
   supermercado: 0.15,
 };

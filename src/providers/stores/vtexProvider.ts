@@ -30,10 +30,13 @@ export type VtexStoreConfig = {
   // Marca la tienda como bloqueada (p. ej. 403 persistente): no se hacen
   // requests y el cron/búsqueda la saltean sin reintentar.
   blocked?: boolean;
+  // Sales channel (sc) de VTEX. Algunas tiendas (p. ej. Más Online) sólo
+  // devuelven precios con `&sc=N`; sin él `commertialOffer.Price` viene en 0.
+  salesChannel?: number;
 };
 
 const requestTimeoutMs = 6000;
-const searchLimit = 12;
+const searchLimit = 24;
 
 type VtexCommertialOffer = {
   Price?: unknown;
@@ -120,7 +123,8 @@ function shouldOpenCircuitForVtexFailure(status: number | undefined, errorMessag
 }
 
 export function createVtexProvider(config: VtexStoreConfig): StoreProvider {
-  const { name, storeSlug, storeName, baseUrl, blocked = false } = config;
+  const { name, storeSlug, storeName, baseUrl, blocked = false, salesChannel } = config;
+  const scParam = typeof salesChannel === "number" ? `&sc=${salesChannel}` : "";
   const circuitName = `vtex:${storeSlug}`;
   const hostPattern = new RegExp(
     baseUrl.replace(/^https?:\/\//, "").replace(/\./g, "\\."),
@@ -188,7 +192,7 @@ export function createVtexProvider(config: VtexStoreConfig): StoreProvider {
       const startedAt = performance.now();
       const path = `/api/catalog_system/pub/products/search/${encodeURIComponent(
         normalizedQuery,
-      )}?_from=0&_to=${searchLimit - 1}`;
+      )}?_from=0&_to=${searchLimit - 1}${scParam}`;
       const result = await fetchVtex(path);
       const latencyMs = performance.now() - startedAt;
 
@@ -242,7 +246,7 @@ export function createVtexProvider(config: VtexStoreConfig): StoreProvider {
           return null;
         }
         const result = await fetchVtex(
-          `/api/catalog_system/pub/products/search?fq=productId:${encodeURIComponent(productId)}`,
+          `/api/catalog_system/pub/products/search?fq=productId:${encodeURIComponent(productId)}${scParam}`,
         );
         if (result.errorMessage || !Array.isArray(result.data) || result.data.length === 0) {
           if (result.errorMessage) await recordFailure("getProductByUrl", result.errorMessage);
@@ -261,7 +265,7 @@ export function createVtexProvider(config: VtexStoreConfig): StoreProvider {
         const productId = input.externalId ?? (input.url ? extractProductId(input.url) : null);
         if (!productId) return null;
         const result = await fetchVtex(
-          `/api/catalog_system/pub/products/search?fq=productId:${encodeURIComponent(productId)}`,
+          `/api/catalog_system/pub/products/search?fq=productId:${encodeURIComponent(productId)}${scParam}`,
         );
         if (result.errorMessage || !Array.isArray(result.data) || result.data.length === 0) {
           if (result.errorMessage) await recordFailure("getCurrentPrice", result.errorMessage);
