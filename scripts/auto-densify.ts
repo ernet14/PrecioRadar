@@ -46,7 +46,6 @@ const QUERIES = CATEGORY
   : ALL_DENSIFY_QUERIES;
 const TARGET_CATEGORIES = CATEGORY ? new Set([CATEGORY]) : DENSIFY_TARGET_CATEGORIES;
 
-type ComparableRow = { price: number; slug: string; store: string; title: string };
 type JunkRow = { id: string; price: number; slug: string; store: string; title: string };
 
 function readNumberArg(name: string, fallback: number) {
