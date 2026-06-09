@@ -22,6 +22,9 @@ export function DealQualityBadge({ dealQuality }: { dealQuality: DealQuality }) 
 export function DealQualityPanel({ dealQuality }: { dealQuality: DealQuality }) {
   return (
     <div className={`rounded-lg border p-4 ${VERDICT_CLASS[dealQuality.verdict]}`}>
+      <p className="mb-1 text-xs font-bold uppercase tracking-wide opacity-75">
+        Validación del descuento
+      </p>
       <p className="flex items-center gap-2 text-sm font-semibold">
         <span aria-hidden>{dealQuality.emoji}</span>
         {dealQuality.label}

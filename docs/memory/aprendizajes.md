@@ -2,6 +2,12 @@
 
 > Cosas no obvias aprendidas trabajando en el proyecto, para no re-descubrirlas.
 
+## UX / interfaz
+- `ImageResponse` exige `display` explícito en cualquier `div` con texto y elementos hijos;
+  sin eso la ruta OG compila pero falla en runtime con HTTP 500.
+- En mobile 390x844, el banner de cookies original empezaba en `y=665` y tapaba el botón
+  principal del hero (`y=683–735`); después de compactarlo empieza en `y=735`, sin solaparse.
+
 ## MercadoLibre
 - **`/sites/MLA/search` da 403 a nivel plataforma**, no por código ni scope: probado sin
   token, con token de usuario y con `client_credentials`. No hay cambio de código que lo
@@ -21,6 +27,11 @@
   `ProductOffer.affiliateUrl`). No escala. Ver `docs/afiliados-mercadolibre.md`.
 
 ## Datos / proveedores
+- **La alerta de 32 fallos no era una caída general**: se concentró en `getCurrentPrice` de
+  Carrefour por productos VTEX que ya no se podían normalizar; Más Online aportó pocos casos.
+  Antes de bloquear un proveedor, agrupar `ProviderLog` por provider/acción/mensaje.
+- **VTEX rechaza `%2B` en la ruta de búsqueda con HTTP 400 `Scripts are not allowed`**:
+  normalizar `+` como espacio antes de llamar al Search API (detectado con `Black+Decker`).
 - **Frávega bloquea las IPs de Vercel (403)** → marcado `blocked:true`.
 - **`compactPriceHistory` ya hacía roll-up perpetuo** (día/semana/mes), no borraba a 180d.
   El problema real era que conservaba solo el punto más antiguo por bucket → se perdía el

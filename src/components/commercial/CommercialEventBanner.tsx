@@ -37,15 +37,15 @@ export function CommercialEventBanner({ now = new Date() }: { now?: Date }) {
           </p>
           <p className="mt-1 text-sm font-semibold text-slate-950 sm:text-base">
             {active
-              ? `${event.name}: oportunidades destacadas, con precios e historial verificados.`
-              : `${event.name}: oportunidades destacadas para comprar con más contexto.`}
+              ? `${event.name}: compará precios e historial antes de decidir.`
+              : `${event.name}: preparate para comprar con más contexto.`}
           </p>
         </div>
         <Link
-          className="inline-flex h-10 shrink-0 items-center justify-center rounded-lg bg-slate-950 px-4 text-sm font-semibold text-white transition hover:bg-slate-800"
+          className="inline-flex h-11 shrink-0 items-center justify-center rounded-lg bg-slate-950 px-4 text-sm font-semibold text-white transition hover:bg-slate-800"
           href="/promos-hoy"
         >
-          Ver promos destacadas
+          Revisar promos confirmadas
         </Link>
       </div>
     </section>

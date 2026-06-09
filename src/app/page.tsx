@@ -127,7 +127,7 @@ function ProductImage({
 
 export default async function Home() {
   const featured = await getWeeklyFeaturedForHome();
-  const featuredProducts = featured.products;
+  const featuredProducts = featured.products.slice(0, 8);
   const heroProduct = featuredProducts[0];
   const heroPeerProducts = featuredProducts.slice(1, 4);
   const sourceIsWeekly = featured.source === "weekly";
@@ -247,19 +247,19 @@ export default async function Home() {
                     aria-hidden
                     className="inline-block size-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.85)]"
                   />
-                  Argentina · ARS · Beta en construcción
+                  Argentina · ARS · Beta
                 </Badge>
               </div>
               <h1 className="hero-fade-in hero-fade-in-delay-1 mt-4 max-w-4xl text-3xl font-bold tracking-tight text-white sm:mt-6 sm:text-5xl lg:text-[3.5rem] lg:leading-[1.05]">
                 Comprá con más contexto:{" "}
-                <span className="bg-gradient-to-r from-indigo-300 via-violet-300 to-emerald-300 bg-clip-text text-transparent">
+                <span className="text-emerald-300">
                   precio real, historial y alertas
                 </span>
               </h1>
               <p className="hero-fade-in hero-fade-in-delay-2 mt-3 max-w-2xl text-base leading-7 text-slate-300 sm:mt-5 sm:text-lg sm:leading-8">
-                Estamos construyendo un comparador con precios de fuentes
-                integradas, historial y alertas. Las promos bancarias se
-                publican solo cuando tienen fuente y vigencia verificable.
+                Comparamos precios de fuentes integradas, guardamos historial
+                y permitimos crear alertas. Las promos bancarias se publican
+                solo cuando tienen fuente y vigencia verificable.
               </p>
 
               <div className="hero-fade-in hero-fade-in-delay-3">
@@ -268,7 +268,7 @@ export default async function Home() {
                   className="mt-5 border-white/10 bg-white p-4 shadow-[0_28px_70px_-12px_rgba(8,11,30,0.6)] sm:mt-8"
                 >
                   <SearchForm
-                    helperText="Buscador MVP. Los datos demo están identificados."
+                    helperText="Los resultados reales y de demostración están identificados."
                     id="home-search"
                   />
                   <div className="mt-4 flex flex-wrap gap-2">
@@ -284,27 +284,6 @@ export default async function Home() {
                   </div>
                 </Card>
               </div>
-
-              <dl className="hero-fade-in hero-fade-in-delay-4 mt-6 grid max-w-xl grid-cols-3 gap-4 text-sm text-slate-300 sm:mt-8">
-                <div>
-                  <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-indigo-200">
-                    Productos
-                  </dt>
-                  <dd className="mt-1 text-xl font-bold text-white">+1.000</dd>
-                </div>
-                <div>
-                  <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-indigo-200">
-                    Tiendas
-                  </dt>
-                  <dd className="mt-1 text-xl font-bold text-white">5+</dd>
-                </div>
-                <div>
-                  <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-indigo-200">
-                    Sin costo
-                  </dt>
-                  <dd className="mt-1 text-xl font-bold text-white">100%</dd>
-                </div>
-              </dl>
             </div>
 
             {/* Composición flotante: card principal + tags + mini card */}
@@ -601,7 +580,7 @@ export default async function Home() {
               </h2>
             </div>
             <p className="hidden max-w-xl text-sm leading-6 text-slate-600 sm:block">
-              El MVP prioriza categorías donde precio, historial y alertas
+              Priorizamos categorías donde precio, historial y alertas
               aportan una decisión de compra más confiable.
             </p>
           </div>
@@ -700,7 +679,7 @@ export default async function Home() {
               {[
                 "Los precios pueden cambiar en la tienda externa.",
                 "La compra se realiza fuera de PrecioRadar.",
-                "Los datos demo están identificados durante el desarrollo MVP.",
+                "Los datos de demostración se identifican claramente.",
               ].map((line) => (
                 <li className="flex items-start gap-2" key={line}>
                   <span

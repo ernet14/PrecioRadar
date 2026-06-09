@@ -84,7 +84,7 @@ export async function generateMetadata({
     return { title: "Categoría no encontrada" };
   }
 
-  const { products } = await getCategoryProducts(slug);
+  const { products, isReal } = await getCategoryProducts(slug);
   const productCount = products.length;
   const comparableCount = products.filter(isComparable).length;
   const minPrice = products.length
@@ -101,6 +101,7 @@ export async function generateMetadata({
     title,
     description,
     alternates: { canonical },
+    robots: isReal ? undefined : { follow: true, index: false },
     openGraph: {
       title,
       description,

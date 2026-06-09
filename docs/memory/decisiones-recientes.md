@@ -4,6 +4,20 @@
 > proyecto versionado en el repo (distinto de la memoria cross-sesión del agente, que vive
 > fuera del repo).
 
+## 2026-06-09 — Auditoría de preparación para usuarios reales
+- Las páginas demo y las búsquedas internas quedan fuera del índice; el sitemap publica solo
+  productos reales. La ficha separa “momento de compra” de “validación del descuento” para
+  evitar que dos métricas correctas parezcan contradictorias.
+- Las imágenes OG de producto usan el detalle real y la app incorpora una 404 propia.
+- La home muestra como máximo 8 destacados y la búsqueda renderiza 8 coincidencias exactas
+  y 4 similares, informando siempre el total y el límite visible. El ranking y la captura de
+  datos no cambian; la paginación queda como evolución posterior.
+- El hero deja visible todo el contenido desde el primer frame, elimina métricas redundantes
+  y texto degradado; el banner de cookies mobile se compacta sin perder opciones ni targets
+  táctiles de 44 px para no tapar el CTA de búsqueda.
+- Se sanitizan errores de auth/health, se habilita el dominio oficial de Vercel Analytics en
+  CSP y se actualiza Hono de 4.12.18 a 4.12.24 por una vulnerabilidad moderada.
+
 ## 2026-05-29 — Auditoría de seguridad de server actions (cerrada, sin cambios)
 - Revisados los 19 archivos con `"use server"`. Mutaciones de usuario (alertas, reseñas, votos,
   seguir-producto, reportes, notificaciones, account) validan con zod y exigen `getCurrentUser()`;

@@ -11,7 +11,6 @@ import { ReportProblemForm } from "@/components/product/ReportProblemForm";
 import { TrackProductButton } from "@/components/product/TrackProductButton";
 import { TrackingFeedback } from "@/components/product/TrackingFeedback";
 import {
-  DealQualityBadge,
   DealQualityPanel,
 } from "@/components/product/DealQualityBadge";
 import { OfferVotePanel } from "@/components/product/OfferVotePanel";
@@ -93,6 +92,9 @@ export async function generateMetadata({
     title,
     description,
     alternates: { canonical: canonicalUrl },
+    robots: product.bestOffer.isDemo
+      ? { follow: true, index: false }
+      : undefined,
     openGraph: {
       title,
       description,
@@ -535,7 +537,6 @@ export default async function ProductoPage({
                   label={product.recommendation.label}
                   level={product.recommendation.level}
                 />
-                <DealQualityBadge dealQuality={product.dealQuality} />
               </div>
               <h1 className="mt-5 break-words text-3xl font-semibold leading-tight text-slate-950 sm:text-4xl">
                 {product.name}
@@ -581,6 +582,9 @@ export default async function ProductoPage({
               </div>
 
               <div className="border-t border-blue-100 bg-white/70 p-5">
+                <p className="mb-1 text-xs font-bold uppercase tracking-wide text-slate-500">
+                  Momento de compra
+                </p>
                 <p className="text-sm leading-6 text-slate-600">
                   <span className="font-semibold text-emerald-800">
                     {product.recommendation.label}
@@ -616,7 +620,7 @@ export default async function ProductoPage({
                 history={product.priceHistory}
                 initialStats={product.priceHistoryStats}
               />
-              <div className="mt-5 rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm leading-6 text-slate-600">
+              <div className="mt-5 rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm leading-6 text-blue-900/80">
                 {product.historyMessage}
               </div>
             </Card>

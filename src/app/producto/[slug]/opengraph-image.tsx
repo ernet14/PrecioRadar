@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getMockProductDetailBySlug } from "@/services/productService";
+import { getProductDetailBySlug } from "@/services/productService";
 import { formatCurrencyARS } from "@/lib/utils";
 
 export const runtime = "nodejs";
@@ -13,7 +13,7 @@ type Props = {
 
 export default async function OgImage({ params }: Props) {
   const { slug } = await params;
-  const product = getMockProductDetailBySlug(slug);
+  const product = await getProductDetailBySlug(slug);
 
   const title = product?.name ?? "PrecioRadar";
   const price = product
@@ -39,6 +39,7 @@ export default async function OgImage({ params }: Props) {
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <div
             style={{
+              display: "flex",
               fontSize: "36px",
               fontWeight: 700,
               letterSpacing: "-0.02em",
@@ -56,7 +57,7 @@ export default async function OgImage({ params }: Props) {
               fontWeight: 600,
             }}
           >
-            Argentina · ARS · Beta en construcción
+            Argentina · ARS · Beta
           </div>
         </div>
 

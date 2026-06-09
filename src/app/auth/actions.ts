@@ -36,18 +36,25 @@ function mapAuthError(message: string) {
   const normalized = message.toLowerCase();
 
   if (normalized.includes("invalid login credentials")) {
-    return "Email o contrasena incorrectos.";
+    return "Email o contraseña incorrectos.";
   }
 
   if (normalized.includes("email not confirmed")) {
-    return "Tenes que confirmar tu email antes de ingresar.";
+    return "Tenés que confirmar tu email antes de ingresar.";
   }
 
   if (normalized.includes("user already registered")) {
     return "Ya existe una cuenta con ese email.";
   }
 
-  return message || "No pudimos completar la operacion.";
+  console.error("Unhandled auth provider error.", { message });
+  return "No pudimos completar la operación. Intentá de nuevo.";
+}
+
+function getAuthUnavailableMessage() {
+  return process.env.NODE_ENV === "production"
+    ? "El acceso no está disponible en este momento. Intentá de nuevo más tarde."
+    : getSupabaseConfigErrorMessage();
 }
 
 export async function loginAction(
@@ -83,7 +90,7 @@ export async function loginAction(
   if (!isSupabaseConfigured()) {
     return {
       status: "error",
-      message: getSupabaseConfigErrorMessage(),
+      message: getAuthUnavailableMessage(),
       fields: { email },
     };
   }
@@ -147,7 +154,7 @@ export async function registerAction(
   if (!isSupabaseConfigured()) {
     return {
       status: "error",
-      message: getSupabaseConfigErrorMessage(),
+      message: getAuthUnavailableMessage(),
       fields: { email, name },
     };
   }
@@ -182,7 +189,7 @@ export async function registerAction(
     return {
       status: "success",
       message:
-        "Cuenta creada. Revisa tu email para confirmar el registro antes de ingresar.",
+        "Cuenta creada. Revisá tu email para confirmar el registro antes de ingresar.",
       fields: { email, name },
     };
   }

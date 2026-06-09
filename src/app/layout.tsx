@@ -63,10 +63,18 @@ export default function RootLayout({
   return (
     <html lang="es-AR" className="h-full">
       <body className="min-h-full antialiased">
+        <a
+          className="fixed left-4 top-4 z-[100] -translate-y-24 rounded-lg bg-slate-950 px-4 py-3 text-sm font-semibold text-white shadow-lg transition focus:translate-y-0 focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-indigo-400"
+          href="#main-content"
+        >
+          Saltar al contenido
+        </a>
         <div className="flex min-h-screen flex-col">
           <BetaBanner />
           <Header />
-          <div className="flex-1">{children}</div>
+          <div className="flex-1" id="main-content" tabIndex={-1}>
+            {children}
+          </div>
           <Footer />
         </div>
         <CookieBanner />

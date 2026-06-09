@@ -90,6 +90,21 @@ test("searches Fravega via VTEX and normalizes real prices", async () => {
   );
 });
 
+test("normalizes plus signs before calling VTEX search", async () => {
+  delete process.env.DATABASE_URL;
+  delete process.env.DIRECT_URL;
+  let requestedUrl = "";
+  mockFetch((input) => {
+    requestedUrl = String(input);
+    return [];
+  });
+
+  await fravegaProvider.searchProducts("Hidrolavadora Black+Decker");
+
+  assert.match(requestedUrl, /Hidrolavadora%20Black%20Decker/);
+  assert.doesNotMatch(requestedUrl, /%2B/);
+});
+
 test("returns empty when Fravega responds with a non-array body", async () => {
   delete process.env.DATABASE_URL;
   delete process.env.DIRECT_URL;

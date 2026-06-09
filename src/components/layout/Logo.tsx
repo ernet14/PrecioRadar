@@ -132,7 +132,7 @@ export function Logo({ iconOnly = false, className = "" }: LogoProps) {
       {/* Wordmark (Texto) */}
       {!iconOnly && (
         <span className="font-sans text-lg font-bold tracking-tight text-slate-900 leading-none">
-          Precio<span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">Radar</span>
+          Precio<span className="text-indigo-600">Radar</span>
         </span>
       )}
     </div>

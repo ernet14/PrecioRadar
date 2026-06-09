@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { logoutAction } from "@/app/auth/actions";
 
 const navLinks = [
@@ -22,14 +22,31 @@ type MobileMenuProps = {
 
 export function MobileMenu({ isAuthenticated, isAdminUser }: MobileMenuProps) {
   const [open, setOpen] = useState(false);
+  const firstLinkRef = useRef<HTMLAnchorElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   // Evita scroll de fondo mientras el panel está abierto.
   useEffect(() => {
     if (!open) return;
     const previous = document.body.style.overflow;
+    const trigger = triggerRef.current;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    };
+
     document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", handleKeyDown);
+    const focusFrame = window.requestAnimationFrame(() => {
+      firstLinkRef.current?.focus();
+    });
+
     return () => {
+      window.cancelAnimationFrame(focusFrame);
       document.body.style.overflow = previous;
+      document.removeEventListener("keydown", handleKeyDown);
+      trigger?.focus();
     };
   }, [open]);
 
@@ -41,8 +58,9 @@ export function MobileMenu({ isAuthenticated, isAdminUser }: MobileMenuProps) {
         aria-controls="mobile-menu-panel"
         aria-expanded={open}
         aria-label={open ? "Cerrar menú" : "Abrir menú"}
-        className="inline-flex size-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-indigo-300 hover:text-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400"
+        className="inline-flex size-11 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-indigo-300 hover:text-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400"
         onClick={() => setOpen((value) => !value)}
+        ref={triggerRef}
         type="button"
       >
         <svg
@@ -80,13 +98,17 @@ export function MobileMenu({ isAuthenticated, isAdminUser }: MobileMenuProps) {
             className="absolute inset-x-0 top-full z-50 border-b border-slate-200 bg-white shadow-[0_24px_50px_-20px_rgba(8,11,30,0.35)]"
             id="mobile-menu-panel"
           >
-            <nav className="mx-auto flex w-full max-w-6xl flex-col gap-1 px-5 py-4">
-              {navLinks.map((link) => (
+            <nav
+              aria-label="Navegación principal"
+              className="mx-auto flex w-full max-w-6xl flex-col gap-1 px-5 py-4"
+            >
+              {navLinks.map((link, index) => (
                 <Link
                   className={panelLinkClass}
                   href={link.href}
                   key={link.href}
                   onClick={close}
+                  ref={index === 0 ? firstLinkRef : undefined}
                 >
                   {link.label}
                 </Link>

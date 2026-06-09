@@ -56,34 +56,34 @@ export function CookieBanner() {
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200 bg-white px-4 py-4 shadow-lg">
-      <div className="mx-auto flex max-w-5xl flex-col gap-3">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-slate-600">
-            Usamos cookies para el funcionamiento del servicio. Podés elegir qué
-            permitir. Ver detalle en{" "}
+    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white px-3 py-2 shadow-lg sm:px-4 sm:py-4">
+      <div className="mx-auto flex max-w-5xl flex-col gap-2 sm:gap-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+          <p className="text-xs leading-5 text-slate-600 sm:text-sm">
+            Usamos cookies esenciales. Elegí si permitís analytics y marketing.
+            Ver{" "}
             <Link className="underline transition hover:text-slate-900" href="/cookies">
               Política de cookies
             </Link>
             .
           </p>
-          <div className="flex shrink-0 flex-wrap gap-2">
+          <div className="grid shrink-0 grid-cols-3 gap-2 sm:flex sm:flex-wrap">
             <button
-              className="rounded-md border border-slate-300 px-4 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+              className="h-11 rounded-md border border-slate-300 px-2 text-xs font-medium text-slate-700 transition hover:bg-slate-50 sm:px-4 sm:text-sm"
               onClick={() => submit(false, false)}
               type="button"
             >
               Solo esenciales
             </button>
             <button
-              className="rounded-md border border-slate-300 px-4 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+              className="h-11 rounded-md border border-slate-300 px-2 text-xs font-medium text-slate-700 transition hover:bg-slate-50 sm:px-4 sm:text-sm"
               onClick={() => setExpanded((current) => !current)}
               type="button"
             >
               {expanded ? "Ocultar opciones" : "Personalizar"}
             </button>
             <button
-              className="rounded-md bg-blue-600 px-4 py-1.5 text-sm font-medium text-white transition hover:bg-blue-700"
+              className="h-11 rounded-md bg-indigo-600 px-2 text-xs font-medium text-white transition hover:bg-indigo-700 sm:px-4 sm:text-sm"
               onClick={() => submit(true, true)}
               type="button"
             >

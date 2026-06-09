@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Promos bancarias hoy en Argentina",
   description:
-    "Calendario diario de descuentos, reintegros y cuotas sin interes para comprar online en Argentina.",
+    "Calendario diario de descuentos, reintegros y cuotas sin interés para comprar online en Argentina.",
   alternates: { canonical: getAbsoluteUrl("/promos-hoy") },
 };
 
@@ -28,11 +28,11 @@ function scopeLabel(promo: {
 }) {
   const parts = [
     promo.storeSlug ? `Tienda: ${promo.storeSlug}` : "Todas las tiendas",
-    promo.categorySlug ? `Categoria: ${promo.categorySlug}` : "Todas las categorias",
+    promo.categorySlug ? `Categoría: ${promo.categorySlug}` : "Todas las categorías",
     promo.commerceChannel === "both"
-      ? "Online y fisica"
+      ? "Online y física"
       : promo.commerceChannel === "physical"
-        ? "Fisica"
+        ? "Física"
         : "Online",
   ];
 
@@ -78,9 +78,9 @@ export default async function PromosHoyPage() {
             final antes de comprar.
           </p>
           <p className="mt-4 max-w-2xl text-xs leading-5 text-slate-400">
-            Informacion orientativa, sujeta a cambios sin previo aviso. No somos
-            el emisor de estas promociones ni tenemos relacion con los bancos o
-            billeteras mencionados: verifica las condiciones en la fuente oficial
+            Información orientativa, sujeta a cambios sin previo aviso. No somos
+            el emisor de estas promociones ni tenemos relación con los bancos o
+            billeteras mencionados: verificá las condiciones en la fuente oficial
             antes de comprar.
           </p>
         </section>
@@ -144,7 +144,7 @@ export default async function PromosHoyPage() {
           </section>
         ) : (
           <Card className="border-dashed border-slate-200 p-6 text-sm text-slate-500">
-            Por ahora no tenemos promos bancarias confirmadas para hoy. Volve a
+            Por ahora no tenemos promos bancarias confirmadas para hoy. Volvé a
             revisar: actualizamos el calendario seguido.
           </Card>
         )}

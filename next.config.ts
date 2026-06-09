@@ -22,6 +22,7 @@ const contentSecurityPolicy = [
     process.env.NODE_ENV !== "production" ? "'unsafe-eval'" : "",
     "https://*.vercel-insights.com",
     "https://*.vercel-analytics.com",
+    "https://va.vercel-scripts.com",
     "https://*.sentry.io",
     "https://www.googletagmanager.com",
   ]

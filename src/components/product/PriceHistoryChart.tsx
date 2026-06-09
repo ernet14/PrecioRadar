@@ -19,9 +19,9 @@ type ChartPoint = PriceHistoryPoint & {
 };
 
 const ranges: Array<{ label: string; value: PriceHistoryRangeDays }> = [
-  { label: "7 dias", value: 7 },
-  { label: "30 dias", value: 30 },
-  { label: "90 dias", value: 90 },
+  { label: "7 días", value: 7 },
+  { label: "30 días", value: 30 },
+  { label: "90 días", value: 90 },
 ];
 
 function getRangeHistory(
@@ -155,14 +155,14 @@ export function PriceHistoryChart({
             Historial de precio
           </h2>
           <p className="mt-1 text-sm text-slate-500">
-            Precio minimo diario registrado.
+            Precio mínimo diario registrado.
           </p>
         </div>
 
         <div className="grid grid-cols-3 gap-1 rounded-lg border border-slate-200 bg-slate-100 p-1">
           {ranges.map((range) => (
             <button
-              className={`h-9 rounded-md px-3 text-sm font-semibold transition ${
+              className={`h-11 rounded-md px-3 text-sm font-semibold transition ${
                 rangeDays === range.value
                   ? "bg-blue-600 text-white shadow-sm"
                   : "text-slate-600 hover:bg-white hover:text-slate-950"
@@ -178,13 +178,13 @@ export function PriceHistoryChart({
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Minimo" value={formatCurrencyARS(stats.minPrice)} />
-        <StatCard label="Maximo" value={formatCurrencyARS(stats.maxPrice)} />
+        <StatCard label="Mínimo" value={formatCurrencyARS(stats.minPrice)} />
+        <StatCard label="Máximo" value={formatCurrencyARS(stats.maxPrice)} />
         <StatCard
           label="Promedio"
           value={formatCurrencyARS(stats.averagePrice)}
         />
-        <StatCard label="Variacion" value={formatPercent(stats.variationPercent)} />
+        <StatCard label="Variación" value={formatPercent(stats.variationPercent)} />
       </div>
 
       {stats.isSufficient ? (
@@ -196,7 +196,7 @@ export function PriceHistoryChart({
             </div>
             <div className="relative mt-3 min-h-0 flex-1 overflow-hidden rounded-lg bg-slate-50">
               <svg
-                aria-label="Grafico de historial de precio"
+                aria-label="Gráfico de historial de precio"
                 className="h-full w-full"
                 preserveAspectRatio="none"
                 role="img"
@@ -236,7 +236,7 @@ export function PriceHistoryChart({
       )}
 
       <p className="text-sm text-slate-500">
-        Ultima actualizacion: {formatDate(stats.lastUpdatedAt)}
+        Última actualización: {formatDate(stats.lastUpdatedAt)}
       </p>
     </div>
   );

@@ -23,10 +23,10 @@ type AuthFormProps = {
 const modeCopy = {
   login: {
     title: "Ingresar",
-    description: "Accede para preparar productos seguidos, alertas y dashboard.",
+    description: "Accedé a tus productos seguidos, alertas y notificaciones.",
     submit: "Ingresar",
     pending: "Ingresando...",
-    switchText: "No tenes cuenta?",
+    switchText: "¿No tenés cuenta?",
     switchHref: "/registro",
     switchLabel: "Registrate",
   },
@@ -35,9 +35,9 @@ const modeCopy = {
     description: "Usá tu nombre, email y una contraseña segura.",
     submit: "Registrarme",
     pending: "Creando cuenta...",
-    switchText: "Ya tenes cuenta?",
+    switchText: "¿Ya tenés cuenta?",
     switchHref: "/login",
-    switchLabel: "Ingresa",
+    switchLabel: "Ingresá",
   },
 } satisfies Record<AuthFormMode, Record<string, string>>;
 
@@ -118,7 +118,7 @@ export function AuthForm({ action, mode, nextPath = "/dashboard" }: AuthFormProp
             id="password"
             minLength={mode === "register" ? 8 : 6}
             name="password"
-            placeholder={mode === "register" ? "Minimo 8 caracteres" : "Tu contraseña"}
+            placeholder={mode === "register" ? "Mínimo 8 caracteres" : "Tu contraseña"}
             required
             type="password"
           />

@@ -33,6 +33,7 @@ export const metadata: Metadata = {
   description:
     "Busca productos, compara ofertas por tienda y revisa recomendaciones de precio en PrecioRadar.",
   alternates: { canonical: "/buscar" },
+  robots: { follow: true, index: false },
 };
 
 const detectedTypeLabels: Record<SearchResult["detectedType"], string> = {
@@ -40,6 +41,9 @@ const detectedTypeLabels: Record<SearchResult["detectedType"], string> = {
   url: "URL",
   mercadolibre_url: "URL MercadoLibre",
 };
+
+const MAX_EXACT_RESULTS = 8;
+const MAX_SIMILAR_RESULTS = 4;
 
 const offerGridStyle = {
   "--offer-grid": "minmax(220px, 1fr) 125px 100px 105px 130px",
@@ -285,13 +289,13 @@ function ResultCard({
           ) : null}
 
           <div className="mt-6 flex flex-col gap-4 border-t border-slate-100 pt-5 lg:flex-row lg:items-center lg:justify-between">
-            <p className="rounded-lg border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm leading-6 text-slate-700">
+            <p className="rounded-lg border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-950">
               <span className="font-semibold text-emerald-800">
                 {recommendation?.label ??
                   (offer?.available ? "Disponible" : "Sin stock")}
               </span>
               {recommendation?.reason ? (
-                <span className="block text-slate-500">{recommendation.reason}</span>
+                <span className="block text-emerald-800/80">{recommendation.reason}</span>
               ) : null}
               {offersCount > 1 ? (
                 <span className="block text-slate-500">
@@ -321,6 +325,7 @@ function ResultCard({
 }
 
 function ResultsSection({
+  displayLimit,
   emptyText,
   items,
   returnTo,
@@ -329,10 +334,14 @@ function ResultsSection({
 }: {
   title: string;
   items: SearchResultItem[];
+  displayLimit: number;
   emptyText: string;
   returnTo: string;
   trackingOverview: TrackingOverview;
 }) {
+  const visibleItems = items.slice(0, displayLimit);
+  const hiddenCount = items.length - visibleItems.length;
+
   return (
     <section>
       <div className="mb-4 flex items-center justify-between gap-3">
@@ -343,16 +352,30 @@ function ResultsSection({
       </div>
 
       {items.length > 0 ? (
-        <div className="space-y-6">
-          {items.map((item) => (
-            <ResultCard
-              item={item}
-              key={item.product.id}
-              returnTo={returnTo}
-              trackingOverview={trackingOverview}
-            />
-          ))}
-        </div>
+        <>
+          <div className="space-y-6">
+            {visibleItems.map((item) => (
+              <ResultCard
+                item={item}
+                key={item.product.id}
+                returnTo={returnTo}
+                trackingOverview={trackingOverview}
+              />
+            ))}
+          </div>
+          {hiddenCount > 0 ? (
+            <Card className="mt-6 border-indigo-100 bg-indigo-50 p-5 text-center shadow-none">
+              <p className="text-sm font-semibold text-indigo-900">
+                Mostramos los {visibleItems.length} resultados más relevantes de{" "}
+                {items.length}.
+              </p>
+              <p className="mt-1 text-sm leading-6 text-indigo-800/80">
+                Para encontrar un modelo puntual, agregá marca, línea o capacidad
+                a la búsqueda.
+              </p>
+            </Card>
+          ) : null}
+        </>
       ) : (
         <Card className="border-dashed border-slate-300 bg-white p-8 text-center shadow-none">
           <p className="text-base font-semibold text-slate-950">
@@ -399,7 +422,7 @@ export default async function BuscarPage({ searchParams }: BuscarPageProps) {
         <section className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_18px_50px_-20px_rgba(15,23,42,0.18)] md:p-8">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
-              <Badge variant="brand">Búsqueda MVP</Badge>
+              <Badge variant="brand">Búsqueda</Badge>
               <h1 className="mt-4 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
                 Resultados de búsqueda
               </h1>
@@ -420,7 +443,7 @@ export default async function BuscarPage({ searchParams }: BuscarPageProps) {
           <div className="mt-6">
             <SearchForm
               defaultValue={query}
-              helperText="Ejemplos: Samsung A55, RTX 5070, notebook Lenovo. Los datos demo están identificados."
+              helperText="Ejemplos: Samsung A55, RTX 5070, notebook Lenovo. Los datos de demostración están identificados."
               id="buscar-search"
               variant="hero"
             />
@@ -432,7 +455,8 @@ export default async function BuscarPage({ searchParams }: BuscarPageProps) {
         <StatusMessage result={result} />
 
         <ResultsSection
-          emptyText="No hay coincidencias exactas para esta busqueda."
+          displayLimit={MAX_EXACT_RESULTS}
+          emptyText="No hay coincidencias exactas para esta búsqueda."
           items={result.exactMatches}
           returnTo={returnTo}
           title="Resultados exactos"
@@ -440,7 +464,8 @@ export default async function BuscarPage({ searchParams }: BuscarPageProps) {
         />
 
         <ResultsSection
-          emptyText="No encontramos productos similares relevantes para esta busqueda."
+          displayLimit={MAX_SIMILAR_RESULTS}
+          emptyText="No encontramos productos similares relevantes para esta búsqueda."
           items={result.similarMatches}
           returnTo={returnTo}
           title="Resultados similares"

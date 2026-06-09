@@ -12,6 +12,17 @@ test("product page renders name, price and offers table", async ({ page }) => {
   await expect(page.locator("main").getByText(/\$\s*[\d.]+/).first()).toBeVisible();
 });
 
+test("product page separates purchase timing from discount validation", async ({
+  page,
+}) => {
+  await page.goto(`/producto/${PRODUCT_SLUG}`);
+
+  await expect(page.getByText("Momento de compra", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("Validación del descuento", { exact: true }),
+  ).toBeVisible();
+});
+
 test("product page has JSON-LD structured data", async ({ page }) => {
   await page.goto(`/producto/${PRODUCT_SLUG}`);
 

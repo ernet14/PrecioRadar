@@ -40,16 +40,16 @@ function worstStatus(...statuses: CheckStatus[]): CheckStatus {
 async function checkDatabase(): Promise<HealthPayload["checks"]["database"]> {
   const prisma = getPrismaClient();
   if (!prisma) {
-    return { latencyMs: null, status: "fail", error: "DATABASE_URL no configurado." };
+    return { latencyMs: null, status: "fail", error: "database_unavailable" };
   }
 
   const startedAt = performance.now();
   try {
     await prisma.$queryRaw`SELECT 1`;
     return { latencyMs: Math.round(performance.now() - startedAt), status: "ok" };
-  } catch (error) {
+  } catch {
     return {
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: "database_unavailable",
       latencyMs: null,
       status: "fail",
     };

@@ -54,7 +54,7 @@ export const reportProductSchema = z.object({
 });
 
 export const loginSchema = z.object({
-  email: z.string().trim().email("Ingresa un email válido."),
+  email: z.string().trim().email("Ingresá un email válido."),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres."),
   returnTo: safeReturnTo.optional(),
 });
@@ -70,7 +70,7 @@ export const registerSchema = z.object({
     // Empieza y termina en letra; en el medio solo letras, marcas, espacios y . ' -
     // (rechaza < > & etc., defensa en profundidad contra inyección/XSS).
     .regex(/^[\p{L}\p{M}][\p{L}\p{M}\s.'-]*[\p{L}\p{M}]$/u, "Ingresá un nombre válido."),
-  email: z.string().trim().email("Ingresa un email válido."),
+  email: z.string().trim().email("Ingresá un email válido."),
   password: z
     .string()
     .min(8, "La contraseña debe tener al menos 8 caracteres.")

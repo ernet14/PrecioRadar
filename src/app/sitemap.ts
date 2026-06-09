@@ -1,9 +1,7 @@
 import type { MetadataRoute } from "next";
 import {
-  getAllMockProductSlugs,
   getIndexableProductSlugs,
   getIndexableBrandCategoryPages,
-  type IndexableProduct,
 } from "@/services/productService";
 import { getAllGuideSlugs } from "@/content/guides";
 import { mvpCategoryDescriptors } from "@/data/categories";
@@ -14,7 +12,6 @@ export const revalidate = 21600;
 
 const staticRoutes: MetadataRoute.Sitemap = [
   { url: getAbsoluteUrl(), changeFrequency: "daily", lastModified, priority: 1 },
-  { url: getAbsoluteUrl("/buscar"), changeFrequency: "daily", lastModified, priority: 0.8 },
   { url: getAbsoluteUrl("/promos-hoy"), changeFrequency: "daily", lastModified, priority: 0.86 },
   { url: getAbsoluteUrl("/termometro"), changeFrequency: "daily", lastModified, priority: 0.84 },
   { url: getAbsoluteUrl("/guias"), changeFrequency: "weekly", lastModified, priority: 0.7 },
@@ -28,16 +25,8 @@ const staticRoutes: MetadataRoute.Sitemap = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const realProducts = await getIndexableProductSlugs();
+  const products = await getIndexableProductSlugs();
   const brandCategoryPages = await getIndexableBrandCategoryPages();
-  const products: IndexableProduct[] =
-    realProducts.length > 0
-      ? realProducts
-      : getAllMockProductSlugs().map((slug) => ({
-          slug,
-          comparable: false,
-          lastModified,
-        }));
   const guideSlugs = getAllGuideSlugs();
 
   const productRoutes: MetadataRoute.Sitemap = products.map((product) => ({

@@ -38,6 +38,10 @@ export type VtexStoreConfig = {
 const requestTimeoutMs = 6000;
 const searchLimit = 24;
 
+function normalizeVtexSearchQuery(query: string) {
+  return query.replace(/\+/g, " ").replace(/\s+/g, " ").trim();
+}
+
 type VtexCommertialOffer = {
   Price?: unknown;
   ListPrice?: unknown;
@@ -175,7 +179,7 @@ export function createVtexProvider(config: VtexStoreConfig): StoreProvider {
 
     async searchProducts(query: string) {
       if (blocked) return [];
-      const normalizedQuery = query.trim();
+      const normalizedQuery = normalizeVtexSearchQuery(query);
       if (!normalizedQuery) return [];
 
       if (isCircuitOpen(circuitName)) {
