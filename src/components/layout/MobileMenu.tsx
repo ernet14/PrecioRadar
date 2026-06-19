@@ -8,6 +8,7 @@ const navLinks = [
   { href: "/#buscar", label: "Buscar" },
   { href: "/#categorias", label: "Categorías" },
   { href: "/guias", label: "Guías" },
+  { href: "/indice", label: "Índice" },
   { href: "/promos-hoy", label: "Promos" },
   { href: "/como-funciona", label: "Cómo funciona" },
 ];
