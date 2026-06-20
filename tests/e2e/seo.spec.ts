@@ -11,13 +11,14 @@ test("robots.txt is accessible and blocks private routes", async ({ request }) =
   expect(body).toContain("Sitemap");
 });
 
-test("sitemap.xml is accessible and contains product URLs", async ({ request }) => {
+test("sitemap.xml is accessible and contains indexable public URLs", async ({ request }) => {
   const response = await request.get("/sitemap.xml");
   expect(response.status()).toBe(200);
 
   const body = await response.text();
   expect(body).toContain("<urlset");
-  expect(body).toContain("/producto/");
+  expect(body).toContain("/indice");
+  expect(body).toContain("/categoria/");
   expect(body).not.toMatch(/<loc>[^<]+\/buscar<\/loc>/);
 });
 
