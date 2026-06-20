@@ -4,6 +4,7 @@ export type ProviderPriceInput = {
   productId?: string;
   externalId?: string;
   url?: string;
+  lastKnownPrice?: number;
 };
 
 export type ProviderPrice = {

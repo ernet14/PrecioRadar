@@ -325,11 +325,24 @@ export async function snapshotCurrentPrices(): Promise<SnapshotResult> {
 
         const currentPrice = await provider.getCurrentPrice({
           externalId: offer.externalId ?? undefined,
+          lastKnownPrice: Number(offer.price),
           url: offer.productUrl,
         });
 
         if (!currentPrice) {
           errors += 1;
+          continue;
+        }
+
+        if (!currentPrice.available) {
+          await prisma.productOffer.update({
+            where: { id: offer.id },
+            data: {
+              available: false,
+              lastCheckedAt: currentPrice.lastCheckedAt,
+            },
+          });
+          updated += 1;
           continue;
         }
 

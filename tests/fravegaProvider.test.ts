@@ -208,3 +208,77 @@ test("resolves a Fravega product URL through productId", async () => {
   assert.equal(product?.externalId, "990353710");
   assert.equal(product?.price, 799999);
 });
+
+test("marks a VTEX product without price as unavailable", async () => {
+  delete process.env.DATABASE_URL;
+  delete process.env.DIRECT_URL;
+  mockFetch(() => [
+    {
+      ...vtexProduct,
+      items: [
+        {
+          ...vtexProduct.items[0],
+          sellers: [
+            {
+              commertialOffer: {
+                Price: 0,
+                IsAvailable: false,
+                AvailableQuantity: 0,
+              },
+            },
+          ],
+        },
+      ],
+    },
+  ]);
+
+  const price = await fravegaProvider.getCurrentPrice({
+    externalId: "990353710",
+    lastKnownPrice: 799999,
+  });
+
+  assert.equal(price?.price, 799999);
+  assert.equal(price?.available, false);
+});
+
+test("marks a removed VTEX product as unavailable", async () => {
+  delete process.env.DATABASE_URL;
+  delete process.env.DIRECT_URL;
+  mockFetch(() => []);
+
+  const price = await fravegaProvider.getCurrentPrice({
+    externalId: "990353710",
+    lastKnownPrice: 799999,
+  });
+
+  assert.equal(price?.price, 799999);
+  assert.equal(price?.available, false);
+});
+
+test("retries a VTEX price request once after a 429", async () => {
+  delete process.env.DATABASE_URL;
+  delete process.env.DIRECT_URL;
+  let fetchCount = 0;
+  globalThis.fetch = (async () => {
+    fetchCount += 1;
+    if (fetchCount === 1) {
+      return new Response("Too Many Requests", {
+        headers: { "retry-after": "0" },
+        status: 429,
+      });
+    }
+    return new Response(JSON.stringify([vtexProduct]), {
+      headers: { "content-type": "application/json" },
+      status: 200,
+    });
+  }) as typeof fetch;
+
+  const price = await fravegaProvider.getCurrentPrice({
+    externalId: "990353710",
+    lastKnownPrice: 799999,
+  });
+
+  assert.equal(fetchCount, 2);
+  assert.equal(price?.price, 799999);
+  assert.equal(price?.available, true);
+});

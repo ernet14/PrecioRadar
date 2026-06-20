@@ -37,6 +37,8 @@ export type VtexStoreConfig = {
 
 const requestTimeoutMs = 6000;
 const searchLimit = 24;
+const defaultRateLimitBackoffMs = 2_000;
+const maxRateLimitBackoffMs = 10_000;
 
 function normalizeVtexSearchQuery(query: string) {
   return query.replace(/\+/g, " ").replace(/\s+/g, " ").trim();
@@ -88,6 +90,27 @@ function getBestOffer(product: VtexProduct): { price: number; available: boolean
   return { price: offer.Price, available: true };
 }
 
+function getRateLimitBackoffMs(response: Response) {
+  const retryAfter = response.headers.get("retry-after")?.trim();
+  if (!retryAfter) return defaultRateLimitBackoffMs;
+
+  const seconds = Number(retryAfter);
+  if (Number.isFinite(seconds) && seconds >= 0) {
+    return Math.min(seconds * 1_000, maxRateLimitBackoffMs);
+  }
+
+  const retryAt = Date.parse(retryAfter);
+  if (Number.isFinite(retryAt)) {
+    return Math.min(Math.max(0, retryAt - Date.now()), maxRateLimitBackoffMs);
+  }
+
+  return defaultRateLimitBackoffMs;
+}
+
+function wait(ms: number) {
+  return new Promise<void>((resolve) => setTimeout(resolve, ms));
+}
+
 function getImageUrl(product: VtexProduct): string | null {
   const image = product.items?.[0]?.images?.[0]?.imageUrl;
   return typeof image === "string" ? image : null;
@@ -130,15 +153,17 @@ export function createVtexProvider(config: VtexStoreConfig): StoreProvider {
   const { name, storeSlug, storeName, baseUrl, blocked = false, salesChannel } = config;
   const scParam = typeof salesChannel === "number" ? `&sc=${salesChannel}` : "";
   const circuitName = `vtex:${storeSlug}`;
+  let rateLimitedUntil = 0;
   const hostPattern = new RegExp(
     baseUrl.replace(/^https?:\/\//, "").replace(/\./g, "\\."),
     "i",
   );
 
-  async function fetchVtex(path: string): Promise<{
+  async function fetchVtexOnce(path: string): Promise<{
     data: unknown | null;
     errorMessage?: string;
     status?: number;
+    rateLimitBackoffMs?: number;
   }> {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), requestTimeoutMs);
@@ -158,6 +183,8 @@ export function createVtexProvider(config: VtexStoreConfig): StoreProvider {
           errorMessage: `HTTP ${response.status} desde ${storeName}.${
             bodyText ? ` ${bodyText.slice(0, 160)}` : ""
           }`,
+          rateLimitBackoffMs:
+            response.status === 429 ? getRateLimitBackoffMs(response) : undefined,
           status: response.status,
         };
       }
@@ -167,6 +194,47 @@ export function createVtexProvider(config: VtexStoreConfig): StoreProvider {
     } finally {
       clearTimeout(timeout);
     }
+  }
+
+  async function fetchVtex(path: string) {
+    const pendingBackoff = rateLimitedUntil - Date.now();
+    if (pendingBackoff > 0) await wait(pendingBackoff);
+
+    const firstAttempt = await fetchVtexOnce(path);
+    if (firstAttempt.status !== 429) return firstAttempt;
+
+    const backoffMs = firstAttempt.rateLimitBackoffMs ?? defaultRateLimitBackoffMs;
+    rateLimitedUntil = Date.now() + backoffMs;
+    if (backoffMs > 0) await wait(backoffMs);
+
+    const secondAttempt = await fetchVtexOnce(path);
+    if (secondAttempt.status === 429) {
+      rateLimitedUntil =
+        Date.now() + (secondAttempt.rateLimitBackoffMs ?? defaultRateLimitBackoffMs);
+    }
+    return secondAttempt;
+  }
+
+  function unavailablePrice(
+    externalId: string,
+    lastKnownPrice: number | undefined,
+  ): ProviderPrice | null {
+    if (
+      typeof lastKnownPrice !== "number" ||
+      !Number.isFinite(lastKnownPrice) ||
+      lastKnownPrice <= 0
+    ) {
+      return null;
+    }
+
+    return {
+      externalId,
+      price: lastKnownPrice,
+      currency: "ARS",
+      available: false,
+      isDemo: false,
+      lastCheckedAt: new Date(),
+    };
   }
 
   async function recordFailure(action: string, errorMessage: string) {
@@ -271,10 +339,24 @@ export function createVtexProvider(config: VtexStoreConfig): StoreProvider {
         const result = await fetchVtex(
           `/api/catalog_system/pub/products/search?fq=productId:${encodeURIComponent(productId)}${scParam}`,
         );
-        if (result.errorMessage || !Array.isArray(result.data) || result.data.length === 0) {
+        if (result.errorMessage || !Array.isArray(result.data)) {
           if (result.errorMessage) await recordFailure("getCurrentPrice", result.errorMessage);
           return null;
         }
+
+        if (result.data.length === 0) {
+          return unavailablePrice(productId, input.lastKnownPrice);
+        }
+
+        const rawProduct = asVtexProduct(result.data[0]);
+        if (
+          rawProduct &&
+          typeof rawProduct.productId === "string" &&
+          !getBestOffer(rawProduct)
+        ) {
+          return unavailablePrice(productId, input.lastKnownPrice);
+        }
+
         const product = provider.normalizeProductData(result.data[0]);
         return {
           externalId: product.externalId,
