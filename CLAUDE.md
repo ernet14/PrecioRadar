@@ -9,6 +9,27 @@ Supabase (Postgres) + Upstash + Vercel. Dominio: `www.precio-radar.com`.
 > Las **reglas de trabajo** (13) vienen de [`AGENTS.md`](AGENTS.md), importado arriba.
 > Leé solo el contexto necesario para la tarea.
 
+## Delegación a subagentes
+
+Antes de empezar, decidí si un subagente debe hacer parte del trabajo. Preferí el
+agente seguro más barato y escalá solo cuando aparezca riesgo.
+
+1. `precio-scout`: archivos, rutas, flujo de datos, sitemap o código afectado poco claro.
+2. `precio-auditor`: antes de SEO/indexación, sitemap, robots, canonical, hreflang,
+   datos estructurados, ingesta, fuentes externas, exposición Supabase, cron, cookies,
+   analytics o cambios sensibles de admin/seguridad.
+3. `precio-architect`: arquitectura, estrategia de ingesta/SEO, refactors grandes o
+   decisiones ambiguas de producto.
+4. `precio-coder`: solo cuando el problema se entiende y el cambio es pequeño y seguro.
+5. `precio-helper`: lint, build, tests, logs y diagnóstico.
+6. `precio-guardian`: después de editar y antes de commit, push, deploy, cron,
+   migraciones o trabajo sensible para producción.
+
+Nunca hagas commit, push, deploy, apliques migraciones, cambies cron ni toques
+producción sin aprobación explícita. Mantené los cambios pequeños, reversibles y
+seguros para SEO. Al final, indicá qué subagentes usaste; si no usaste ninguno,
+explicá por qué.
+
 ## Contexto del proyecto
 - [Producto](docs/contexto/producto.md) — qué hace hoy, features, usuarios.
 - [Negocio](docs/contexto/negocio.md) — modelo, monetización, estrategia, legal.
