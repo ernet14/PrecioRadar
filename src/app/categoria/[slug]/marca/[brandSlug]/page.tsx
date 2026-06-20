@@ -12,7 +12,6 @@ import { getAbsoluteUrl, getSiteUrl } from "@/lib/seo/site";
 import { safeJsonLd } from "@/lib/seo/safeJsonLd";
 import { formatCurrencyARS } from "@/lib/utils";
 import {
-  getIndexableBrandCategoryPages,
   listRealProductsByCategory,
   type CategoryProduct,
 } from "@/services/productService";
@@ -21,15 +20,8 @@ type MarcaCategoriaPageProps = {
   params: Promise<{ brandSlug: string; slug: string }>;
 };
 
-export const revalidate = 3600;
-
-export async function generateStaticParams() {
-  const pages = await getIndexableBrandCategoryPages();
-  return pages.map((page) => ({
-    brandSlug: page.brandSlug,
-    slug: page.categorySlug,
-  }));
-}
+// El Header global lee cookies de sesión, por lo que esta ruta no puede ser estática.
+export const dynamic = "force-dynamic";
 
 function getBrandName(products: CategoryProduct[], brandSlug: string) {
   return products.find((product) => product.brandSlug === brandSlug)?.brand ?? brandSlug;
