@@ -105,9 +105,12 @@ Si el log informa `truncated=true`, no se debe aumentar el límite sin rehacer e
 
 No registrar ni copiar sus valores. Para apagar el trabajo, establecer
 `PRICE_RADAR_CRON_ENABLED=false` en el entorno afectado y desplegar/promover esa configuración.
-Al 2026-08-31, Vercel Production ya expone los nombres de `CRON_SECRET`, `DATABASE_URL` y las dos
-variables de Upstash, pero todavía no tiene `PRICE_RADAR_CRON_ENABLED`; queda pendiente crearla de
-forma segura antes del deployment.
+El 2026-08-31 se verificaron las cinco variables en Vercel Production y
+`PRICE_RADAR_CRON_ENABLED` quedó configurada con el valor habilitante exacto. Upstash respondió
+`PONG` mediante una comprobación no destructiva. `CRON_SECRET` se conservó: no se rotó porque la
+arquitectura documenta callers externos legítimos que comparten ese secreto y rotarlo sin
+actualizarlos los rompería. Las solicitudes sin autorización siguen rechazándose antes de DB y
+el caller que conserve autorización queda contenido por lock y presupuesto diario.
 
 ## Validación local
 
@@ -121,9 +124,31 @@ forma segura antes del deployment.
   contiene un índice total válido; `/indice` conserva datos visibles sin recalcular el historial.
 - Migraciones: ninguna.
 
-La asociación de Vercel quedó confirmada como proyecto `precio-radar`. No hay una herramienta de
-administración Supabase autenticada que permita mapear inequívocamente la referencia de conexión
-con el nombre del proyecto desde este entorno; por esta ambigüedad obligatoria no se desplegó.
+La asociación de Vercel quedó confirmada como proyecto `precio-radar`, repositorio
+`ernet14/PrecioRadar` y dominios oficiales. La referencia Supabase enmascarada `iucg…qrow`
+coincide entre `DATABASE_URL`, `DIRECT_URL`, cliente público y el check oficial de integración
+Supabase del mismo repositorio. La conexión de solo lectura confirmó las tablas propias de Precio
+Radar. Preview y Production se desplegaron y verificaron como se detalla a continuación.
+
+## Despliegue de producción — 2026-08-31
+
+- Artefacto funcional exacto: `89489c632f85bc3323274df2f6b01707fa542cf6`.
+- Integración durable: fast-forward de `origin/master` desde `f2acb93` al SHA anterior; sin force,
+  reescritura ni merge divergente.
+- Preview verificado: `https://precio-radar-19sn6z5a2-proyectosernet-1071s-projects.vercel.app`.
+- Production verificado: `https://precio-radar-ftcxwxhdf-proyectosernet-1071s-projects.vercel.app`,
+  con aliases `https://precio-radar.com`, `https://www.precio-radar.com` y
+  `https://precio-radar.vercel.app`.
+- Smoke Preview: `/`, `/buscar` y `/api/health` respondieron 200; Data Radar sin autorización
+  respondió 401 y `Cache-Control: no-store`.
+- Smoke Production: `/`, `/buscar`, `/indice` y `/api/health` respondieron 200; Data Radar sin
+  autorización respondió 401 con payload pequeño. No se llamó el cron con autorización.
+- Logs productivos revisados en la ventana posterior al deploy: 20 eventos, sin 5xx ni patrones
+  sensibles; una sola llamada a Data Radar, la prueba 401. No se observó recurrencia por minuto
+  en esa ventana, sin afirmar todavía comportamiento de largo plazo.
+- Los deployments creados por esta misión pertenecen únicamente a `precio-radar`. Los deployments
+  visibles de MarketPlace/Machina Latam son anteriores y no se modificaron.
+- No hubo migraciones ni escrituras directas sobre la base.
 
 ## Rollback
 
@@ -140,14 +165,17 @@ base enlazada es el proyecto Supabase Precio Radar y que las variables anteriore
 entorno correcto.
 
 1. **Una hora:** comprobar que llamadas sin autorización reciben 401 antes de acceder a DB;
-   buscar logs `price-index-analysis` y confirmar cero o una ejecución aceptada, nunca una por
-   minuto. Revisar `rowsRead <= 90000`, respuesta pequeña y ausencia de payloads sensibles.
+   buscar logs `price-index-analysis` y confirmar como máximo una ejecución analítica aceptada,
+   nunca una por minuto. Revisar `rowsRead <= 90000`, respuesta pequeña y ausencia de payloads
+   sensibles.
 2. **Seis horas:** comparar invocaciones reales con el cron esperado. Debe haber como máximo una
    ejecución analítica aceptada; las adicionales deben mostrar `cooldown` o `budget_exhausted`.
 3. **Veinticuatro horas:** confirmar máximo una ejecución aceptada y calcular
    `Shared Pooler Egress diario × 31`. La referencia conservadora es ≤20,63 MB/día y 0,639 GB/mes.
-4. Si la proyección supera 1 GB/mes, activar inmediatamente el kill switch y mantenerlo apagado
-   hasta identificar el nuevo origen con métricas por consulta/ruta.
+4. Si el consumo supera 20,63 MB diarios de forma sostenida o la proyección supera 1 GB/mes,
+   establecer `PRICE_RADAR_CRON_ENABLED=false` en Production y desplegar esa configuración antes
+   de continuar la investigación. Si reaparece una ejecución pesada repetida, aplicar el mismo
+   apagado de inmediato.
 
-El consumo pasado no se reduce retroactivamente. El resultado productivo debe permanecer como
-“código preparado” hasta tener deployment identificado y mediciones reales posteriores al reinicio.
+El consumo pasado no se reduce retroactivamente. El deployment está identificado, pero no debe
+afirmarse que el egress real bajó hasta contar con métricas posteriores al reinicio.

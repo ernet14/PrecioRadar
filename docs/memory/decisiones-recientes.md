@@ -4,6 +4,11 @@
 > proyecto versionado en el repo (distinto de la memoria cross-sesión del agente, que vive
 > fuera del repo).
 
+## 2026-08-31 — Deployment exacto del containment de egress
+- Producción queda en el SHA funcional `89489c6`; el registro operativo posterior se mantiene
+  como commit documental en la rama de misión para no reemplazar el artefacto verificado mediante
+  el auto-deploy de `master`.
+
 ## 2026-08-31 — Presupuesto de egress para índices de precios
 - Data Radar y Phase Readiness comparten un guard distribuido de una ejecución diaria y una única
   consulta acotada a 90.000 filas; `/indice` consume el snapshot persistido en producción. La cota
