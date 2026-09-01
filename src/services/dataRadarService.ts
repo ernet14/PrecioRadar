@@ -2,7 +2,11 @@ import { mvpCategoryDescriptors } from "@/data/categories";
 import { getPrismaClient } from "@/lib/prisma";
 import { fetchBnaDollarSeries, type BnaDollarSeriesResult } from "@/services/bnaDollarService";
 import { computePassThrough, type PassThroughResult } from "@/services/passThroughService";
-import { computePriceIndex, type PriceIndexResult } from "@/services/priceIndexService";
+import {
+  computePriceIndexes,
+  MAX_PRICE_INDEX_SCOPES,
+  type PriceIndexResult,
+} from "@/services/priceIndexService";
 
 const DEFAULT_LAGS = [0, 1, 3, 7, 14];
 
@@ -24,9 +28,11 @@ export type DataRadarScopeResult = {
 
 export type DataRadarRunResult = {
   generatedAt: string;
+  rowsRead: number;
   scopes: DataRadarScopeResult[];
   source: "bna";
   status: "ready" | "no_fx_data" | "no_price_history";
+  truncated: boolean;
 };
 
 export type DataRadarPersistenceResult =
@@ -49,6 +55,12 @@ export type DataRadarSnapshotSummary = {
   source: string;
   status: string;
 };
+
+function isPriceIndexResult(value: unknown): value is PriceIndexResult {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Partial<PriceIndexResult>;
+  return Array.isArray(candidate.points) && typeof candidate.days === "number";
+}
 
 function addDays(date: string, days: number) {
   const ms = Date.parse(`${date}T00:00:00.000Z`);
@@ -132,22 +144,31 @@ export async function runBnaDataRadar(opts?: { lags?: number[] }): Promise<DataR
       categorySlug: descriptor.slug,
       label: descriptor.slug,
     })),
-  ];
+  ].slice(0, MAX_PRICE_INDEX_SCOPES);
 
-  const indexed = await Promise.all(
-    scopes.map(async (scope) => ({
-      ...scope,
-      index: await computePriceIndex({ categorySlug: scope.categorySlug }),
-    })),
-  );
+  const batch = await computePriceIndexes(scopes.map((scope) => scope.categorySlug));
+  const indexed = scopes.map((scope, index) => ({
+    ...scope,
+    index: batch.scopes[index]?.index ?? {
+      points: [],
+      baseDate: null,
+      latestDate: null,
+      latestIndex: null,
+      totalChangePct: null,
+      productsTracked: 0,
+      days: 0,
+    },
+  }));
 
   const active = indexed.filter((scope) => scope.index.baseDate && scope.index.latestDate);
   if (active.length === 0) {
     return {
       generatedAt: new Date().toISOString(),
+      rowsRead: batch.rowsRead,
       scopes: indexed.map((scope) => ({ ...scope, radar: null })),
       source: "bna",
       status: "no_price_history",
+      truncated: batch.truncated,
     };
   }
 
@@ -162,12 +183,14 @@ export async function runBnaDataRadar(opts?: { lags?: number[] }): Promise<DataR
 
   return {
     generatedAt: new Date().toISOString(),
+    rowsRead: batch.rowsRead,
     scopes: indexed.map((scope) => ({
       ...scope,
       radar: computeBnaDataRadarWithFx(scope.index, fx, from, lags),
     })),
     source: "bna",
     status,
+    truncated: batch.truncated,
   };
 }
 
@@ -340,5 +363,25 @@ export async function listDataRadarSnapshots(opts?: {
     }));
   } catch {
     return [];
+  }
+}
+
+export async function getLatestPersistedPriceIndex(
+  scope = "total",
+): Promise<PriceIndexResult | null> {
+  const prisma = getPrismaClient();
+  if (!prisma) return null;
+
+  try {
+    const rows = await prisma.$queryRaw<Array<{ price_index: unknown }>>`
+      SELECT "payload"->'scope'->'index' AS price_index
+      FROM "DataRadarSnapshot"
+      WHERE "source" = 'bna' AND "scope" = ${scope}
+      ORDER BY "snapshotDate" DESC
+      LIMIT 1`;
+    const index = rows[0]?.price_index;
+    return isPriceIndexResult(index) ? index : null;
+  } catch {
+    return null;
   }
 }

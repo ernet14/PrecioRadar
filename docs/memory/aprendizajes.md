@@ -2,6 +2,10 @@
 
 > Cosas no obvias aprendidas trabajando en el proyecto, para no re-descubrirlas.
 
+- `computePriceIndex` devolvía ~84.353 filas por llamada y Data Radar la repetía 13 veces; en
+  `pg_stat_statements`, 5.684 llamadas = 437 × 13 + 3 reveló el patrón aunque el cron de un minuto
+  no estuviera en el `vercel.json` actual.
+
 ## UX / interfaz
 - `ImageResponse` exige `display` explícito en cualquier `div` con texto y elementos hijos;
   sin eso la ruta OG compila pero falla en runtime con HTTP 500.

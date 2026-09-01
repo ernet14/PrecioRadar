@@ -3,10 +3,13 @@ import Link from "next/link";
 import { Container } from "@/components/layout/Container";
 import { Card } from "@/components/ui/Card";
 import { computePriceIndex, type PriceIndexResult } from "@/services/priceIndexService";
+import { getLatestPersistedPriceIndex } from "@/services/dataRadarService";
 import { getAbsoluteUrl, getSiteUrl } from "@/lib/seo/site";
 import { safeJsonLd } from "@/lib/seo/safeJsonLd";
 
-export const revalidate = 3600;
+// El índice cambia con el snapshot diario; regenerarlo más seguido releía todo
+// el historial sin aportar frescura visible.
+export const revalidate = 86_400;
 
 const canonical = getAbsoluteUrl("/indice");
 const title = "Índice de precios Argentina — PrecioRadar";
@@ -82,7 +85,22 @@ function PriceChart({ points }: { points: PriceIndexResult["points"] }) {
 }
 
 export default async function IndicePage() {
-  const index = await computePriceIndex();
+  // El cron diario ya persiste este resultado. La consulta histórica completa
+  // queda como fallback local; producción falla cerrada para no reabrir egress.
+  const persisted = await getLatestPersistedPriceIndex();
+  const index =
+    persisted ??
+    (process.env.NODE_ENV === "production"
+      ? {
+          points: [],
+          baseDate: null,
+          latestDate: null,
+          latestIndex: null,
+          totalChangePct: null,
+          productsTracked: 0,
+          days: 0,
+        }
+      : await computePriceIndex());
 
   const mature = index.days >= 30;
   const hasData = index.points.length > 0;
@@ -293,7 +311,7 @@ export default async function IndicePage() {
                 <h3 className="font-semibold text-slate-800">Actualización</h3>
                 <p className="mt-1">
                   El bot corre diariamente y actualiza la serie. El índice de esta página
-                  se recalcula cada hora con los últimos datos disponibles.
+                  se publica desde el último snapshot diario disponible.
                 </p>
               </div>
               {!mature ? (

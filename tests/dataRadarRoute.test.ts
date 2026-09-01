@@ -8,6 +8,7 @@ import {
 const originalCronSecret = process.env.CRON_SECRET;
 const originalDatabaseUrl = process.env.DATABASE_URL;
 const originalDirectUrl = process.env.DIRECT_URL;
+const originalCronEnabled = process.env.PRICE_RADAR_CRON_ENABLED;
 
 function restoreEnv(key: string, value: string | undefined) {
   if (value === undefined) {
@@ -33,6 +34,7 @@ afterEach(() => {
   restoreEnv("CRON_SECRET", originalCronSecret);
   restoreEnv("DATABASE_URL", originalDatabaseUrl);
   restoreEnv("DIRECT_URL", originalDirectUrl);
+  restoreEnv("PRICE_RADAR_CRON_ENABLED", originalCronEnabled);
 });
 
 test("rejects data radar when CRON_SECRET is missing", async () => {
@@ -63,6 +65,7 @@ test("rejects data radar when the secret does not match", async () => {
 
 test("accepts manual data radar trigger but requires database", async () => {
   process.env.CRON_SECRET = "test-secret";
+  process.env.PRICE_RADAR_CRON_ENABLED = "true";
   clearDatabaseEnv();
 
   const response = await POST(createRequest({ "x-cron-secret": "test-secret" }));
@@ -70,4 +73,20 @@ test("accepts manual data radar trigger but requires database", async () => {
 
   assert.equal(response.status, 503);
   assert.equal(body.status, "database_unavailable");
+  assert.ok(JSON.stringify(body).length < 512);
+});
+
+test("kill switch stops data radar before database access", async () => {
+  process.env.CRON_SECRET = "test-secret";
+  process.env.PRICE_RADAR_CRON_ENABLED = "false";
+  process.env.DATABASE_URL = "postgresql://must-not-be-used.invalid/precioradar";
+
+  const response = await POST(createRequest({ "x-cron-secret": "test-secret" }));
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(body.status, "skipped");
+  assert.equal(body.reason, "disabled");
+  assert.equal(body.processed, 0);
+  assert.ok(JSON.stringify(body).length < 512);
 });

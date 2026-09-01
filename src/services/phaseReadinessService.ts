@@ -2,10 +2,10 @@ import { mvpCategoryDescriptors } from "@/data/categories";
 import { getPrismaClient } from "@/lib/prisma";
 import {
   type DataRadarRunResult,
-  type DataRadarScopeResult,
 } from "@/services/dataRadarService";
 import {
-  computePriceIndex,
+  computePriceIndexes,
+  MAX_PRICE_INDEX_SCOPES,
   type PriceIndexResult,
 } from "@/services/priceIndexService";
 import {
@@ -37,8 +37,10 @@ export type Phase3ReadinessReport = {
   indexableProducts: number;
   nextActions: string[];
   publicableScopes: number;
+  rowsRead: number;
   scopes: Phase3ScopeReadiness[];
   status: "ready" | "partial" | "building" | "no_data";
+  truncated: boolean;
 };
 
 export type Phase3ReadinessPersistence =
@@ -123,8 +125,10 @@ function buildNextActions(report: Omit<Phase3ReadinessReport, "nextActions">) {
   return actions;
 }
 
-async function getScopeInputs(run?: DataRadarRunResult): Promise<DataRadarScopeResult[]> {
-  if (run) return run.scopes;
+async function getScopeInputs(run?: DataRadarRunResult) {
+  if (run) {
+    return { rowsRead: run.rowsRead, scopes: run.scopes, truncated: run.truncated };
+  }
 
   const scopes = [
     { categorySlug: null, label: "total" },
@@ -132,21 +136,32 @@ async function getScopeInputs(run?: DataRadarRunResult): Promise<DataRadarScopeR
       categorySlug: descriptor.slug,
       label: descriptor.slug,
     })),
-  ];
+  ].slice(0, MAX_PRICE_INDEX_SCOPES);
 
-  return Promise.all(
-    scopes.map(async (scope) => ({
+  const batch = await computePriceIndexes(scopes.map((scope) => scope.categorySlug));
+  return {
+    rowsRead: batch.rowsRead,
+    scopes: scopes.map((scope, index) => ({
       ...scope,
-      index: await computePriceIndex({ categorySlug: scope.categorySlug }),
+      index: batch.scopes[index]?.index ?? {
+        points: [],
+        baseDate: null,
+        latestDate: null,
+        latestIndex: null,
+        totalChangePct: null,
+        productsTracked: 0,
+        days: 0,
+      },
       radar: null,
     })),
-  );
+    truncated: batch.truncated,
+  };
 }
 
 export async function buildPhase3ReadinessReport(
   run?: DataRadarRunResult,
 ): Promise<Phase3ReadinessReport> {
-  const [scopesInput, indexableProducts, brandCategoryPages] = await Promise.all([
+  const [scopeInputs, indexableProducts, brandCategoryPages] = await Promise.all([
     getScopeInputs(run),
     getIndexableProductSlugs(),
     getIndexableBrandCategoryPages(),
@@ -156,7 +171,7 @@ export async function buildPhase3ReadinessReport(
     indexableProducts.length > 0
       ? Math.round((comparableProducts / indexableProducts.length) * 100)
       : 0;
-  const scopes = scopesInput.map((scope) =>
+  const scopes = scopeInputs.scopes.map((scope) =>
     assessScope(scope.label, scope.categorySlug, scope.index),
   );
   const baseReport = {
@@ -166,8 +181,10 @@ export async function buildPhase3ReadinessReport(
     generatedAt: new Date().toISOString(),
     indexableProducts: indexableProducts.length,
     publicableScopes: scopes.filter((scope) => scope.publicable).length,
+    rowsRead: scopeInputs.rowsRead,
     scopes,
     status: getOverallStatus(scopes),
+    truncated: scopeInputs.truncated,
   };
 
   return {

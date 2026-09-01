@@ -4,6 +4,11 @@
 > proyecto versionado en el repo (distinto de la memoria cross-sesión del agente, que vive
 > fuera del repo).
 
+## 2026-08-31 — Presupuesto de egress para índices de precios
+- Data Radar y Phase Readiness comparten un guard distribuido de una ejecución diaria y una única
+  consulta acotada a 90.000 filas; `/indice` consume el snapshot persistido en producción. La cota
+  conservadora queda en 0,639 GB/mes y el trabajo falla cerrado mediante kill switch y Upstash.
+
 ## 2026-06-09 — Auditoría de preparación para usuarios reales
 - Las páginas demo y las búsquedas internas quedan fuera del índice; el sitemap publica solo
   productos reales. La ficha separa “momento de compra” de “validación del descuento” para
